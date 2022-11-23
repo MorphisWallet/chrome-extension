@@ -7,6 +7,7 @@ specifiers:
   '@types/node': ^18.11.9
   '@types/react': ^18.0.25
   '@types/react-dom': ^18.0.9
+  '@types/webextension-polyfill': ^0.9.1
   '@types/webpack': ^5.28.0
   '@typescript-eslint/eslint-plugin': ^5.42.0
   '@typescript-eslint/parser': ^5.42.0
@@ -27,7 +28,9 @@ specifiers:
   postcss-loader: ^7.0.1
   postcss-preset-env: ^7.8.3
   prettier: ^2.7.1
+  rxjs: ^7.5.7
   typescript: ^4.8.4
+  webextension-polyfill: ^0.10.0
   webpack: ^5.75.0
   webpack-cli: ^5.0.0
   webpack-merge: ^5.8.0
@@ -37,6 +40,7 @@ dependencies:
   dotenv-webpack: 8.0.1_webpack@5.75.0
   html-webpack-plugin: 5.5.0_webpack@5.75.0
   mini-css-extract-plugin: 2.7.0_webpack@5.75.0
+  rxjs: 7.5.7
   typescript: 4.9.3
 
 devDependencies:
@@ -46,6 +50,7 @@ devDependencies:
   '@types/node': 18.11.9
   '@types/react': 18.0.25
   '@types/react-dom': 18.0.9
+  '@types/webextension-polyfill': 0.9.1
   '@types/webpack': 5.28.0_webpack-cli@5.0.0
   '@typescript-eslint/eslint-plugin': 5.44.0_fnsv2sbzcckq65bwfk7a5xwslu
   '@typescript-eslint/parser': 5.44.0_hsf322ms6xhhd4b5ne6lb74y4a
@@ -62,6 +67,7 @@ devDependencies:
   postcss-loader: 7.0.1_upg3rk2kpasnbk27hkqapxaxfq
   postcss-preset-env: 7.8.3_postcss@8.4.19
   prettier: 2.8.0
+  webextension-polyfill: 0.10.0
   webpack: 5.75.0_webpack-cli@5.0.0
   webpack-cli: 5.0.0_webpack@5.75.0
   webpack-merge: 5.8.0
@@ -614,6 +620,10 @@ packages:
 
   /@types/semver/7.3.13:
     resolution: {integrity: sha512-21cFJr9z3g5dW8B0CVI9g2O9beqaThGQ6ZFBqHfwhzLDKUxaqTIy3vnfah/UPkfOiF2pLq+tGz+W8RyCskuslw==}
+    dev: true
+
+  /@types/webextension-polyfill/0.9.1:
+    resolution: {integrity: sha512-6aNzPIhqKlAV9t06nwSH3/veAceYE2dS2RVFZI8V1+UXHqsFNB6cRwxNmheiBvEGRc45E/gyZNzH0xAYIC27KA==}
     dev: true
 
   /@types/webpack/5.28.0_webpack-cli@5.0.0:
@@ -3717,7 +3727,6 @@ packages:
     resolution: {integrity: sha512-z9MzKh/UcOqB3i20H6rtrlaE/CgjLOvheWK/9ILrbhROGTweAi1BaFsTT9FbwZi5Trr1qNRs+MXkhmR06awzQA==}
     dependencies:
       tslib: 2.4.1
-    dev: true
 
   /safe-buffer/5.2.1:
     resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
@@ -4222,6 +4231,10 @@ packages:
     dependencies:
       glob-to-regexp: 0.4.1
       graceful-fs: 4.2.10
+
+  /webextension-polyfill/0.10.0:
+    resolution: {integrity: sha512-c5s35LgVa5tFaHhrZDnr3FpQpjj1BB+RXhLTYUxGqBVN460HkbM8TBtEqdXWbpTKfzwCcjAZVF7zXCYSKtcp9g==}
+    dev: true
 
   /webpack-cli/5.0.0_webpack@5.75.0:
     resolution: {integrity: sha512-AACDTo20yG+xn6HPW5xjbn2Be4KUzQPebWXsDMHwPPyKh9OnTOJgZN2Nc+g/FZKV3ObRTYsGvibAvc+5jAUrVA==}
