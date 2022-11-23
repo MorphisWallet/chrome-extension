@@ -1,21 +1,16 @@
 {
-  "name": "morphiswallet",
-  "version": "1.0.0",
+  "name": "@morphis/chrome-extension",
+  "version": "0.0.1.0",
   "description": "",
-  "packageManager": "^pnpm@7.14.0",
-  "workspaces": [
-    "packages/*"
-  ],
+  "packageManager": "^pnpm@7.0.0+",
   "scripts": {
     "prepare": "husky install",
     "lint": "npx eslint packages --ext .js,.jsx,.ts,.tsx",
-    "prettier": "prettier --write packages",
-    "ext": "pnpm --filter @morphiswallet/chromeextension",
-    "core": "pnpm --filter @morphiswallet/core"
+    "prettier": "prettier --write src"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:MorphisWallet/morphis_wallet.git"
+    "directory": "https://github.com/MorphisWallet/chrome-ext.git"
   },
   "keywords": [
     "morphis",
@@ -24,12 +19,15 @@
   ],
   "author": "Morphis Lab<morphiswallet@gmail.com>",
   "license": "MIT",
-  "homepage": "https://github.com/MorphisWallet/morphis_wallet",
+  "homepage": "https://github.com/MorphisWallet/chrome-ext",
   "devDependencies": {
     "@commitlint/cli": "^17.2.0",
     "@commitlint/config-conventional": "^17.2.0",
-    "husky": "^8.0.0",
-    "lint-staged": "^13.0.3",
+    "@types/dotenv-webpack": "^7.0.3",
+    "@types/node": "^18.11.9",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.9",
+    "@types/webpack": "^5.28.0",
     "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
     "eslint": "^8.26.0",
@@ -39,11 +37,21 @@
     "eslint-plugin-jsonc": "^2.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.31.10",
-    "prettier": "^2.7.1"
+    "eslint-webpack-plugin": "^3.2.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^13.0.3",
+    "postcss-loader": "^7.0.1",
+    "postcss-preset-env": "^7.8.3",
+    "prettier": "^2.7.1",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.0",
+    "webpack-merge": "^5.8.0"
   },
   "dependencies": {
-    "@morphiswallet/chromeextension": "workspace:*",
-    "@morphiswallet/core": "workspace:*",
+    "copy-webpack-plugin": "^11.0.0",
+    "dotenv-webpack": "^8.0.1",
+    "html-webpack-plugin": "^5.5.0",
+    "mini-css-extract-plugin": "^2.7.0",
     "typescript": "^4.8.4"
   },
   "lint-staged": {
