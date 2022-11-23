@@ -1,0 +1,52 @@
+{
+  "name": "morphiswallet",
+  "version": "1.0.0",
+  "description": "",
+  "packageManager": "^pnpm@7.14.0",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "prepare": "husky install",
+    "lint": "npx eslint packages --ext .js,.jsx,.ts,.tsx",
+    "prettier": "prettier --write packages",
+    "ext": "pnpm --filter @morphiswallet/chromeextension",
+    "core": "pnpm --filter @morphiswallet/core"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:MorphisWallet/morphis_wallet.git"
+  },
+  "keywords": [
+    "morphis",
+    "wallet",
+    "sui"
+  ],
+  "author": "Morphis Lab<morphiswallet@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/MorphisWallet/morphis_wallet",
+  "devDependencies": {
+    "@commitlint/cli": "^17.2.0",
+    "@commitlint/config-conventional": "^17.2.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^13.0.3",
+    "@typescript-eslint/eslint-plugin": "^5.42.0",
+    "@typescript-eslint/parser": "^5.42.0",
+    "eslint": "^8.26.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-define-config": "^1.11.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsonc": "^2.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.31.10",
+    "prettier": "^2.7.1"
+  },
+  "dependencies": {
+    "@morphiswallet/chromeextension": "workspace:*",
+    "@morphiswallet/core": "workspace:*",
+    "typescript": "^4.8.4"
+  },
+  "lint-staged": {
+    "*.{js,ts,jsx,tsx,md,json}": "eslint"
+  }
+}
