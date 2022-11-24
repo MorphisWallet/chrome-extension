@@ -5,7 +5,6 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { createRoot } from 'react-dom/client'
 import { IntlProvider } from 'react-intl'
 import { Provider } from 'react-redux'
-import { HashRouter } from 'react-router-dom'
 
 import { queryClient } from '_app/helpers/queryClient'
 import initSentry from '_src/shared/sentry'
@@ -36,17 +35,16 @@ const renderApp = () => {
   }
   const root = createRoot(rootDom)
   root.render(
-    <HashRouter>
+    // TODO: intl
+    <IntlProvider locale="en">
       <Provider store={store}>
-        <IntlProvider locale="en">
-          <QueryClientProvider client={queryClient}>
-            <ErrorBoundary>
-              <App />
-            </ErrorBoundary>
-          </QueryClientProvider>
-        </IntlProvider>
+        <QueryClientProvider client={queryClient}>
+          <ErrorBoundary>
+            <App />
+          </ErrorBoundary>
+        </QueryClientProvider>
       </Provider>
-    </HashRouter>
+    </IntlProvider>
   )
 }
 

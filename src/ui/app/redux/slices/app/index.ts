@@ -21,6 +21,7 @@ type AppState = {
   appType: AppType
   apiEnv: API_ENV
   navVisible: boolean
+  headerVisible: boolean
   customRPC?: string | null
   activeOrigin: string | null
   activeOriginFavIcon: string | null
@@ -31,6 +32,7 @@ const initialState: AppState = {
   apiEnv: DEFAULT_API_ENV,
   customRPC: null,
   navVisible: true,
+  headerVisible: true,
   activeOrigin: null,
   activeOriginFavIcon: null,
 }
@@ -138,6 +140,8 @@ export const {
   setActiveOrigin,
   setCustomRPCURL,
 } = slice.actions
+
 export const getNavIsVisible = ({ app }: RootState) => app.navVisible
+export const getHeaderVisible = ({ app }: RootState) => app.headerVisible
 
 export default slice.reducer

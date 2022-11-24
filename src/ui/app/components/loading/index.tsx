@@ -13,16 +13,12 @@ type LoadingProps = {
 
 // full screen loading indicator
 // for component-level loading, use spinner
-const LoadingBase = ({
-  loading,
-  children,
-  className,
-}: LoadingProps): JSX.Element => {
+const LoadingBase = ({ loading, children, className }: LoadingProps) => {
   if (loading)
     return (
       <div
         className={cl([
-          'flex justify-center items-center h-full w-full',
+          'flex grow justify-center items-center h-full w-full',
           className,
         ])}
       >
