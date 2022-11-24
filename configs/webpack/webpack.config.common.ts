@@ -134,6 +134,11 @@ const commonConfig: () => Promise<Configuration> = async () => {
           test: /\.(png|jpg|jpeg|gif)$/,
           type: 'asset/resource',
         },
+        {
+          test: /\.svg$/i,
+          issuer: /\.[jt]sx?$/,
+          use: [{ loader: '@svgr/webpack', options: { icon: true } }],
+        },
       ],
     },
     plugins: [
