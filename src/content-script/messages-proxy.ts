@@ -14,7 +14,7 @@ function createPort(windowMsgStream: WindowMessageStream) {
   const windowMsgSub = windowMsgStream.messages.subscribe((msg) => {
     port.sendMessage(msg)
   })
-  port.onDisconnect.subscribe((port) => {
+  port.onDisconnect.subscribe((/* port */) => {
     windowMsgSub.unsubscribe()
     createPort(windowMsgStream)
   })
