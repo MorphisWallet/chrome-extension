@@ -1,6 +1,7 @@
-// Copyright (c) 2022, Mysten Labs, Inc.
+// Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
+import { randomBytes } from '@noble/hashes/utils'
 import { exec } from 'child_process'
 import CopyPlugin from 'copy-webpack-plugin'
 import DotEnv from 'dotenv-webpack'
@@ -13,7 +14,8 @@ import packageJson from '../../package.json'
 
 import type { Configuration } from 'webpack'
 
-const APP_NAME = 'Morphis Wallet'
+const WALLET_BETA = process.env.WALLET_BETA === 'true'
+
 const PROJECT_ROOT = resolve(__dirname, '..', '..')
 const CONFIGS_ROOT = resolve(PROJECT_ROOT, 'configs')
 const SRC_ROOT = resolve(PROJECT_ROOT, 'src')
@@ -24,6 +26,11 @@ const TS_CONFIG_FILE = resolve(
   TS_CONFIGS_ROOT,
   `tsconfig.${IS_DEV ? 'dev' : 'prod'}.json`
 )
+const APP_NAME = WALLET_BETA
+  ? 'Sui Wallet (BETA)'
+  : IS_DEV
+  ? 'Sui Wallet (DEV)'
+  : 'Sui Wallet'
 
 function loadTsConfig(tsConfigFilePath: string) {
   return new Promise<string>((res, rej) => {
@@ -158,12 +165,11 @@ const commonConfig: () => Promise<Configuration> = async () => {
             from: resolve(SRC_ROOT, 'manifest', 'manifest.json'),
             to: resolve(OUTPUT_ROOT, '[name][ext]'),
             transform: (content) => {
-              const { description, version } = packageJson
               const manifestJson = {
                 ...JSON.parse(content.toString()),
                 name: APP_NAME,
-                description,
-                version,
+                description: packageJson.description,
+                version: packageJson.version,
               }
               return JSON.stringify(manifestJson, null, 4)
             },
@@ -176,8 +182,16 @@ const commonConfig: () => Promise<Configuration> = async () => {
         expand: true,
       }),
       new DefinePlugin({
-        'typeof window': JSON.stringify(typeof {}),
+        // This brakes bg service, js-sha3 checks if window is defined,
+        // but it's not defined in background service.
+        // TODO: check if this is worth investigating a fix and maybe do a separate build for UI and bg?
+        // 'typeof window': JSON.stringify(typeof {}),
         'process.env.NODE_DEBUG': false,
+        'process.env.WALLET_KEYRING_PASSWORD': JSON.stringify(
+          IS_DEV ? 'DEV_PASS' : Buffer.from(randomBytes(64)).toString('hex')
+        ),
+        'process.env.WALLET_BETA': WALLET_BETA,
+        'process.env.APP_NAME': JSON.stringify(APP_NAME),
       }),
       new ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],

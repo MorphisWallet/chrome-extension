@@ -1,36 +1,33 @@
 // // Copyright (c) Mysten Labs, Inc.
 // // SPDX-License-Identifier: Apache-2.0
 
-// import { GrowthBookProvider } from '@growthbook/growthbook-react';
-// import { QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query'
 import { createRoot } from 'react-dom/client'
-// import { IntlProvider } from 'react-intl';
+import { IntlProvider } from 'react-intl'
 import { Provider } from 'react-redux'
-// import { HashRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom'
 
-// import App from './app';
-// import { growthbook, loadFeatures } from './app/experimentation/feature-gating';
-// import { queryClient } from './app/helpers/queryClient';
-// import { initAppType, initNetworkFromStorage } from '_redux/slices/app';
-// import { getFromLocationSearch } from '_redux/slices/app/AppType';
+import { queryClient } from '_app/helpers/queryClient'
+import initSentry from '_src/shared/sentry'
+
 import store from '_store'
-// import { thunkExtras } from '_store/thunk-extras';
+import { thunkExtras } from '_store/thunk-extras'
+import { initAppType, initNetworkFromStorage } from '_redux/slices/app'
+import { getFromLocationSearch } from '_redux/slices/app/AppType'
 
-import './global.css';
-// import './styles/tailwind.css';
-// import '_font-icons/output/sui-icons.scss';
-// import 'bootstrap-icons/font/bootstrap-icons.scss';
+import ErrorBoundary from './ErrorBoundary'
+import App from './App'
 
-// async function init() {
-//     if (process.env.NODE_ENV === 'development') {
-//         Object.defineProperty(window, 'store', { value: store });
-//     }
-//     await loadFeatures();
-//     store.dispatch(initAppType(getFromLocationSearch(window.location.search)));
-//     await store.dispatch(initNetworkFromStorage()).unwrap();
-//     await thunkExtras.background.init(store.dispatch);
-// }
+import './global.css'
 
+async function init() {
+  if (process.env.NODE_ENV === 'development') {
+    Object.defineProperty(window, 'store', { value: store })
+  }
+  store.dispatch(initAppType(getFromLocationSearch()))
+  await store.dispatch(initNetworkFromStorage()).unwrap()
+  await thunkExtras.background.init(store.dispatch)
+}
 
 const renderApp = () => {
   const rootDom = document.getElementById('root')
@@ -39,13 +36,22 @@ const renderApp = () => {
   }
   const root = createRoot(rootDom)
   root.render(
-    <Provider store={store}>
-      <h1 className="text-[#00ff00]">test123</h1>
-    </Provider>
+    <HashRouter>
+      <Provider store={store}>
+        <IntlProvider locale="en">
+          <QueryClientProvider client={queryClient}>
+            <ErrorBoundary>
+              <App />
+            </ErrorBoundary>
+          </QueryClientProvider>
+        </IntlProvider>
+      </Provider>
+    </HashRouter>
   )
 }
 
 ;(async () => {
-  // await init();
+  await init()
+  initSentry()
   renderApp()
 })()

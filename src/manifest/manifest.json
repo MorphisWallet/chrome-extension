@@ -6,15 +6,14 @@
   "background": {
     "service_worker": "background.js"
   },
-  "permissions": ["storage"],
+  "permissions": ["storage", "tabs", "alarms"],
   "action": {
     "default_popup": "ui.html?type=popup"
   },
   "host_permissions": [
     "http://127.0.0.1:5001/",
-    "https://gateway.devnet.sui.io/",
-    "https://fullnode.devnet.sui.io:443/",
-    "https://gateway.staging.sui.io/"
+    "https://fullnode.devnet.sui.io/",
+    "https://fullnode.staging.sui.io/"
   ],
   "icons": {
     "16": "manifest/icons/morphis-logo-16.png",
