@@ -120,6 +120,12 @@ const slice = createSlice({
     ) => {
       state.navVisible = isVisible
     },
+    setHeaderVisibility: (
+      state,
+      { payload: isVisible }: PayloadAction<boolean>
+    ) => {
+      state.headerVisible = isVisible
+    },
     setActiveOrigin: (
       state,
       {
@@ -137,6 +143,7 @@ export const {
   initAppType,
   setApiEnv,
   setNavVisibility,
+  setHeaderVisibility,
   setActiveOrigin,
   setCustomRPCURL,
 } = slice.actions
