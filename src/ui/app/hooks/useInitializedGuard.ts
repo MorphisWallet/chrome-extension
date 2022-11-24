@@ -8,16 +8,20 @@ import useAppSelector from './useAppSelector'
 
 export default function useInitializedGuard(initializedRequired: boolean) {
   const isInitialized = useAppSelector(({ account }) => account.isInitialized)
-  const loading = isInitialized === null
   const navigate = useNavigate()
+
+  const loading = isInitialized === null
+
   const guardAct = useMemo(
     () => !loading && initializedRequired !== isInitialized,
     [loading, initializedRequired, isInitialized]
   )
+
   useEffect(() => {
     if (guardAct) {
       navigate(isInitialized ? '/' : '/welcome', { replace: true })
     }
   }, [guardAct, isInitialized, navigate])
+
   return loading || guardAct
 }
