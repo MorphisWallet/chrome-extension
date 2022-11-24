@@ -3,6 +3,7 @@ import { createHashRouter, RouterProvider } from 'react-router-dom'
 
 import { Home } from '_app/pages/home'
 import { Welcome } from '_app/pages/welcome'
+import { Locked } from '_app/pages/locked'
 
 // import { useAppDispatch } from '_hooks'
 
@@ -20,6 +21,10 @@ const router = createHashRouter([
   {
     path: 'welcome',
     element: <Welcome />,
+  },
+  {
+    path: 'locked',
+    element: <Locked />,
   },
 ])
 
