@@ -16,7 +16,7 @@ import { Provider } from 'react-redux'
 import store from '_store'
 // import { thunkExtras } from '_store/thunk-extras';
 
-// import './styles/global.scss';
+import './global.css';
 // import './styles/tailwind.css';
 // import '_font-icons/output/sui-icons.scss';
 // import 'bootstrap-icons/font/bootstrap-icons.scss';
@@ -31,6 +31,7 @@ import store from '_store'
 //     await thunkExtras.background.init(store.dispatch);
 // }
 
+
 const renderApp = () => {
   const rootDom = document.getElementById('root')
   if (!rootDom) {
@@ -39,7 +40,7 @@ const renderApp = () => {
   const root = createRoot(rootDom)
   root.render(
     <Provider store={store}>
-      <h1>test123</h1>
+      <h1 className="text-[#00ff00]">test123</h1>
     </Provider>
   )
 }
