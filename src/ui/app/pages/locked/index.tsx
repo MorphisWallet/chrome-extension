@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
-import { useFormik, FormikHelpers } from 'formik'
-import * as Yup from 'yup'
+import { Formik, FormikHelpers } from 'formik'
 
 import { Loading } from '_components/loading'
 import { Input } from '_components/input'
@@ -10,15 +9,13 @@ import { useAppDispatch, useInitializedGuard, useLockedGuard } from '_hooks'
 
 import { unlockWallet } from '_redux/slices/wallet'
 
+import { passwordValidation } from '_app/utils/validation'
+
 import Logo from '_assets/icons/logo.svg'
 
 type PasswordField = {
   password: string
 }
-
-const validation = Yup.object({
-  password: Yup.string().ensure().required('Password is required'),
-})
 
 export const Locked = () => {
   const dispatch = useAppDispatch()
@@ -27,18 +24,10 @@ export const Locked = () => {
 
   const guardsLoading = initGuardLoading || lockedGuardLoading
 
-  const { handleSubmit, handleChange, handleBlur, values, errors } = useFormik({
-    initialValues: {
-      password: '',
-    },
-    validationSchema: validation,
-    onSubmit: onSubmit,
-  })
-
-  async function onSubmit(
+  const onSubmit = async (
     { password }: PasswordField,
     { setFieldError }: FormikHelpers<PasswordField>
-  ) {
+  ) => {
     try {
       await dispatch(unlockWallet({ password })).unwrap()
     } catch (e) {
@@ -54,22 +43,30 @@ export const Locked = () => {
             <Logo height={55} width={57} className="mb-4" />
           </a>
           <p className="text-2xl font-bold mb-10">Welcome back!</p>
-          <form onSubmit={handleSubmit} className="w-full">
-            <Input
-              id="password"
-              name="password"
-              value={values.password}
-              error={errors.password}
-              type="password"
-              placeholder="Password"
-              className="mb-4"
-              onChange={handleChange}
-              onBlur={handleBlur}
-            />
-            <Button type="submit" variant="contained">
-              Unlock
-            </Button>
-          </form>
+          <Formik
+            initialValues={{ password: '' }}
+            validationSchema={passwordValidation}
+            onSubmit={onSubmit}
+          >
+            {({ values, errors, handleBlur, handleChange, handleSubmit }) => (
+              <form onSubmit={handleSubmit} className="w-full">
+                <Input
+                  id="password"
+                  name="password"
+                  value={values.password}
+                  error={errors.password}
+                  type="password"
+                  placeholder="Password"
+                  className="mb-4"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                <Button type="submit" variant="contained">
+                  Unlock
+                </Button>
+              </form>
+            )}
+          </Formik>
         </div>
         <Link
           to=""

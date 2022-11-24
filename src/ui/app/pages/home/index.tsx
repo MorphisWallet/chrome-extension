@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
 import { of, filter, switchMap, from, defer, repeat } from 'rxjs'
 
-import { Layout } from '_app/layouts'
 import { Loading } from '_components/loading'
 
 import { useAppDispatch, useInitializedGuard, useLockedGuard } from '_hooks'
@@ -50,10 +49,8 @@ export const Home = () => {
   }, [guardChecking, visibility, dispatch])
 
   return (
-    <Layout>
-      <Loading loading={guardChecking}>
-        <Outlet />
-      </Loading>
-    </Layout>
+    <Loading loading={guardChecking}>
+      <Outlet />
+    </Loading>
   )
 }
