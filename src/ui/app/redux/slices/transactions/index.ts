@@ -122,6 +122,8 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(sendTokens.fulfilled, (state, { payload }) => {
+      // eslint-disable-next-line
+      // @ts-ignore
       return txAdapter.setOne(state, payload)
     })
     builder.addCase(StakeTokens.fulfilled, (state, { payload }) => {

@@ -156,7 +156,7 @@ const slice = createSlice({
         state.error = false
         state.lastSync = Date.now()
       })
-      .addCase(fetchAllOwnedAndRequiredObjects.pending, (state, action) => {
+      .addCase(fetchAllOwnedAndRequiredObjects.pending, (state) => {
         state.loading = true
       })
       .addCase(

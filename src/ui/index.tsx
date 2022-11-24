@@ -5,7 +5,7 @@
 // import { QueryClientProvider } from '@tanstack/react-query';
 import { createRoot } from 'react-dom/client'
 // import { IntlProvider } from 'react-intl';
-// import { Provider } from 'react-redux';
+import { Provider } from 'react-redux'
 // import { HashRouter } from 'react-router-dom';
 
 // import App from './app';
@@ -13,7 +13,7 @@ import { createRoot } from 'react-dom/client'
 // import { queryClient } from './app/helpers/queryClient';
 // import { initAppType, initNetworkFromStorage } from '_redux/slices/app';
 // import { getFromLocationSearch } from '_redux/slices/app/AppType';
-// import store from '_store';
+import store from '_store'
 // import { thunkExtras } from '_store/thunk-extras';
 
 // import './styles/global.scss';
@@ -37,7 +37,11 @@ const renderApp = () => {
     throw new Error('Root element not found')
   }
   const root = createRoot(rootDom)
-  root.render(<h1>123</h1>)
+  root.render(
+    <Provider store={store}>
+      <h1>test123</h1>
+    </Provider>
+  )
 }
 
 ;(async () => {

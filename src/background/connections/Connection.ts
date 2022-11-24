@@ -1,4 +1,4 @@
-// Copyright (c) 2022, Mysten Labs, Inc.
+// Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
 import { map, take } from 'rxjs'
@@ -13,23 +13,21 @@ export abstract class Connection {
 
   constructor(port: Runtime.Port) {
     this._portStream = new PortStream(port)
-    this._portStream.onMessage.subscribe((msg: Message) =>
-      this.handleMessage(msg)
-    )
+    this._portStream.onMessage.subscribe((msg) => this.handleMessage(msg))
   }
 
   public get onDisconnect() {
     return this._portStream.onDisconnect.pipe(
-      map((port) => ({ port, connection: this })),
+      map((port) => ({ port })),
       take(1)
     )
   }
 
-  protected abstract handleMessage(msg: Message): void
-
-  protected send(msg: Message) {
+  public send(msg: Message) {
     if (this._portStream.connected) {
       return this._portStream.sendMessage(msg)
     }
   }
+
+  protected abstract handleMessage(msg: Message): void
 }

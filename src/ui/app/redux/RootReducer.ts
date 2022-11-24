@@ -11,7 +11,7 @@ import suiObjects from './slices/sui-objects'
 import transactionRequests from './slices/transaction-requests'
 import transactions from './slices/transactions'
 import txresults from './slices/txresults'
-import { reducer as faucet } from './slices/faucet'
+import { reducer as faucet } from '_app/shared/faucet/slice'
 
 const rootReducer = combineReducers({
   account,

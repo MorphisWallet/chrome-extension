@@ -213,7 +213,7 @@ const slice = createSlice({
       }
     )
 
-    build.addCase(deserializeTxn.rejected, (state, { payload }) => {
+    build.addCase(deserializeTxn.rejected, (state) => {
       state.deserializeTxnFailed = true
     })
 

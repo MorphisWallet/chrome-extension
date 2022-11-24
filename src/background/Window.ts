@@ -1,4 +1,4 @@
-// Copyright (c) 2022, Mysten Labs, Inc.
+// Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
 import { filter, fromEventPattern, share, take, takeWhile } from 'rxjs'
@@ -12,21 +12,9 @@ const windowRemovedStream = fromEventPattern<number>(
 export class Window {
   private _id: number | null = null
   private _url: string
-  private _width: number
-  private _height: number
 
-  constructor({
-    url,
-    width = 370,
-    height = 460,
-  }: {
-    url: string
-    width?: number
-    height?: number
-  }) {
+  constructor(url: string) {
     this._url = url
-    this._width = width
-    this._height = height
   }
 
   public async show() {
@@ -38,8 +26,8 @@ export class Window {
     const w = await Browser.windows.create({
       url: this._url,
       focused: true,
-      width: this._width,
-      height: this._height,
+      width: 360,
+      height: 595,
       type: 'popup',
       top: top,
       left: Math.floor(left + width - 450),

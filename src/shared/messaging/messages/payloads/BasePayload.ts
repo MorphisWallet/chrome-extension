@@ -1,4 +1,4 @@
-// Copyright (c) 2022, Mysten Labs, Inc.
+// Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
 import type { Payload } from './Payload'
@@ -9,10 +9,6 @@ export type PayloadType =
   | 'get-permission-requests'
   | 'get-account'
   | 'get-account-response'
-  | 'open-wallet'
-  | 'open-wallet-response'
-  | 'disconnect-request'
-  | 'disconnect-response'
   | 'has-permissions-request'
   | 'has-permissions-response'
   | 'acquire-permissions-request'
@@ -22,15 +18,10 @@ export type PayloadType =
   | 'get-transaction-requests'
   | 'get-transaction-requests-response'
   | 'transaction-request-response'
-  | 'preapproval-request'
-  | 'preapproval-response'
-  | 'get-preapproval-requests'
-  | 'get-preapproval-response'
-  | 'execute-sign-message-request'
-  | 'execute-sign-message-response'
-  | 'sign-message-request-response'
-  | 'get-sign-message-requests'
-  | 'get-sign-message-requests-response'
+  | 'update-active-origin'
+  | 'disconnect-app'
+  | 'done'
+  | 'keyring'
 
 export interface BasePayload {
   type: PayloadType

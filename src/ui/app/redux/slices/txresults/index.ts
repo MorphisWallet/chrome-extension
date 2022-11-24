@@ -134,10 +134,7 @@ export const getTransactionsByAddress = createAsyncThunk<
   AppThunkConfig
 >(
   'sui-transactions/get-transactions-by-address',
-  async (
-    _,
-    { getState, dispatch, extra: { api } }
-  ): Promise<TxResultByAddress> => {
+  async (_, { getState, extra: { api } }): Promise<TxResultByAddress> => {
     const address = getState().account.address
 
     if (!address) return []
@@ -268,7 +265,7 @@ const txSlice = createSlice({
           ...new Set(recentAddresses.flat().filter((itm) => itm)),
         ]
       })
-      .addCase(getTransactionsByAddress.pending, (state, action) => {
+      .addCase(getTransactionsByAddress.pending, (state) => {
         state.loading = true
         state.latestTx = []
         state.recentAddresses = []

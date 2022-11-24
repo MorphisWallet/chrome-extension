@@ -4,7 +4,7 @@
 import {
   RawSigner,
   JsonRpcProvider,
-  LocalTxnDataSerializer,
+  // LocalTxnDataSerializer,
 } from '@mysten/sui.js'
 
 // import { queryClient } from './helpers/queryClient';

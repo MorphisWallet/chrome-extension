@@ -32,7 +32,7 @@ export const getCuratedApps = createAsyncThunk<
   DappApiResponse[],
   void,
   AppThunkConfig
->('sui-apps/get-curated-apps', async (_): Promise<DappApiResponse[]> => {
+>('sui-apps/get-curated-apps', async (): Promise<DappApiResponse[]> => {
   if (!SUI_APPS_API_ENDPOINT) {
     throw new Error('SUI_APPS_API_ENDPOINT is not defined')
   }

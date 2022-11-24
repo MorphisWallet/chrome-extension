@@ -1,6 +1,6 @@
-// Copyright (c) 2022, Mysten Labs, Inc.
+// Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
 export type PortChannelName =
-  | 'ethos_content<->background'
-  | 'ethos_ui<->background'
+  | 'morphis_content<->background'
+  | 'morphis_ui<->background'
