@@ -30,7 +30,7 @@ export const Create = () => {
   const onSubmit = async (values: Fields) => {
     try {
       await dispatch(createVault({ password: values.password })).unwrap()
-      navigate('../backup')
+      navigate('/initialize/backup')
     } catch (e) {
       toast(<Alert type="error">{`Failed to create vault, ${e}`}</Alert>)
     }

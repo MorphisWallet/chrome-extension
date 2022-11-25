@@ -19,9 +19,14 @@ module.exports = {
           '90%': { transform: 'translate(1px, 2px) rotate(0deg)' },
           '100%': { transform: 'translate(1px, -2px) rotate(-1deg)' },
         },
+        'fade-in-frames': {
+          '0%': { opacity: 0 },
+          '100%': { opacity: 1 },
+        },
       },
       animation: {
         shake: 'shake-frames 0.2s linear',
+        'fade-in': 'fade-in-frames 0.2s ease-in-out alternate',
       },
     },
   },

@@ -5,6 +5,7 @@ import { Welcome } from '_app/pages/welcome'
 import { Locked } from '_app/pages/locked'
 import { Initialize } from '_app/pages/initialize'
 import { Create } from '_app/pages/initialize/create'
+import { Backup } from '_app/pages/initialize/backup'
 
 const router = createHashRouter([
   {
@@ -30,6 +31,10 @@ const router = createHashRouter([
       {
         path: 'create',
         element: <Create />,
+      },
+      {
+        path: 'backup',
+        element: <Backup />,
       },
     ],
   },
