@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
+import ReactTooltip from 'react-tooltip'
 import { Formik, FormikHelpers } from 'formik'
+import * as Yup from 'yup'
 
 import { Loading } from '_components/loading'
 import { Input } from '_components/input'
@@ -45,7 +47,9 @@ export const Locked = () => {
           <p className="text-2xl font-bold mb-10">Welcome back!</p>
           <Formik
             initialValues={{ password: '' }}
-            validationSchema={passwordValidation}
+            validationSchema={Yup.object().shape({
+              password: passwordValidation,
+            })}
             onSubmit={onSubmit}
           >
             {({ values, errors, handleBlur, handleChange, handleSubmit }) => (
@@ -70,9 +74,17 @@ export const Locked = () => {
         </div>
         <Link
           to=""
+          data-tip="Coming soon"
+          data-for="link-tip"
           className="text-sm text-[#818181] text-center font-medium cursor-not-allowed"
         >
-          Forgot password?
+          <span>Forgot password?</span>
+          <ReactTooltip
+            id="link-tip"
+            effect="solid"
+            className="before:hidden"
+            backgroundColor="#000000"
+          />
         </Link>
       </div>
     </Loading>

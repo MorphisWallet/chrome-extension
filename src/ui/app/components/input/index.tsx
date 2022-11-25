@@ -1,7 +1,7 @@
 import cl from 'classnames'
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
-  error?: string
+  error?: string | boolean
   inputClassName?: string
 }
 

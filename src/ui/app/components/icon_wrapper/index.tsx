@@ -9,9 +9,9 @@ type IconProps = React.DOMAttributes<HTMLDivElement> & {
 export const IconWrapper = ({ className, children, ...rest }: IconProps) => (
   <div
     className={cl([
-      'flex justify-center items-center h-4 w-4 cursor-pointer',
-      'transition-all duration-100 ease-in-out hover:scale-110 active:scale-125',
-      '[&>svg:]text-[#000000] hover:[&>svg]:text-[#2a2a2d] active:[&>svg]:text-[#6a6a6d]',
+      'flex justify-center items-center h-4 cursor-pointer',
+      'transition-all duration-100 ease-in-out text-[#000000]',
+      'hover:scale-110 active:scale-125 hover:text-[#2a2a2d] active:text-[#6a6a6d]',
       className,
     ])}
     {...rest}
