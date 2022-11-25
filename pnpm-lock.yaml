@@ -61,6 +61,7 @@ specifiers:
   react-intl: ^6.2.1
   react-redux: ^8.0.5
   react-router-dom: ^6.4.3
+  react-tooltip: ^4.5.1
   rxjs: ^7.5.7
   semver: ^7.3.8
   stream-browserify: ^3.0.0
@@ -106,6 +107,7 @@ dependencies:
   react-intl: 6.2.1_eetduzquwu67aqoq5644t6dxzu
   react-redux: 8.0.5_moha6x5fbqoiok2ot63p7hwafm
   react-router-dom: 6.4.3_biqbaboplfbrettd7655fr4n2y
+  react-tooltip: 4.5.1_biqbaboplfbrettd7655fr4n2y
   rxjs: 7.5.7
   semver: 7.3.8
   stream-browserify: 3.0.0
@@ -6516,7 +6518,6 @@ packages:
   /object-assign/4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
     engines: {node: '>=0.10.0'}
-    dev: true
 
   /object-hash/3.0.0:
     resolution: {integrity: sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==}
@@ -7241,7 +7242,6 @@ packages:
       loose-envify: 1.4.0
       object-assign: 4.1.1
       react-is: 16.13.1
-    dev: true
 
   /property-expr/2.0.5:
     resolution: {integrity: sha512-IJUkICM5dP5znhCckHSv30Q4b5/JA5enCtkRHYaOVOAocnH/1BQEYTC5NMfT3AVl/iXKdr3aqQbQn9DxyWknwA==}
@@ -7372,6 +7372,19 @@ packages:
     dependencies:
       '@remix-run/router': 1.0.3
       react: 18.2.0
+    dev: false
+
+  /react-tooltip/4.5.1_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-Zo+CSFUGXar1uV+bgXFFDe7VeS2iByeIp5rTgTcc2HqtuOS5D76QapejNNfx320MCY91TlhTQat36KGFTqgcvw==}
+    engines: {npm: '>=6.13'}
+    peerDependencies:
+      react: '>=16.0.0'
+      react-dom: '>=16.0.0'
+    dependencies:
+      prop-types: 15.8.1
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      uuid: 7.0.3
     dev: false
 
   /react/18.2.0:
@@ -8418,6 +8431,11 @@ packages:
 
   /utila/0.4.0:
     resolution: {integrity: sha512-Z0DbgELS9/L/75wZbro8xAnT50pBVFQZ+hUEueGDU5FN51YSCYM+jdxsfCiHjwNP/4LCDD0i/graKpeBnOXKRA==}
+    dev: false
+
+  /uuid/7.0.3:
+    resolution: {integrity: sha512-DPSke0pXhTZgoF/d+WSt2QaKMCFSfx7QegxEWT+JOuHF5aWrKEn0G+ztjuJg/gG8/ItK+rbPCD/yNv8yyih6Cg==}
+    hasBin: true
     dev: false
 
   /uuid/8.3.2:

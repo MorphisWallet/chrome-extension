@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import ReactTooltip from 'react-tooltip'
 import { Formik, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
 
@@ -73,9 +74,17 @@ export const Locked = () => {
         </div>
         <Link
           to=""
+          data-tip="Coming soon"
+          data-for="link-tip"
           className="text-sm text-[#818181] text-center font-medium cursor-not-allowed"
         >
-          Forgot password?
+          <span>Forgot password?</span>
+          <ReactTooltip
+            id="link-tip"
+            effect="solid"
+            className="before:hidden"
+            backgroundColor="#000000"
+          />
         </Link>
       </div>
     </Loading>
