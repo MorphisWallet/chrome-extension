@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Formik, FormikHelpers } from 'formik'
+import * as Yup from 'yup'
 
 import { Loading } from '_components/loading'
 import { Input } from '_components/input'
@@ -45,7 +46,9 @@ export const Locked = () => {
           <p className="text-2xl font-bold mb-10">Welcome back!</p>
           <Formik
             initialValues={{ password: '' }}
-            validationSchema={passwordValidation}
+            validationSchema={Yup.object().shape({
+              password: passwordValidation,
+            })}
             onSubmit={onSubmit}
           >
             {({ values, errors, handleBlur, handleChange, handleSubmit }) => (

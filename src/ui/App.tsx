@@ -1,17 +1,10 @@
-// import { useEffect } from 'react'
 import { createHashRouter, RouterProvider } from 'react-router-dom'
 
 import { Home } from '_app/pages/home'
 import { Welcome } from '_app/pages/welcome'
 import { Locked } from '_app/pages/locked'
-
-// import { useAppDispatch } from '_hooks'
-
-// import { setNavVisibility, setHeaderVisibility } from '_redux/slices/app'
-
-// const HIDDEN_NAV_PATHS = []
-
-// const HIDDEN_HEADER_PATHS = []
+import { Initialize } from '_app/pages/initialize'
+import { Create } from '_app/pages/initialize/create'
 
 const router = createHashRouter([
   {
@@ -25,6 +18,20 @@ const router = createHashRouter([
   {
     path: 'locked',
     element: <Locked />,
+  },
+  {
+    path: '/initialize',
+    element: <Initialize />,
+    children: [
+      {
+        index: true,
+        element: <Create />,
+      },
+      {
+        path: 'create',
+        element: <Create />,
+      },
+    ],
   },
 ])
 
