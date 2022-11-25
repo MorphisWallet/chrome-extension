@@ -1,15 +1,10 @@
 import { useNavigate } from 'react-router-dom'
-import { ToastContainer, Slide, toast } from 'react-toastify'
+import { toast } from 'react-toastify'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
 
 import { Layout } from '_app/layouts'
-import { Stepper } from '_components/stepper'
-import { Input } from '_components/input'
-import { Checkbox } from '_components/checkbox'
-import { Button } from '_components/button'
-import { IconWrapper } from '_src/ui/app/components/icon_wrapper'
-import { Alert } from '_components/alert'
+import { Stepper, Input, Checkbox, Button, Alert } from '_components/index'
 
 import { useAppDispatch } from '_hooks'
 
@@ -19,8 +14,6 @@ import {
   passwordValidation,
   getConfirmPasswordValidation,
 } from '_app/utils/validation'
-
-import CloseIcon from '_assets/icons/close.svg'
 
 type Fields = {
   password: string
@@ -39,33 +32,13 @@ export const Create = () => {
       await dispatch(createVault({ password: values.password })).unwrap()
       navigate('../backup')
     } catch (e) {
-      toast(<Alert type="success">{`Failed to create vault, ${e}`}</Alert>)
+      toast(<Alert type="error">{`Failed to create vault, ${e}`}</Alert>)
     }
   }
 
   return (
     <Layout showHeader={false} showNav={false}>
       <div className="flex flex-col grow px-10 pb-10">
-        <ToastContainer
-          position="top-center"
-          autoClose={3000000}
-          limit={1}
-          hideProgressBar
-          newestOnTop={false}
-          closeOnClick={false}
-          rtl={false}
-          pauseOnFocusLoss={false}
-          draggable={false}
-          pauseOnHover
-          theme="dark"
-          closeButton={({ closeToast }) => (
-            <IconWrapper onClick={closeToast}>
-              <CloseIcon />
-            </IconWrapper>
-          )}
-          transition={Slide}
-          className="h-10 !p-0 !top-0 !w-[360px] [&>div]:min-h-[40px] [&>div]:px-6 [&>div]:items-center [&>div]:rounded-none [&>div>:shadow-none"
-        />
         <Stepper steps={3} current={0} onPrev={onPrev} />
         <Formik
           initialValues={{ password: '', confirmedPassword: '', tos: false }}
