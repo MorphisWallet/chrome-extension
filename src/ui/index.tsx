@@ -18,6 +18,7 @@ import ErrorBoundary from './ErrorBoundary'
 import App from './App'
 
 import './global.css'
+import 'react-toastify/dist/ReactToastify.min.css' // react-toastify styles
 
 async function init() {
   if (process.env.NODE_ENV === 'development') {

@@ -61,6 +61,7 @@ specifiers:
   react-intl: ^6.2.1
   react-redux: ^8.0.5
   react-router-dom: ^6.4.3
+  react-toastify: ^9.1.1
   react-tooltip: ^4.5.1
   rxjs: ^7.5.7
   semver: ^7.3.8
@@ -107,6 +108,7 @@ dependencies:
   react-intl: 6.2.1_eetduzquwu67aqoq5644t6dxzu
   react-redux: 8.0.5_moha6x5fbqoiok2ot63p7hwafm
   react-router-dom: 6.4.3_biqbaboplfbrettd7655fr4n2y
+  react-toastify: 9.1.1_biqbaboplfbrettd7655fr4n2y
   react-tooltip: 4.5.1_biqbaboplfbrettd7655fr4n2y
   rxjs: 7.5.7
   semver: 7.3.8
@@ -3684,6 +3686,11 @@ packages:
       is-plain-object: 2.0.4
       kind-of: 6.0.3
       shallow-clone: 3.0.1
+
+  /clsx/1.2.1:
+    resolution: {integrity: sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==}
+    engines: {node: '>=6'}
+    dev: false
 
   /co/4.6.0:
     resolution: {integrity: sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==}
@@ -7372,6 +7379,17 @@ packages:
     dependencies:
       '@remix-run/router': 1.0.3
       react: 18.2.0
+    dev: false
+
+  /react-toastify/9.1.1_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-pkFCla1z3ve045qvjEmn2xOJOy4ZciwRXm1oMPULVkELi5aJdHCN/FHnuqXq8IwGDLB7PPk2/J6uP9D8ejuiRw==}
+    peerDependencies:
+      react: '>=16'
+      react-dom: '>=16'
+    dependencies:
+      clsx: 1.2.1
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /react-tooltip/4.5.1_biqbaboplfbrettd7655fr4n2y:
