@@ -7,7 +7,7 @@ import { Layout } from '_app/layouts'
 import { Loading } from '_components/loading'
 import { Stepper, Input, Checkbox, Button, Alert } from '_components/index'
 
-import { useAppDispatch, useInitializedGuard, useLockedGuard } from '_hooks'
+import { useAppDispatch, useInitializedGuard } from '_hooks'
 
 import { createVault } from '_redux/slices/account'
 
@@ -25,8 +25,7 @@ type Fields = {
 export const Create = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const initGuardLoading = useInitializedGuard(true)
-  const lockedGuardLoading = useLockedGuard(true)
+  const initGuardLoading = useInitializedGuard(false)
 
   const onPrev = () => navigate('/welcome')
 
@@ -41,10 +40,8 @@ export const Create = () => {
     }
   }
 
-  const guardsLoading = initGuardLoading || lockedGuardLoading
-
   return (
-    <Loading loading={guardsLoading}>
+    <Loading loading={initGuardLoading}>
       <Layout showHeader={false} showNav={false}>
         <div className="flex flex-col grow px-10 pb-10">
           <Stepper steps={3} current={0} onPrev={onPrev} />

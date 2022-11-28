@@ -20,7 +20,7 @@ export const Backup = () => {
   const [mnemonicLoading, setMnemonicLoading] = useState(false)
   const [mnemonic, setMnemonic] = useState<string | null>(null)
 
-  const [step, setStep] = useState<0 | 1>(1)
+  const [step, setStep] = useState<0 | 1>(0)
 
   const onInit = async () => {
     if (guardsLoading) {

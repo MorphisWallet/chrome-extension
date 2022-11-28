@@ -1,4 +1,5 @@
 import { memo, useState } from 'react'
+import { useLocation, Link } from 'react-router-dom'
 import { ToastContainer, Slide, toast } from 'react-toastify'
 import cl from 'classnames'
 import copy from 'copy-to-clipboard'
@@ -14,6 +15,10 @@ import { useAppSelector, useMiddleEllipsis } from '_hooks'
 import Logo from '_assets/icons/logo.svg'
 import CopyIcon from '_assets/icons/copy.svg'
 import CloseIcon from '_assets/icons/close.svg'
+import LandingIcon from '_assets/icons/landing.svg'
+import NftIcon from '_assets/icons/nft.svg'
+import HistoryIcon from '_assets/icons/history.svg'
+import SettingsIcon from '_assets/icons/settings.svg'
 
 type PageLayoutProps = {
   children: React.ReactNode | React.ReactNode[]
@@ -22,6 +27,25 @@ type PageLayoutProps = {
   showNav?: boolean
 }
 
+const ROUTES = [
+  {
+    name: 'landing',
+    icon: LandingIcon,
+  },
+  {
+    name: 'nft',
+    icon: NftIcon,
+  },
+  {
+    name: 'history',
+    icon: HistoryIcon,
+  },
+  {
+    name: 'settings',
+    icon: SettingsIcon,
+  },
+]
+
 const LayoutBase = ({
   children,
   className,
@@ -29,6 +53,7 @@ const LayoutBase = ({
   showNav = true,
 }: PageLayoutProps) => {
   // const dispatch = useAppDispatch()
+  const location = useLocation()
   const network = useAppSelector(({ app }) => app.apiEnv)
   const address = useAppSelector(({ account: { address } }) => address)
 
@@ -97,7 +122,24 @@ const LayoutBase = ({
         </header>
       )}
       <main className={cl(['flex flex-col grow', className])}>{children}</main>
-      {showNav && <nav className="h-14">nav</nav>}
+      {showNav && (
+        <nav className="h-14 bg-black flex items-center justify-around">
+          {ROUTES.map((route) => (
+            <Link
+              key={route.name}
+              to={`/${route.name}`}
+              className={cl([
+                'w-[52px] h-9 rounded-[20px] flex justify-center items-center transition duration-300 ease-in-out',
+                location.pathname.includes(route.name)
+                  ? 'text-black bg-white hover:bg-[#dddddd] hover:scale-110'
+                  : 'text-white hover:bg-[#333333] hover:scale-110',
+              ])}
+            >
+              {<route.icon height={20} width={20} />}
+            </Link>
+          ))}
+        </nav>
+      )}
     </div>
   )
 }

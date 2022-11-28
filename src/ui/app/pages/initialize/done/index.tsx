@@ -13,7 +13,7 @@ export const Done = () => (
       <a href="https://morphiswallet.com" target="_blank" rel="noreferrer">
         <Logo height={55} width={57} className="mb-6" />
       </a>
-      <p className="text-4xl leading-[48px] mb-3">You are all done!</p>
+      <p className="text-2xl leading-[48px] mb-3">You are all done!</p>
       <p className="text-lg text-[#929294] leading-6 mb-10">
         Follow us to get the latest offers and product updates!
       </p>
@@ -23,7 +23,7 @@ export const Done = () => (
         target="_blank"
         rel="noreferrer"
       >
-        <Button className="h-14 rounded-[28px] relative">
+        <Button className="h-[56px] rounded-[28px] relative">
           <div className="absolute h-8 w-8 rounded-full bg-[#ffffff] text-black flex justify-center items-center top-3 left-6">
             <TwitterIcon />
           </div>
@@ -31,7 +31,7 @@ export const Done = () => (
         </Button>
       </a>
       <a href="http://discord.gg/morphis" target="_blank" rel="noreferrer">
-        <Button className="h-14 rounded-[28px] relative">
+        <Button className="h-[56px] rounded-[28px] relative">
           <div className="absolute h-8 w-8 rounded-full bg-[#ffffff] text-black flex justify-center items-center top-3 left-6">
             <DiscordIcon />
           </div>
