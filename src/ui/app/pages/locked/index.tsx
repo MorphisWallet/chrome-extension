@@ -3,6 +3,7 @@ import ReactTooltip from 'react-tooltip'
 import { Formik, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
 
+import { Layout } from '_app/layouts'
 import { Loading } from '_components/loading'
 import { Input } from '_components/input'
 import { Button } from '_components/button'
@@ -39,54 +40,60 @@ export const Locked = () => {
 
   return (
     <Loading loading={guardsLoading}>
-      <div className="flex flex-col grow p-10">
-        <div className="flex flex-col grow justify-center items-center font-medium mb-12">
-          <a href="https://morphiswallet.com" target="_blank" rel="noreferrer">
-            <Logo height={55} width={57} className="mb-4" />
-          </a>
-          <p className="text-2xl font-bold mb-10">Welcome back!</p>
-          <Formik
-            initialValues={{ password: '' }}
-            validationSchema={Yup.object().shape({
-              password: passwordValidation,
-            })}
-            onSubmit={onSubmit}
+      <Layout showHeader={false} showNav={false}>
+        <div className="flex flex-col grow p-10">
+          <div className="flex flex-col grow justify-center items-center font-medium mb-12">
+            <a
+              href="https://morphiswallet.com"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Logo height={55} width={57} className="mb-4" />
+            </a>
+            <p className="text-2xl font-bold mb-10">Welcome back!</p>
+            <Formik
+              initialValues={{ password: '' }}
+              validationSchema={Yup.object().shape({
+                password: passwordValidation,
+              })}
+              onSubmit={onSubmit}
+            >
+              {({ values, errors, handleBlur, handleChange, handleSubmit }) => (
+                <form onSubmit={handleSubmit} className="w-full">
+                  <Input
+                    id="password"
+                    name="password"
+                    value={values.password}
+                    error={errors.password}
+                    type="password"
+                    placeholder="Password"
+                    className="mb-4"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  <Button type="submit" variant="contained">
+                    Unlock
+                  </Button>
+                </form>
+              )}
+            </Formik>
+          </div>
+          <Link
+            to=""
+            data-tip="Coming soon"
+            data-for="link-tip"
+            className="text-sm text-[#818181] text-center font-medium cursor-not-allowed"
           >
-            {({ values, errors, handleBlur, handleChange, handleSubmit }) => (
-              <form onSubmit={handleSubmit} className="w-full">
-                <Input
-                  id="password"
-                  name="password"
-                  value={values.password}
-                  error={errors.password}
-                  type="password"
-                  placeholder="Password"
-                  className="mb-4"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                <Button type="submit" variant="contained">
-                  Unlock
-                </Button>
-              </form>
-            )}
-          </Formik>
+            <span>Forgot password?</span>
+            <ReactTooltip
+              id="link-tip"
+              effect="solid"
+              className="before:hidden"
+              backgroundColor="#000000"
+            />
+          </Link>
         </div>
-        <Link
-          to=""
-          data-tip="Coming soon"
-          data-for="link-tip"
-          className="text-sm text-[#818181] text-center font-medium cursor-not-allowed"
-        >
-          <span>Forgot password?</span>
-          <ReactTooltip
-            id="link-tip"
-            effect="solid"
-            className="before:hidden"
-            backgroundColor="#000000"
-          />
-        </Link>
-      </div>
+      </Layout>
     </Loading>
   )
 }

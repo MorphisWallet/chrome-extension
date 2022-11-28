@@ -40,7 +40,9 @@ export const StepOne = ({
       return
     }
 
-    toast(<Alert type="error">Fail to copy, try to copy manually</Alert>)
+    toast(<Alert type="error">Fail to copy, try to copy manually</Alert>, {
+      toastId: 'initialize-toast',
+    })
   }
 
   const mnemonicArray = mnemonic?.split(' ')

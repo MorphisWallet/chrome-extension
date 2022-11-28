@@ -35,7 +35,9 @@ export const Backup = () => {
       setMnemonic(mnemonic)
     } catch (e) {
       console.warn(e)
-      toast(<Alert type="error">{`Fail to load mnemonics, ${e}`}</Alert>)
+      toast(<Alert type="error">{`Fail to load mnemonics, ${e}`}</Alert>, {
+        toastId: 'initialize-toast',
+      })
     } finally {
       setMnemonicLoading(false)
     }
