@@ -1,16 +1,28 @@
-import { createHashRouter, RouterProvider } from 'react-router-dom'
+import { createHashRouter, RouterProvider, Navigate } from 'react-router-dom'
 
 import { Home } from '_app/pages/home'
+import { Landing } from '_app/pages/home/landing'
 import { Welcome } from '_app/pages/welcome'
 import { Locked } from '_app/pages/locked'
 import { Initialize } from '_app/pages/initialize'
 import { Create } from '_app/pages/initialize/create'
 import { Backup } from '_app/pages/initialize/backup'
+import { Done } from '_app/pages/initialize/done'
 
 const router = createHashRouter([
   {
     path: '/*',
     element: <Home />,
+    children: [
+      {
+        path: 'landing/*',
+        element: <Landing />,
+      },
+      {
+        path: '*',
+        element: <Navigate to="/landing" replace={true} />,
+      },
+    ],
   },
   {
     path: 'welcome',
@@ -36,18 +48,15 @@ const router = createHashRouter([
         path: 'backup',
         element: <Backup />,
       },
+      {
+        path: 'done',
+        element: <Done />,
+      },
     ],
   },
 ])
 
 const App = () => {
-  // const dispatch = useAppDispatch()
-  // const location = useLocation()
-
-  // useEffect(() => {
-
-  // }, [location, dispatch])
-
   return <RouterProvider router={router} />
 }
 

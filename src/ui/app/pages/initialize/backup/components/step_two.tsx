@@ -5,7 +5,7 @@ import * as Yup from 'yup'
 
 import { Stepper, Button, Input } from '_components/index'
 
-import { MNEMONIC_LENGTH } from '_src/shared/constants'
+import { MNEMONIC_LENGTH } from '_shared/constants'
 
 type StepOneProps = {
   mnemonic: string | null
@@ -27,7 +27,7 @@ export const StepTwo = ({ mnemonic, setStep }: StepOneProps) => {
       return
     }
 
-    navigate('/')
+    navigate('../done')
   }
 
   const onPaste = (
