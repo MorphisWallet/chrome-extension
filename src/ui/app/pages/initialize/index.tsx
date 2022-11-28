@@ -1,13 +1,14 @@
 import { Outlet } from 'react-router-dom'
 import { ToastContainer, Slide } from 'react-toastify'
 
-import { IconWrapper } from '../../components'
+import { IconWrapper } from '_components/icon_wrapper'
 
 import CloseIcon from '_assets/icons/close.svg'
 
 export const Initialize = () => (
   <>
     <ToastContainer
+      containerId="initialize-toast"
       position="top-center"
       autoClose={3000}
       limit={1}
