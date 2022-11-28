@@ -8,6 +8,8 @@ import { Initialize } from '_app/pages/initialize'
 import { Create } from '_app/pages/initialize/create'
 import { Backup } from '_app/pages/initialize/backup'
 import { Done } from '_app/pages/initialize/done'
+import { Nft } from '_app/pages/nft'
+import { History } from '_app/pages/history'
 
 const router = createHashRouter([
   {
@@ -53,6 +55,14 @@ const router = createHashRouter([
         element: <Done />,
       },
     ],
+  },
+  {
+    path: '/nft',
+    element: <Nft />,
+  },
+  {
+    path: '/history',
+    element: <History />,
   },
 ])
 
