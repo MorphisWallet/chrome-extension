@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 
 import { Layout } from '_app/layouts'
@@ -18,6 +17,7 @@ import { accountAggregateBalancesSelector } from '_redux/slices/account'
 import { GAS_TYPE_ARG } from '_redux/slices/sui-objects/Coin'
 
 import { API_ENV } from '_app/ApiProvider'
+import { formatFaucetError } from '_app/shared/faucet/utils'
 import { POLL_SUI_OBJECTS_INTERVAL } from '_src/shared/constants'
 
 import ArrowIcon from '_assets/icons/arrow_short_thin.svg'
@@ -29,17 +29,23 @@ type LandingProps = {
 export const Landing = ({ coinType }: LandingProps) => {
   const activeCoinType = coinType || GAS_TYPE_ARG
 
-  const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const network = useAppSelector(({ app }) => app.apiEnv)
-  const faucetLoading = useAppSelector(({ faucet }) => faucet.loading)
+  const { loading: faucetLoading, lastRequest } = useAppSelector(
+    ({ faucet }) => faucet
+  )
   const balances = useAppSelector(accountAggregateBalancesSelector)
-  const { loading, error, showError } = useObjectsState()
+  const { loading } = useObjectsState()
 
   const activeCoinBalance = balances[activeCoinType] || BigInt(0)
   const [formattedBalance, symbol] = useFormatCoin(
     activeCoinBalance,
     activeCoinType,
+    true
+  )
+  const [coinsReceivedFormatted, coinsReceivedSymbol] = useFormatCoin(
+    lastRequest?.totalGasReceived,
+    GAS_TYPE_ARG,
     true
   )
 
@@ -48,36 +54,46 @@ export const Landing = ({ coinType }: LandingProps) => {
 
   const onAirdrop = async () => {
     setAirdropDelay(true)
-    try {
-      const res = await dispatch(requestGas()).unwrap()
 
-      toast(<Alert type="success">{`Received ${res.total} SUI`}</Alert>, {
-        toastId: 'global-toast',
-      })
-    } catch (error: unknown) {
-      console.error(error)
+    await dispatch(requestGas()).unwrap()
 
-      const _error = error as {
-        status: number
-        statusTxt: string | undefined
-        retryAfter: number
-      }
-      if (_error.status === 429) {
+    setTimeout(() => {
+      setAirdropDelay(false)
+    }, POLL_SUI_OBJECTS_INTERVAL)
+  }
+
+  useEffect(() => {
+    if (!faucetLoading && !!lastRequest) {
+      if (lastRequest?.error) {
         toast(
-          <Alert type="error">{`Reach the limit, please retry after ${Math.round(
-            _error.retryAfter / 60
-          )} minute(s)`}</Alert>,
+          <Alert type="error">
+            {formatFaucetError({
+              status: lastRequest.status,
+              statusTxt: lastRequest.statusTxt,
+              retryAfter: lastRequest.retryAfter,
+            })}
+          </Alert>,
+          {
+            toastId: 'global-toast',
+          }
+        )
+        return
+      }
+
+      if (lastRequest.error === false) {
+        toast(
+          <Alert type="success">
+            {`${
+              lastRequest.totalGasReceived ? `${coinsReceivedFormatted} ` : ''
+            }${coinsReceivedSymbol} received`}
+          </Alert>,
           {
             toastId: 'global-toast',
           }
         )
       }
-    } finally {
-      setTimeout(() => {
-        setAirdropDelay(false)
-      }, POLL_SUI_OBJECTS_INTERVAL)
     }
-  }
+  }, [lastRequest])
 
   const allowAirdrop = API_ENV.customRPC !== network
 
@@ -117,7 +133,7 @@ export const Landing = ({ coinType }: LandingProps) => {
             </div>
           </div>
         </div>
-        <div className="flex grow px-8">
+        <div className="flex grow max-h-[286px] overflow-y-auto">
           <CoinList
             airdropLoading={faucetLoading || airdropDelay}
             airdropDisabled={
