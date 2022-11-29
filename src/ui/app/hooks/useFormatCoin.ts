@@ -22,7 +22,8 @@ type FormattedCoin = [
  */
 export function formatBalance(
   balance: bigint | number | string,
-  decimals: number
+  decimals: number,
+  showAllDecimals?: boolean
 ) {
   let postfix = ''
   let bn = new BigNumber(balance.toString()).shiftedBy(-1 * decimals)
@@ -38,11 +39,12 @@ export function formatBalance(
     postfix = ' K'
   }
 
-  if (bn.gte(1)) {
-    bn = bn.decimalPlaces(3, BigNumber.ROUND_DOWN)
-  }
+  // if (bn.gte(1)) {
+  //   bn = bn.decimalPlaces(3, BigNumber.ROUND_DOWN)
+  // }
+  // always show full decimals
 
-  return bn.toFormat() + postfix
+  return bn.toFormat(showAllDecimals ? decimals : 3) + postfix
 }
 
 export function useCoinDecimals(coinType?: string | null) {
@@ -76,7 +78,8 @@ export function useCoinDecimals(coinType?: string | null) {
 // today, but it really shouldn't in a perfect world.
 export function useFormatCoin(
   balance?: bigint | number | string | null,
-  coinType?: string | null
+  coinType?: string | null,
+  showAllDecimals?: boolean
 ): FormattedCoin {
   const intl = useIntl()
   const symbol = useMemo(
@@ -98,7 +101,7 @@ export function useFormatCoin(
 
     if (!isFetched) return '...'
 
-    return formatBalance(balance, decimals)
+    return formatBalance(balance, decimals, showAllDecimals)
   }, [decimals, isError, isFetched, intl, balance])
 
   return [formatted, symbol, queryResult]
