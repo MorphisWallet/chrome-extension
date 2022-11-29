@@ -1,6 +1,7 @@
 import cl from 'classnames'
 
 import { IconWrapper } from '_components/icon_wrapper'
+
 import BackArrow from '_assets/icons/arrow_short.svg'
 
 type StepperProps = {
