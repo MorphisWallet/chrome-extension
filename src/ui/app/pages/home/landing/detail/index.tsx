@@ -56,7 +56,7 @@ export const Detail = () => {
               <span className="text-[#c0c0c0]">{symbol}</span>
             </Loading>
           </div>
-          <Link to="/" className="w-full">
+          <Link to={`/send?type=${coinType}`} className="w-full">
             <Button disabled={loading || !coinInfo}>Send</Button>
           </Link>
         </div>

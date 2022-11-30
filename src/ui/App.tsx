@@ -4,11 +4,12 @@ import { Welcome } from '_app/pages/welcome'
 
 import { Home } from '_app/pages/home'
 import { Landing } from '_app/pages/home/landing'
-import { Detail } from '_app/pages/home/landing/defail'
-import { Nft } from '_src/ui/app/pages/home/nft'
-import { History } from '_src/ui/app/pages/home/history'
-import { Settings } from '_src/ui/app/pages/home/settings'
-import { Sap } from '_src/ui/app/pages/home/settings/sap'
+import { Detail } from '_app/pages/home/landing/detail'
+import { Send } from '_app/pages/home/send'
+import { Nft } from '_app/pages/home/nft'
+import { History } from '_app/pages/home/history'
+import { Settings } from '_app/pages/home/settings'
+import { Sap } from '_app/pages/home/settings/sap'
 
 import { Initialize } from '_app/pages/initialize'
 import { Create } from '_app/pages/initialize/create'
@@ -29,6 +30,10 @@ const router = createHashRouter([
       {
         path: 'landing/:coin',
         element: <Detail />,
+      },
+      {
+        path: 'send',
+        element: <Send />,
       },
       {
         path: 'nft',

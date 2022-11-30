@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
 import { Layout } from '_app/layouts'
@@ -121,7 +122,10 @@ export const Landing = ({ coinType }: LandingProps) => {
               </Button>
               <span>Airdrop</span>
             </div>
-            <div className="flex flex-col items-center">
+            <Link
+              to={`/send?type=${GAS_TYPE_ARG}`}
+              className="flex flex-col items-center"
+            >
               <Button
                 disabled={loading}
                 variant="outlined"
@@ -130,7 +134,7 @@ export const Landing = ({ coinType }: LandingProps) => {
                 <ArrowIcon />
               </Button>
               <span>Send</span>
-            </div>
+            </Link>
           </div>
         </div>
         <div className="flex grow max-h-[286px] overflow-y-auto">
