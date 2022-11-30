@@ -8,7 +8,7 @@
   "packageManager": "^pnpm@7.0.0+",
   "scripts": {
     "prepare": "husky install",
-    "lint": "npx eslint packages --ext .js,.jsx,.ts,.tsx",
+    "lint": "npx eslint src --ext .js,.jsx,.ts,.tsx",
     "prettier": "prettier --write src",
     "start": "pnpm build:dev --watch",
     "build:dev": "NODE_ENV=\"development\" TS_NODE_PROJECT=\"./configs/ts/tsconfig.webpack.json\" webpack --progress",

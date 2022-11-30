@@ -27,10 +27,10 @@ const TS_CONFIG_FILE = resolve(
   `tsconfig.${IS_DEV ? 'dev' : 'prod'}.json`
 )
 const APP_NAME = WALLET_BETA
-  ? 'Sui Wallet (BETA)'
+  ? 'Morphis Wallet (BETA)'
   : IS_DEV
-  ? 'Sui Wallet (DEV)'
-  : 'Sui Wallet'
+  ? 'Morphis Wallet (DEV)'
+  : 'Morphis Wallet'
 
 function loadTsConfig(tsConfigFilePath: string) {
   return new Promise<string>((res, rej) => {

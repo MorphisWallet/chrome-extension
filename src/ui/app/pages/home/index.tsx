@@ -8,7 +8,7 @@ import { useAppDispatch, useInitializedGuard, useLockedGuard } from '_hooks'
 
 import { fetchAllOwnedAndRequiredObjects } from '_redux/slices/sui-objects'
 
-const POLL_SUI_OBJECTS_INTERVAL = 4000
+import { POLL_SUI_OBJECTS_INTERVAL } from '_src/shared/constants'
 
 export const Home = () => {
   const dispatch = useAppDispatch()

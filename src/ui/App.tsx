@@ -1,15 +1,22 @@
 import { createHashRouter, RouterProvider, Navigate } from 'react-router-dom'
 
+import { Welcome } from '_app/pages/welcome'
+
 import { Home } from '_app/pages/home'
 import { Landing } from '_app/pages/home/landing'
-import { Welcome } from '_app/pages/welcome'
-import { Locked } from '_app/pages/locked'
+import { Detail } from '_app/pages/home/landing/detail'
+import { Send } from '_app/pages/home/send'
+import { Nft } from '_app/pages/home/nft'
+import { History } from '_app/pages/home/history'
+import { Settings } from '_app/pages/home/settings'
+import { Sap } from '_app/pages/home/settings/sap'
+
 import { Initialize } from '_app/pages/initialize'
 import { Create } from '_app/pages/initialize/create'
 import { Backup } from '_app/pages/initialize/backup'
 import { Done } from '_app/pages/initialize/done'
-import { Nft } from '_app/pages/nft'
-import { History } from '_app/pages/history'
+
+import { Locked } from '_app/pages/locked'
 
 const router = createHashRouter([
   {
@@ -17,8 +24,32 @@ const router = createHashRouter([
     element: <Home />,
     children: [
       {
-        path: 'landing/*',
+        path: 'landing/',
         element: <Landing />,
+      },
+      {
+        path: 'landing/:coin',
+        element: <Detail />,
+      },
+      {
+        path: 'send',
+        element: <Send />,
+      },
+      {
+        path: 'nft',
+        element: <Nft />,
+      },
+      {
+        path: 'history',
+        element: <History />,
+      },
+      {
+        path: 'settings',
+        element: <Settings />,
+      },
+      {
+        path: 'settings/sap',
+        element: <Sap />,
       },
       {
         path: '*',
@@ -55,14 +86,6 @@ const router = createHashRouter([
         element: <Done />,
       },
     ],
-  },
-  {
-    path: '/nft',
-    element: <Nft />,
-  },
-  {
-    path: '/history',
-    element: <History />,
   },
 ])
 
