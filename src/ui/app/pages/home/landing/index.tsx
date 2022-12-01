@@ -4,7 +4,7 @@ import { toast } from 'react-toastify'
 
 import { Layout } from '_app/layouts'
 import { Button, Loading, Alert } from '_app/components'
-import { CoinList } from './components/coinList'
+import { CoinList } from './components/coin_list'
 
 import {
   useAppSelector,
