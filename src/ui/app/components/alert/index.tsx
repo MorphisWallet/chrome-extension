@@ -5,7 +5,7 @@ import CheckIcon from '_assets/icons/check.svg'
 
 const DEFAULT_ICON_SIZE = 16
 
-type AlertType = 'success' | 'error'
+export type AlertType = 'success' | 'error'
 
 type AlertProps = {
   type: AlertType
