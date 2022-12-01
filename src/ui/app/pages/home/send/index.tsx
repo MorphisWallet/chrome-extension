@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate, Navigate } from 'react-router-dom'
 import { Formik, FormikProps } from 'formik'
 import BigNumber from 'bignumber.js'
 import * as Yup from 'yup'
-import { getTransactionDigest } from '@mysten/sui.js'
+// import { getTransactionDigest } from '@mysten/sui.js'
 
 import { Layout } from '_app/layouts'
 import { IconWrapper, toast } from '_app/components'
@@ -85,7 +85,7 @@ export const Send = () => {
           .integerValue()
           .toString()
       )
-      const response = await dispatch(
+      await dispatch(
         sendTokens({
           amount: bigIntAmount,
           recipientAddress: values.address,
@@ -93,24 +93,28 @@ export const Send = () => {
         })
       ).unwrap()
 
-      const txDigest = getTransactionDigest(response)
+      // const txDigest = getTransactionDigest(response)
       // const receiptUrl = `/receipt?txdigest=${encodeURIComponent(
       //   txDigest
       // )}&transfer=coin`
 
-      console.log(txDigest)
-      toast({
-        type: 'success',
-        message: (
-          <p>
-            Successfully sent {values.amount} {symbol}{' '}
-            <a href="" className="text-[#bef9ff]">
-              View on explorer
-            </a>
-          </p>
-        ),
-      })
-      navigate('/landing')
+      navigate('/')
+      // use macro task to navitgate first, render toast secondly
+      // otherwise, toast providers will be re-rendered, and nothing happens
+      setTimeout(() => {
+        toast({
+          type: 'success',
+          message: (
+            <p>
+              Successfully sent {values.amount} {symbol}
+              {'. '}
+              <a href="" className="text-[#bef9ff]">
+                View on explorer
+              </a>
+            </p>
+          ),
+        })
+      }, 0)
     } catch (e) {
       toast({
         type: 'error',
