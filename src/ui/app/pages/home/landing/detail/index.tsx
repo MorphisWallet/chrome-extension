@@ -1,8 +1,7 @@
 import { Navigate, Link, useSearchParams } from 'react-router-dom'
-import cl from 'classnames'
 
 import { Layout } from '_app/layouts'
-import { Loading, IconWrapper, Button } from '_app/components/'
+import { Loading, IconWrapper, Button, CoinIcon } from '_app/components/'
 
 import { useAppSelector, useFormatCoin, useObjectsState } from '_hooks'
 
@@ -42,14 +41,7 @@ export const Detail = () => {
           </Link>
         </div>
         <div className="flex flex-col items-center pt-8 px-6">
-          <div
-            className={cl([
-              'h-[92px] w-[92px] mb-4',
-              !coinInfo && 'bg-[#c4c4c4] text-white rounded-full',
-            ])}
-          >
-            {coinInfo?.icon({ height: 92, width: 92 }) || symbol[0]}
-          </div>
+          <CoinIcon type={coinType} className="h-[92px] w-[92px] mb-4" />
           <div className="font-normal text-lg h-7 mb-7">
             <Loading loading={loading}>
               <span className="mr-2">{formatted}</span>

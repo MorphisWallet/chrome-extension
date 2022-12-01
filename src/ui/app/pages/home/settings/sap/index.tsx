@@ -10,14 +10,14 @@ export const Sap = () => {
   return (
     <Layout>
       <div className="flex flex-col grow font-medium px-6 pt-4 pb-6">
-        <p className="mb-6 text-xl text-center font-bold relative">
+        <div className="mb-6 text-xl text-center font-bold relative">
           Security & Privacy
           <Link to="/settings" className="absolute left-0 top-[7px]">
             <IconWrapper>
               <ArrowShort height={10} width={13} />
             </IconWrapper>
           </Link>
-        </p>
+        </div>
         <Button
           variant="outlined"
           disabled
