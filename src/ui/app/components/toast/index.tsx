@@ -4,16 +4,16 @@ import { Alert, AlertType } from '_app/components'
 
 type ToastProps = {
   type: AlertType
-  content: React.ReactNode
+  message: React.ReactNode
   toastId?: string
 }
 
 export const toast = ({
   type,
-  content,
+  message,
   toastId = 'global-toast',
 }: ToastProps) => {
-  reactToast(<Alert type={type}>{content}</Alert>, {
+  reactToast(<Alert type={type}>{message}</Alert>, {
     toastId,
   })
 }

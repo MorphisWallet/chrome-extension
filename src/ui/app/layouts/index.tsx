@@ -4,10 +4,7 @@ import { ToastContainer, Slide, toast } from 'react-toastify'
 import cl from 'classnames'
 import copy from 'copy-to-clipboard'
 
-import { Button } from '_components/button'
-import { IconWrapper } from '_components/icon_wrapper'
-import { Alert } from '_components/alert'
-import { Modal } from '_components/modal'
+import { Button, IconWrapper, Alert, Modal } from '_app/components'
 import { Network } from './components/network'
 
 import { useAppSelector, useMiddleEllipsis } from '_hooks'
