@@ -1,6 +1,8 @@
 import { FormikProps } from 'formik'
+import { useState } from 'react'
 
-import { Loading, Input, Button } from '_app/components'
+import { Loading, Input, Button, CoinIcon } from '_app/components'
+import { SelectCoinModal } from './select_coin_modal'
 
 import { useFormatCoin } from '_hooks'
 
@@ -23,8 +25,14 @@ export const StepOne = ({
 
   const [formattedBalance, symbol] = useFormatCoin(coinBalance, coinType, true)
 
+  const [modalOpen, setModalOpen] = useState(false)
+
   return (
     <>
+      <SelectCoinModal
+        open={modalOpen}
+        setOpen={setModalOpen}
+      />
       <div className="flex justify-between mb-1">
         <span>Asset</span>
         <Loading loading={loading} className="w-8 grow-0">
@@ -34,6 +42,12 @@ export const StepOne = ({
         </Loading>
       </div>
       <div className="relative">
+        <CoinIcon
+          type={coinType}
+          className="absolute h-6 w-6 top-[9px] left-4 mr-2 cursor-pointer transition-transform duration-300 ease-in-out hover:scale-110"
+          onClick={() => setModalOpen(true)}
+        />
+        <span className="absolute text-sm top-3 left-12">{symbol}</span>
         <Input
           id="amount"
           name="amount"
@@ -51,7 +65,7 @@ export const StepOne = ({
           }}
           onBlur={handleBlur}
           className="pb-4"
-          inputClassName="rounded px-4 text-right"
+          inputClassName="rounded px-4 pl-24 text-right"
           error={touched.amount && errors.amount}
         />
       </div>
