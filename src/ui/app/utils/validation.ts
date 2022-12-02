@@ -3,6 +3,7 @@ import * as Yup from 'yup'
 
 export const passwordValidation = Yup.string()
   .ensure()
+  .min(6, 'Password needs to be at least 6 characters')
   .required('Password is required')
 
 export const getConfirmPasswordValidation = (passwordFieldName: string) =>
