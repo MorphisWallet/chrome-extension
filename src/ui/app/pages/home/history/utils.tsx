@@ -21,15 +21,9 @@ export const toRenderProps = (tx: TxResultState): TxRenderType | null => {
   const amount = tx?.amount || tx?.balance || tx?.txGas || 0
 
   // TODO: support nft activities
-  // if (tx.kind === 'Call') {
-  //   return {
-  //     txName: tx.name && tx.url ? 'Minted' : 'Call',
-  //     transferrer: null,
-  //     address: null,
-  //     Icon: <SendIcon height={15} width={15} className="mr-0.5" />,
-  //     amount: amount,
-  //   }
-  // }
+  if (tx.kind === 'Call') {
+    return null
+  }
 
   if (tx.isSender) {
     return {

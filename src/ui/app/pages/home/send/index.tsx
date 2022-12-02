@@ -3,10 +3,10 @@ import { useSearchParams, useNavigate, Navigate } from 'react-router-dom'
 import { Formik, FormikProps } from 'formik'
 import BigNumber from 'bignumber.js'
 import * as Yup from 'yup'
-// import { getTransactionDigest } from '@mysten/sui.js'
+import { getTransactionDigest } from '@mysten/sui.js'
 
 import { Layout } from '_app/layouts'
-import { IconWrapper, toast } from '_app/components'
+import { IconWrapper, toast, TxLink } from '_app/components'
 import { StepOne } from './components/step_one'
 import { StepTwo } from './components/step_two'
 
@@ -30,6 +30,7 @@ import { parseAmount } from './utils'
 
 import ArrowShort from '_assets/icons/arrow_short.svg'
 
+import { ExplorerLinkType } from '_app/components/tx_link/type'
 import type { ConfirmFields } from './utils'
 import type { SerializedError } from '@reduxjs/toolkit'
 
@@ -85,7 +86,7 @@ export const Send = () => {
           .integerValue()
           .toString()
       )
-      await dispatch(
+      const res = await dispatch(
         sendTokens({
           amount: bigIntAmount,
           recipientAddress: values.address,
@@ -93,10 +94,7 @@ export const Send = () => {
         })
       ).unwrap()
 
-      // const txDigest = getTransactionDigest(response)
-      // const receiptUrl = `/receipt?txdigest=${encodeURIComponent(
-      //   txDigest
-      // )}&transfer=coin`
+      const txDigest = getTransactionDigest(res)
 
       navigate('/')
       // use macro task to navitgate first, render toast secondly
@@ -108,9 +106,13 @@ export const Send = () => {
             <p>
               Successfully sent {values.amount} {symbol}
               {'. '}
-              <a href="" className="text-[#bef9ff]">
+              <TxLink
+                type={ExplorerLinkType.transaction}
+                transactionID={txDigest}
+                className="text-[#bef9ff]"
+              >
                 View on explorer
-              </a>
+              </TxLink>
             </p>
           ),
         })
