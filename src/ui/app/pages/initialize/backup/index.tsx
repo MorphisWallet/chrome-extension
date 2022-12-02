@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
 
 import { Layout } from '_app/layouts'
-import { Loading, Alert } from '_components/index'
+import { Loading, toast } from '_app/components'
 import { StepOne } from './components/step_one'
 import { StepTwo } from './components/step_two'
 
@@ -35,7 +34,9 @@ export const Backup = () => {
       setMnemonic(mnemonic)
     } catch (e) {
       console.warn(e)
-      toast(<Alert type="error">{`Fail to load mnemonics, ${e}`}</Alert>, {
+      toast({
+        type: 'error',
+        message: `Fail to load mnemonics, ${e}`,
         toastId: 'initialize-toast',
       })
     } finally {

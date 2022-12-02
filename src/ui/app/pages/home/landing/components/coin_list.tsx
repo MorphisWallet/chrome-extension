@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
+import { Link } from 'react-router-dom'
 
 import { Loading, Button } from '_app/components'
-import { CoinInfo } from './coinInfo'
+import { CoinInfo } from './coin_info'
 
 import NoCoinPlaceholder from '_assets/icons/no_coin_placeholder.svg'
 
@@ -42,11 +43,9 @@ export const CoinList = ({
     return (
       <div className="flex flex-col grow">
         {allCoinTypes.map((coinType: string) => (
-          <CoinInfo
-            key={coinType}
-            balance={balances[coinType]}
-            type={coinType}
-          />
+          <Link key={coinType} to={`./details?type=${coinType}`}>
+            <CoinInfo balance={balances[coinType]} type={coinType} />
+          </Link>
         ))}
       </div>
     )
