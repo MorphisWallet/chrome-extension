@@ -64,10 +64,15 @@ export const StepTwo = ({ onBack, onSubmit }: StepTwoProps) => {
             <div className="grow" />
           </fieldset>
           <div className="flex gap-2.5">
-            <Button type="button" variant="outlined" onClick={onBack}>
+            <Button
+              disabled={isSubmitting}
+              type="button"
+              variant="outlined"
+              onClick={onBack}
+            >
               Back
             </Button>
-            <Button type="submit" variant="contained">
+            <Button loading={isSubmitting} type="submit" variant="contained">
               Import
             </Button>
           </div>

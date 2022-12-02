@@ -1,15 +1,20 @@
 import { useState } from 'react'
 
 import { Layout } from '_app/layouts'
-import { Loading } from '_app/components'
+import { Loading, toast } from '_app/components'
 import { StepOne } from './components/step_one'
 import { StepTwo } from './components/step_two'
 
 import { useAppDispatch, useLockedGuard, useInitializedGuard } from '_hooks'
 
+import { createVault } from '_redux/slices/account'
+
+import { MAIN_UI_URL } from '_shared/utils'
+import { entropyToSerialized, mnemonicToEntropy } from '_shared/utils/bip39'
+
 import Logo from '_assets/icons/logo.svg'
 
-import { MnemonicField, PasswordField } from './type'
+import type { MnemonicField, PasswordField } from './type'
 
 export const ImportPage = () => {
   const dispatch = useAppDispatch()
@@ -17,25 +22,36 @@ export const ImportPage = () => {
   const checkingInitialized = useInitializedGuard(false)
 
   const [step, setStep] = useState<0 | 1>(0)
-  const [formData, setFormData] = useState<MnemonicField>({
-    mnemonic: '',
-  })
+  const [mnemonic, setMnemonic] = useState('')
 
   const onNext = (values: MnemonicField) => {
-    setFormData({
-      ...formData,
-      mnemonic: values.mnemonic,
-    })
+    setMnemonic(values.mnemonic)
     setStep(1)
   }
 
-  const onSubmit = async (values: PasswordField) => {
-    //
+  const onSubmit = async ({ password }: PasswordField) => {
+    try {
+      await dispatch(
+        createVault({
+          importedEntropy: entropyToSerialized(mnemonicToEntropy(mnemonic)),
+          password,
+        })
+      ).unwrap()
+
+      // refresh the page to re-initialize the store
+      window.location.href = MAIN_UI_URL
+    } catch (e) {
+      toast({
+        type: 'error',
+        message: `Fail to import wallet, ${e}`,
+        toastId: 'initialize-toast',
+      })
+    }
   }
 
   const renderForm = () => {
     if (step === 0) {
-      return <StepOne mnemonic={formData.mnemonic} onSubmit={onNext} />
+      return <StepOne mnemonic={mnemonic} onSubmit={onNext} />
     }
 
     return <StepTwo onBack={() => setStep(0)} onSubmit={onSubmit} />
