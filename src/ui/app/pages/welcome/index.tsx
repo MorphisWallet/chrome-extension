@@ -25,7 +25,7 @@ export const Welcome = () => {
           <Link to="/initialize" className="w-full mb-4">
             <Button variant="contained">Create a new wallet</Button>
           </Link>
-          <Link to="/" className="w-full">
+          <Link to="/initialize/import" className="w-full">
             <Button variant="outlined">I already have a wallet</Button>
           </Link>
         </div>
