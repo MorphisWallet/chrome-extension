@@ -30,6 +30,11 @@ export const History = () => {
             {latestTx.map((tx: TxResultState) => (
               <Tx key={tx.txId} {...tx} />
             ))}
+            {!latestTx?.length && (
+              <div className="flex grow justify-center items-center">
+                <p className="text-[#c4c4c4]">No recent activities</p>
+              </div>
+            )}
           </Loading>
         </div>
       </div>

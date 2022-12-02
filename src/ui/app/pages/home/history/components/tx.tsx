@@ -1,8 +1,11 @@
+import { TxLink } from '_app/components'
+
 import { useFormatCoin, useMiddleEllipsis } from '_hooks'
 
 import { GAS_TYPE_ARG } from '_redux/slices/sui-objects/Coin'
 import { toRenderProps } from '../utils'
 
+import { ExplorerLinkType } from '_app/components/tx_link/type'
 import type { TxResultState } from '_redux/slices/txresults'
 
 export const Tx = (tx: TxResultState) => {
@@ -20,7 +23,11 @@ export const Tx = (tx: TxResultState) => {
   const truncatedAddress = useMiddleEllipsis(address, 10, 7)
 
   return (
-    <div className="flex items-center shrink-0 h-[52px] py-3 border-b border-b-[#c4c4c4] cursor-pointer">
+    <TxLink
+      type={ExplorerLinkType.transaction}
+      transactionID={tx.txId}
+      className="flex items-center shrink-0 h-[52px] py-3 border-b border-b-[#c4c4c4]"
+    >
       <div className="flex justify-center items-center shrink-0 h-6 w-6 mr-4 bg-black text-white rounded-full">
         {Icon}
       </div>
@@ -43,6 +50,6 @@ export const Tx = (tx: TxResultState) => {
           </span>
         </div>
       </div>
-    </div>
+    </TxLink>
   )
 }
