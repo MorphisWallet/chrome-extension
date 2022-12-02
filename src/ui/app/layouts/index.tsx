@@ -1,10 +1,10 @@
 import { memo, useState } from 'react'
 import { useLocation, Link } from 'react-router-dom'
-import { ToastContainer, Slide, toast } from 'react-toastify'
+import { ToastContainer, Slide } from 'react-toastify'
 import cl from 'classnames'
 import copy from 'copy-to-clipboard'
 
-import { Button, IconWrapper, Alert, Modal } from '_app/components'
+import { Button, IconWrapper, Modal, toast } from '_app/components'
 import { Network } from './components/network'
 
 import { useAppSelector, useMiddleEllipsis } from '_hooks'
@@ -65,8 +65,10 @@ const LayoutBase = ({
 
     const copyRes = copy(address)
     if (copyRes) {
-      toast(<Alert type="success">Copied to clipboard</Alert>, {
-        toastId: 'initialize-toast',
+      toast({
+        type: 'success',
+        message: 'Copied to clipboard',
+        containerId: 'initialize-toast',
       })
     }
   }
@@ -82,6 +84,7 @@ const LayoutBase = ({
         autoClose={3000}
         limit={1}
         hideProgressBar
+        enableMultiContainer
         newestOnTop={false}
         closeOnClick={false}
         rtl={false}

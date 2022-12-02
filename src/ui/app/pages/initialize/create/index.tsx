@@ -1,11 +1,10 @@
 import { useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
 
 import { Layout } from '_app/layouts'
 import { Loading } from '_components/loading'
-import { Stepper, Input, Checkbox, Button, Alert } from '_components/index'
+import { Stepper, Input, Checkbox, Button, toast } from '_components/index'
 
 import { useAppDispatch, useInitializedGuard } from '_hooks'
 
@@ -36,8 +35,10 @@ export const Create = () => {
       await dispatch(createVault({ password: values.password })).unwrap()
       navigate('/initialize/backup')
     } catch (e) {
-      toast(<Alert type="error">{`Failed to create vault, ${e}`}</Alert>, {
-        toastId: 'initialize-toast',
+      toast({
+        type: 'error',
+        message: `Failed to create vault, ${e}`,
+        containerId: 'initialize-toast',
       })
     }
   }

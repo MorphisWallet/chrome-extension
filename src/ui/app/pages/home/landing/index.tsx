@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { toast } from 'react-toastify'
 
 import { Layout } from '_app/layouts'
-import { Button, Loading, Alert } from '_app/components'
+import { Button, Loading, toast } from '_app/components'
 import { CoinList } from './components/coin_list'
 
 import {
@@ -66,32 +65,26 @@ export const Landing = ({ coinType }: LandingProps) => {
   useEffect(() => {
     if (!faucetLoading && !!lastRequest) {
       if (lastRequest?.error) {
-        toast(
-          <Alert type="error">
-            {formatFaucetError({
-              status: lastRequest.status,
-              statusTxt: lastRequest.statusTxt,
-              retryAfter: lastRequest.retryAfter,
-            })}
-          </Alert>,
-          {
-            toastId: 'global-toast',
-          }
-        )
+        toast({
+          type: 'error',
+          message: formatFaucetError({
+            status: lastRequest.status,
+            statusTxt: lastRequest.statusTxt,
+            retryAfter: lastRequest.retryAfter,
+          }),
+          containerId: 'global-toast',
+        })
         return
       }
 
       if (lastRequest.error === false) {
-        toast(
-          <Alert type="success">
-            {`${
-              lastRequest.totalGasReceived ? `${coinsReceivedFormatted} ` : ''
-            }${coinsReceivedSymbol} received`}
-          </Alert>,
-          {
-            toastId: 'global-toast',
-          }
-        )
+        toast({
+          type: 'success',
+          message: `${
+            lastRequest.totalGasReceived ? `${coinsReceivedFormatted} ` : ''
+          }${coinsReceivedSymbol} received`,
+          containerId: 'global-toast',
+        })
       }
     }
   }, [lastRequest])
