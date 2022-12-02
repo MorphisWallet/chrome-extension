@@ -72,7 +72,7 @@ const LayoutBase = ({
   }
 
   return (
-    <div className="flex flex-col grow relative">
+    <div className="flex flex-col grow relative overflow-hidden">
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
         <Network setModalOpen={setModalOpen} />
       </Modal>
@@ -98,7 +98,7 @@ const LayoutBase = ({
         className="h-10 !p-0 !top-12 !w-[360px] [&>div]:min-h-[40px] [&>div]:px-6 [&>div]:items-center [&>div]:rounded-none [&>div]:shadow-none !z-50"
       />
       {showHeader && (
-        <header className="h-12 px-6 bg-white border-b border-b-[#e6e6e9] flex items-center font-medium z-[1010]">
+        <header className="h-12 px-6 bg-white border-b border-b-[#e6e6e9] flex items-center shrink-0 font-medium z-[1010]">
           <a href="https://morphiswallet.com" target="_blank" rel="noreferrer">
             <Logo height={24} width={24} />
           </a>
@@ -118,9 +118,11 @@ const LayoutBase = ({
           </Button>
         </header>
       )}
-      <main className={cl(['flex flex-col grow', className])}>{children}</main>
+      <main className={cl(['flex flex-col grow overflow-hidden', className])}>
+        {children}
+      </main>
       {showNav && (
-        <nav className="h-14 bg-black flex items-center justify-around">
+        <nav className="h-14 bg-black flex items-center justify-around shrink-0">
           {ROUTES.map((route) => (
             <Link
               key={route.name}
