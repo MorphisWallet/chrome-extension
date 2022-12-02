@@ -81,7 +81,8 @@ export const StepOne = ({
                   place="top"
                   effect="solid"
                   padding="4px 8px"
-                  className="before:hidden"
+                  delayHide={500}
+                  className="!pointer-events-auto before:hidden hover:!visible hover:!opacity-100"
                 />
               </div>
               <div className="self-start relative">

@@ -11,6 +11,8 @@ import { useAppDispatch, useInitializedGuard } from '_hooks'
 
 import { createVault } from '_redux/slices/account'
 
+import { ToS_LINK } from '_shared/constants'
+
 import {
   passwordValidation,
   getConfirmPasswordValidation,
@@ -108,8 +110,9 @@ export const Create = () => {
                       <>
                         I agree to the{' '}
                         <a
-                          href=""
+                          href={ToS_LINK}
                           target="_blank"
+                          rel="noreferrer"
                           className="underline hover:text-[#c4c4c4]"
                         >
                           Terms of Service

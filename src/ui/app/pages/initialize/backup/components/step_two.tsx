@@ -1,13 +1,13 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Formik, FieldArray } from 'formik'
 import * as Yup from 'yup'
 
 import { Stepper, Button, Input } from '_components/index'
 
-import { MNEMONIC_LENGTH } from '_shared/constants'
+import { MNEMONIC_LENGTH, MNEMONIC_FIELD_CHECK_LENGTH } from '_shared/constants'
 
-type StepOneProps = {
+type StepTwoProps = {
   mnemonic: string | null
   setStep: (args: 0 | 1) => void
 }
@@ -16,10 +16,27 @@ type MnemonicField = {
   phrases: string[]
 }
 
-export const StepTwo = ({ mnemonic, setStep }: StepOneProps) => {
+const generateRandomFieldCheckIndexes = () => {
+  const indexes: number[] = []
+
+  while (indexes.length < MNEMONIC_FIELD_CHECK_LENGTH) {
+    const randomIndex = Math.floor(Math.random() * MNEMONIC_LENGTH)
+    if (!indexes.includes(randomIndex)) {
+      indexes.push(randomIndex)
+    }
+  }
+
+  return indexes
+}
+
+export const StepTwo = ({ mnemonic, setStep }: StepTwoProps) => {
   const navigate = useNavigate()
 
   const [error, setError] = useState<string | null>(null)
+
+  const fieldCheckIndexes = useMemo(() => generateRandomFieldCheckIndexes(), [])
+
+  if (!mnemonic) return null
 
   const onSubmit = (values: MnemonicField) => {
     if (values.phrases.map((v) => v.trim()).join(' ') !== mnemonic) {
@@ -30,51 +47,25 @@ export const StepTwo = ({ mnemonic, setStep }: StepOneProps) => {
     navigate('../done')
   }
 
-  const onPaste = (
-    e: React.ClipboardEvent<HTMLFieldSetElement>,
-    setValues: (
-      values: React.SetStateAction<MnemonicField>,
-      shouldValidate?: boolean
-    ) => void
-  ) => {
-    e.preventDefault()
-
-    const paste = (e.clipboardData || window.clipboardData).getData('text')
-    if (typeof paste !== 'string') return
-
-    const pasteArray = paste.split(' ')
-    // use macro task to let copy run first and setValues secondly
-    setTimeout(() => {
-      setValues({
-        phrases:
-          pasteArray.length < MNEMONIC_LENGTH
-            ? [
-                ...pasteArray,
-                ...Array(MNEMONIC_LENGTH - pasteArray.length).fill(''),
-              ]
-            : pasteArray.slice(0, 12),
-      })
-    }, 0)
-  }
+  const mnemonicArray = mnemonic?.split(' ')
 
   return (
     <div className="flex flex-col grow px-10 pb-10">
       <Stepper steps={3} current={2} onPrev={() => setStep(0)} />
       <Formik
-        initialValues={{ phrases: Array(MNEMONIC_LENGTH).fill('') }}
+        initialValues={{
+          phrases: Array(MNEMONIC_LENGTH)
+            .fill('')
+            .map((p, i) =>
+              fieldCheckIndexes.includes(i) ? '' : mnemonicArray[i]
+            ),
+        }}
         validationSchema={Yup.object().shape({
           phrases: Yup.array().of(Yup.string().min(1).required()),
         })}
         onSubmit={onSubmit}
       >
-        {({
-          values,
-          errors,
-          touched,
-          handleChange,
-          handleSubmit,
-          setValues,
-        }) => (
+        {({ values, errors, touched, handleChange, handleSubmit }) => (
           <form
             id="confirm-form"
             onSubmit={handleSubmit}
@@ -88,23 +79,32 @@ export const StepTwo = ({ mnemonic, setStep }: StepOneProps) => {
               </p>
               <FieldArray name="phrases">
                 {() => (
-                  <fieldset
-                    className="grid grid-cols-3 grid-rows-4 mb-2.5 gap-x-2 gap-y-4"
-                    onPaste={(e) => onPaste(e, setValues)}
-                  >
+                  <fieldset className="grid grid-cols-3 grid-rows-4 mb-2.5 gap-x-2 gap-y-4">
                     {Array(MNEMONIC_LENGTH)
                       .fill(null)
-                      .map((_, i) => (
-                        <Input
-                          key={i}
-                          name={`phrases.${i}`}
-                          value={values.phrases[i]}
-                          error={touched.phrases && !!errors.phrases?.[i]}
-                          placeholder={String(i + 1).padStart(2, '0')}
-                          onChange={handleChange}
-                          inputClassName="h-7 border-[#c8c8c8] rounded-[30px] px-2 text-xs placeholder:text-xs"
-                        />
-                      ))}
+                      .map((_, i) =>
+                        fieldCheckIndexes.includes(i) ? (
+                          <Input
+                            key={i}
+                            name={`phrases.${i}`}
+                            value={values.phrases[i]}
+                            error={touched.phrases && !!errors.phrases?.[i]}
+                            placeholder={String(i + 1).padStart(2, '0')}
+                            onChange={handleChange}
+                            inputClassName="h-7 border-[#c8c8c8] rounded-[30px] px-2 text-xs placeholder:text-xs"
+                          />
+                        ) : (
+                          <div
+                            key={i}
+                            className="flex items-center pl-2 text-xs"
+                          >
+                            <span className="text-[#c8c8c8] mr-1">
+                              {String(i + 1).padStart(2, '0')}
+                            </span>
+                            <span>{mnemonicArray[i]}</span>
+                          </div>
+                        )
+                      )}
                   </fieldset>
                 )}
               </FieldArray>
