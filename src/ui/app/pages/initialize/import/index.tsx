@@ -25,7 +25,7 @@ export const ImportPage = () => {
   const [mnemonic, setMnemonic] = useState('')
 
   const onNext = (values: MnemonicField) => {
-    setMnemonic(values.mnemonic)
+    setMnemonic(values.mnemonic.trim())
     setStep(1)
   }
 
@@ -44,7 +44,7 @@ export const ImportPage = () => {
       toast({
         type: 'error',
         message: `Fail to import wallet, ${e}`,
-        toastId: 'initialize-toast',
+        containerId: 'initialize-toast',
       })
     }
   }
