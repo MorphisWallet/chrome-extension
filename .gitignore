@@ -146,3 +146,6 @@ sftp-config.json
 
 # Local Environment Variables #
 .env.local
+
+# web-ext artifacts
+web-ext-artifacts
