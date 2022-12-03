@@ -68,7 +68,7 @@ const LayoutBase = ({
       toast({
         type: 'success',
         message: 'Copied to clipboard',
-        containerId: 'initialize-toast',
+        containerId: 'global-toast',
       })
     }
   }
