@@ -15,6 +15,7 @@ import { Initialize } from '_app/pages/initialize'
 import { Create } from '_app/pages/initialize/create'
 import { Backup } from '_app/pages/initialize/backup'
 import { Done } from '_app/pages/initialize/done'
+import { ImportPage } from '_app/pages/initialize/import'
 
 import { Locked } from '_app/pages/locked'
 
@@ -84,6 +85,10 @@ const router = createHashRouter([
       {
         path: 'done',
         element: <Done />,
+      },
+      {
+        path: 'import',
+        element: <ImportPage />,
       },
     ],
   },

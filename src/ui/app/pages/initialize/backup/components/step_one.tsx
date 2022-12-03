@@ -1,9 +1,15 @@
 import { useState } from 'react'
 import ReactTooltip from 'react-tooltip'
-import { toast } from 'react-toastify'
 import copy from 'copy-to-clipboard'
 
-import { Stepper, Loading, Button, IconWrapper, Alert } from '_components/index'
+import {
+  Stepper,
+  Loading,
+  Button,
+  IconWrapper,
+  Alert,
+  toast,
+} from '_components/index'
 
 import { MNEMONIC_LENGTH } from '_src/shared/constants'
 
@@ -40,8 +46,10 @@ export const StepOne = ({
       return
     }
 
-    toast(<Alert type="error">Fail to copy, try to copy manually</Alert>, {
-      toastId: 'initialize-toast',
+    toast({
+      type: 'error',
+      message: 'Fail to copy, try to copy manually',
+      containerId: 'initialize-toast',
     })
   }
 
@@ -81,7 +89,8 @@ export const StepOne = ({
                   place="top"
                   effect="solid"
                   padding="4px 8px"
-                  className="before:hidden"
+                  delayHide={500}
+                  className="!pointer-events-auto before:hidden hover:!visible hover:!opacity-100"
                 />
               </div>
               <div className="self-start relative">

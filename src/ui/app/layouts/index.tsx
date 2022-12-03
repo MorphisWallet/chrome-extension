@@ -1,10 +1,10 @@
 import { memo, useState } from 'react'
 import { useLocation, Link } from 'react-router-dom'
-import { ToastContainer, Slide, toast } from 'react-toastify'
+import { ToastContainer, Slide } from 'react-toastify'
 import cl from 'classnames'
 import copy from 'copy-to-clipboard'
 
-import { Button, IconWrapper, Alert, Modal } from '_app/components'
+import { Button, IconWrapper, Modal, toast } from '_app/components'
 import { Network } from './components/network'
 
 import { useAppSelector, useMiddleEllipsis } from '_hooks'
@@ -65,14 +65,16 @@ const LayoutBase = ({
 
     const copyRes = copy(address)
     if (copyRes) {
-      toast(<Alert type="success">Copied to clipboard</Alert>, {
-        toastId: 'initialize-toast',
+      toast({
+        type: 'success',
+        message: 'Copied to clipboard',
+        containerId: 'initialize-toast',
       })
     }
   }
 
   return (
-    <div className="flex flex-col grow relative">
+    <div className="flex flex-col grow relative overflow-hidden">
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
         <Network setModalOpen={setModalOpen} />
       </Modal>
@@ -82,6 +84,7 @@ const LayoutBase = ({
         autoClose={3000}
         limit={1}
         hideProgressBar
+        enableMultiContainer
         newestOnTop={false}
         closeOnClick={false}
         rtl={false}
@@ -98,7 +101,7 @@ const LayoutBase = ({
         className="h-10 !p-0 !top-12 !w-[360px] [&>div]:min-h-[40px] [&>div]:px-6 [&>div]:items-center [&>div]:rounded-none [&>div]:shadow-none !z-50"
       />
       {showHeader && (
-        <header className="h-12 px-6 bg-white border-b border-b-[#e6e6e9] flex items-center font-medium z-[1010]">
+        <header className="h-12 px-6 bg-white border-b border-b-[#e6e6e9] flex items-center shrink-0 font-medium z-[1010]">
           <a href="https://morphiswallet.com" target="_blank" rel="noreferrer">
             <Logo height={24} width={24} />
           </a>
@@ -118,9 +121,11 @@ const LayoutBase = ({
           </Button>
         </header>
       )}
-      <main className={cl(['flex flex-col grow', className])}>{children}</main>
+      <main className={cl(['flex flex-col grow overflow-hidden', className])}>
+        {children}
+      </main>
       {showNav && (
-        <nav className="h-14 bg-black flex items-center justify-around">
+        <nav className="h-14 bg-black flex items-center justify-around shrink-0">
           {ROUTES.map((route) => (
             <Link
               key={route.name}

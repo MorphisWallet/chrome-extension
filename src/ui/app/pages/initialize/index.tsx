@@ -12,6 +12,7 @@ export const Initialize = () => (
       position="top-center"
       autoClose={3000}
       limit={1}
+      enableMultiContainer
       hideProgressBar
       newestOnTop={false}
       closeOnClick={false}
