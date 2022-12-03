@@ -58,13 +58,13 @@ export const Locked = () => {
               })}
               onSubmit={onSubmit}
             >
-              {({ values, errors, handleBlur, handleChange, handleSubmit }) => (
+              {({ values, touched, errors, handleBlur, handleChange, handleSubmit }) => (
                 <form onSubmit={handleSubmit} className="w-full">
                   <Input
                     id="password"
                     name="password"
                     value={values.password}
-                    error={errors.password}
+                    error={touched.password && errors.password}
                     type="password"
                     placeholder="Password"
                     className="mb-4"
