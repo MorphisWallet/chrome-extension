@@ -18,12 +18,16 @@ const LOCAL_STORAGE = Browser.storage.local
 
 // we use this password + a random one for each time we store the encrypted
 // vault to session storage
-const PASSWORD =
-  process.env.WALLET_KEYRING_PASSWORD ||
-  '344c6f7d04a65c24f35f5c710b0e91e2f2e2f88c038562622d5602019b937bc2c2aa2821e65cc94775fe5acf2fee240d38f1abbbe00b0e6682646a4ce10e908e'
+const PASSWORD = process.env.WALLET_KEYRING_PASSWORD || ''
 const VAULT_KEY = 'morphis_vault'
-const EPHEMERAL_PASSWORD_KEY = '244e4b24e667ebf'
-const EPHEMERAL_VAULT_KEY = 'a8e451b8ae8a1b4'
+const EPHEMERAL_PASSWORD_KEY = process.env.EPHEMERAL_PASSWORD_KEY || ''
+const EPHEMERAL_VAULT_KEY = process.env.EPHEMERAL_VAULT_KEY || ''
+
+if (!PASSWORD || !EPHEMERAL_PASSWORD_KEY || !EPHEMERAL_VAULT_KEY) {
+  throw new Error(
+    `Failed to initialize vault storage. Contact morphis via our twitter or discord`
+  )
+}
 
 async function getFromStorage<T>(
   storage: Storage.LocalStorageArea,
@@ -53,6 +57,11 @@ function getRandomPassword() {
 }
 
 function makeEphemeraPassword(rndPass: string) {
+  if (!PASSWORD) {
+    throw new Error(
+      'Failed to make ephemeral password as no PASSWORD is provided'
+    )
+  }
   return `${PASSWORD}${rndPass}`
 }
 
