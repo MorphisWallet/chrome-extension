@@ -177,8 +177,8 @@ const commonConfig: () => Promise<Configuration> = async () => {
         ],
       }),
       new DotEnv({
-        path: resolve(CONFIGS_ROOT, 'environment', '.env'),
-        defaults: resolve(CONFIGS_ROOT, 'environment', '.env.defaults'),
+        path: resolve(CONFIGS_ROOT, 'environment', '.env.local'),
+        defaults: resolve(CONFIGS_ROOT, 'environment', '.env'),
         expand: true,
       }),
       new DefinePlugin({
@@ -187,9 +187,6 @@ const commonConfig: () => Promise<Configuration> = async () => {
         // TODO: check if this is worth investigating a fix and maybe do a separate build for UI and bg?
         // 'typeof window': JSON.stringify(typeof {}),
         'process.env.NODE_DEBUG': false,
-        'process.env.WALLET_KEYRING_PASSWORD': JSON.stringify(
-          IS_DEV ? 'DEV_PASS' : Buffer.from(randomBytes(64)).toString('hex')
-        ),
         'process.env.WALLET_BETA': WALLET_BETA,
         'process.env.APP_NAME': JSON.stringify(APP_NAME),
       }),
