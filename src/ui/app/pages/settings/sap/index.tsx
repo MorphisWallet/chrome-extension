@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 
-import { Layout } from '_app/layouts'
+import Layout from '_app/layouts'
 import { Button, IconWrapper } from '_app/components'
 
 import ArrowShort from '_assets/icons/arrow_short.svg'

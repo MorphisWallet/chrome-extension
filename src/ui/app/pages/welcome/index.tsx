@@ -2,9 +2,8 @@ import { Link } from 'react-router-dom'
 
 import { useInitializedGuard } from '_hooks'
 
-import { Layout } from '_app/layouts'
-import { Loading } from '_components/loading'
-import { Button } from '_components/button'
+import Layout from '_app/layouts'
+import { Loading, Button } from '_app/components'
 
 import Logo from '_assets/icons/logo.svg'
 

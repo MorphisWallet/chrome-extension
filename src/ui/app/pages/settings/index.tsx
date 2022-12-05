@@ -1,6 +1,6 @@
 import { useNavigate, Link } from 'react-router-dom'
 
-import { Layout } from '_app/layouts'
+import Layout from '_app/layouts'
 import { Button } from '_app/components'
 
 import { useAppDispatch } from '_hooks'

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 
-import { Layout } from '_app/layouts'
+import Layout from '_app/layouts'
 import { Loading, toast } from '_app/components'
-import { StepOne } from './components/step_one'
-import { StepTwo } from './components/step_two'
+import BackupStepOne from './components/step_one'
+import BackupStepTwo from './components/step_two'
 
 import { useAppDispatch, useLockedGuard, useInitializedGuard } from '_hooks'
 
@@ -51,7 +51,7 @@ const BackupPage = () => {
   const renderContent = () => {
     if (step === 0) {
       return (
-        <StepOne
+        <BackupStepOne
           mnemonic={mnemonic}
           mnemonicLoading={mnemonicLoading}
           setStep={setStep}
@@ -59,7 +59,7 @@ const BackupPage = () => {
       )
     }
 
-    return <StepTwo mnemonic={mnemonic} setStep={setStep} />
+    return <BackupStepTwo mnemonic={mnemonic} setStep={setStep} />
   }
   return (
     <Loading loading={guardsLoading || checkingInitialized}>

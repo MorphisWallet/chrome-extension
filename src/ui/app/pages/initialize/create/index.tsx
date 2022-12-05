@@ -2,9 +2,15 @@ import { useNavigate } from 'react-router-dom'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
 
-import { Layout } from '_app/layouts'
-import { Loading } from '_components/loading'
-import { Stepper, Input, Checkbox, Button, toast } from '_components/index'
+import Layout from '_app/layouts'
+import {
+  Loading,
+  Stepper,
+  Input,
+  Checkbox,
+  Button,
+  toast,
+} from '_components/index'
 
 import { useAppDispatch, useInitializedGuard } from '_hooks'
 

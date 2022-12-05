@@ -1,4 +1,4 @@
-import { Layout } from '_app/layouts'
+import Layout from '_app/layouts'
 import { Button } from '_components/button'
 
 import { MAIN_UI_URL } from '_shared/utils'

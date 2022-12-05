@@ -5,7 +5,7 @@ import cl from 'classnames'
 import copy from 'copy-to-clipboard'
 
 import { Button, IconWrapper, Modal, toast } from '_app/components'
-import { Network } from './components/network'
+import Network from './components/network'
 
 import { useAppSelector, useMiddleEllipsis } from '_hooks'
 
@@ -146,4 +146,4 @@ const LayoutBase = ({
   )
 }
 
-export const Layout = memo(LayoutBase)
+export default memo(LayoutBase)

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Layout } from '_app/layouts'
+import Layout from '_app/layouts'
 import { Button, Loading, toast } from '_app/components'
 import CoinList from './components/coin_list'
 

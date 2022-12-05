@@ -23,7 +23,7 @@ type StepOneProps = {
 
 let copyTimeout: ReturnType<typeof setTimeout>
 
-export const StepOne = ({
+const BackupStepOne = ({
   mnemonic,
   mnemonicLoading,
   setStep,
@@ -121,3 +121,5 @@ export const StepOne = ({
     </div>
   )
 }
+
+export default BackupStepOne

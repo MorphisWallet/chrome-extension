@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import { Layout } from '_app/layouts'
+import Layout from '_app/layouts'
 import { Loading } from '_app/components'
 import Tx from './components/tx'
 

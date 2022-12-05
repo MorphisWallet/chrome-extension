@@ -17,7 +17,7 @@ type NetworkProps = {
   setModalOpen: (open: boolean) => void
 }
 
-export const Network = ({ setModalOpen }: NetworkProps) => {
+const Network = ({ setModalOpen }: NetworkProps) => {
   const dispatch = useAppDispatch()
   const selectedApiEnv = useAppSelector(({ app }) => app.apiEnv)
 
@@ -72,3 +72,5 @@ export const Network = ({ setModalOpen }: NetworkProps) => {
     </>
   )
 }
+
+export default Network

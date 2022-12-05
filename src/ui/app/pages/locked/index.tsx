@@ -3,10 +3,8 @@ import ReactTooltip from 'react-tooltip'
 import { Formik, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
 
-import { Layout } from '_app/layouts'
-import { Loading } from '_components/loading'
-import { Input } from '_components/input'
-import { Button } from '_components/button'
+import Layout from '_app/layouts'
+import { Loading, Input, Button } from '_app/components'
 
 import { useAppDispatch, useInitializedGuard, useLockedGuard } from '_hooks'
 

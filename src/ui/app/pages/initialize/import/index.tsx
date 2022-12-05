@@ -1,9 +1,9 @@
 import { useState } from 'react'
 
-import { Layout } from '_app/layouts'
+import Layout from '_app/layouts'
 import { Loading, toast } from '_app/components'
-import { StepOne } from './components/step_one'
-import { StepTwo } from './components/step_two'
+import InitializeStepOne from './components/step_one'
+import InitializeStepTwo from './components/step_two'
 
 import { useAppDispatch, useLockedGuard, useInitializedGuard } from '_hooks'
 
@@ -51,10 +51,10 @@ const ImportPage = () => {
 
   const renderForm = () => {
     if (step === 0) {
-      return <StepOne mnemonic={mnemonic} onSubmit={onNext} />
+      return <InitializeStepOne mnemonic={mnemonic} onSubmit={onNext} />
     }
 
-    return <StepTwo onBack={() => setStep(0)} onSubmit={onSubmit} />
+    return <InitializeStepTwo onBack={() => setStep(0)} onSubmit={onSubmit} />
   }
 
   return (

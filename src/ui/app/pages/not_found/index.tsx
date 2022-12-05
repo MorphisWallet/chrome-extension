@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 
-import { Layout } from '_app/layouts'
+import Layout from '_app/layouts'
 import { Button } from '_app/components'
 
 const NotFound = () => (

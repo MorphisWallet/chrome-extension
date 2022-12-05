@@ -1,6 +1,6 @@
 import { Navigate, Link, useSearchParams } from 'react-router-dom'
 
-import { Layout } from '_app/layouts'
+import Layout from '_app/layouts'
 import { Loading, IconWrapper, Button, CoinIcon } from '_app/components/'
 
 import { useAppSelector, useFormatCoin, useObjectsState } from '_hooks'
