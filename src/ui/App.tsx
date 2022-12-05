@@ -19,11 +19,17 @@ import { ImportPage } from '_app/pages/initialize/import'
 
 import { Locked } from '_app/pages/locked'
 
+import NotFound from '_app/pages/not_found'
+
 const router = createHashRouter([
   {
     path: '/*',
     element: <Home />,
     children: [
+      {
+        path: '',
+        element: <Navigate to="/landing" replace={true} />,
+      },
       {
         path: 'landing/',
         element: <Landing />,
@@ -54,7 +60,7 @@ const router = createHashRouter([
       },
       {
         path: '*',
-        element: <Navigate to="/landing" replace={true} />,
+        element: <NotFound />,
       },
     ],
   },
