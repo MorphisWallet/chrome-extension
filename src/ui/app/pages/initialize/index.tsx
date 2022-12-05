@@ -5,7 +5,7 @@ import { IconWrapper } from '_components/icon_wrapper'
 
 import CloseIcon from '_assets/icons/close.svg'
 
-export const Initialize = () => (
+const InitializePage = () => (
   <>
     <ToastContainer
       containerId="initialize-toast"
@@ -32,3 +32,5 @@ export const Initialize = () => (
     <Outlet />
   </>
 )
+
+export default InitializePage

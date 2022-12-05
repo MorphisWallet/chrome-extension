@@ -16,7 +16,7 @@ import Logo from '_assets/icons/logo.svg'
 
 import type { MnemonicField, PasswordField } from './type'
 
-export const ImportPage = () => {
+const ImportPage = () => {
   const dispatch = useAppDispatch()
   const guardsLoading = useLockedGuard(false)
   const checkingInitialized = useInitializedGuard(false)
@@ -76,3 +76,5 @@ export const ImportPage = () => {
     </Loading>
   )
 }
+
+export default ImportPage

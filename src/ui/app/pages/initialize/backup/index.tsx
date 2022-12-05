@@ -11,7 +11,7 @@ import { loadEntropyFromKeyring } from '_redux/slices/account'
 
 import { entropyToMnemonic, toEntropy } from '_shared/utils/bip39'
 
-export const Backup = () => {
+const BackupPage = () => {
   const dispatch = useAppDispatch()
   const guardsLoading = useLockedGuard(false)
   const checkingInitialized = useInitializedGuard(true)
@@ -69,3 +69,5 @@ export const Backup = () => {
     </Loading>
   )
 }
+
+export default BackupPage

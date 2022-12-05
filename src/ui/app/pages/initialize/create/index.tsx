@@ -23,7 +23,7 @@ type Fields = {
   tos: boolean
 }
 
-export const Create = () => {
+const CreatePage = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const initGuardLoading = useInitializedGuard(false)
@@ -133,3 +133,5 @@ export const Create = () => {
     </Loading>
   )
 }
+
+export default CreatePage

@@ -20,7 +20,7 @@ type PasswordField = {
   password: string
 }
 
-export const Locked = () => {
+const LockedPage = () => {
   const dispatch = useAppDispatch()
   const initGuardLoading = useInitializedGuard(true)
   const lockedGuardLoading = useLockedGuard(true)
@@ -58,7 +58,14 @@ export const Locked = () => {
               })}
               onSubmit={onSubmit}
             >
-              {({ values, touched, errors, handleBlur, handleChange, handleSubmit }) => (
+              {({
+                values,
+                touched,
+                errors,
+                handleBlur,
+                handleChange,
+                handleSubmit,
+              }) => (
                 <form onSubmit={handleSubmit} className="w-full">
                   <Input
                     id="password"
@@ -97,3 +104,5 @@ export const Locked = () => {
     </Loading>
   )
 }
+
+export default LockedPage

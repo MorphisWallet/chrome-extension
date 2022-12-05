@@ -8,7 +8,7 @@ import { Button } from '_components/button'
 
 import Logo from '_assets/icons/logo.svg'
 
-export const Welcome = () => {
+const WelcomePage = () => {
   const checkingInitialized = useInitializedGuard(false)
 
   return (
@@ -33,3 +33,5 @@ export const Welcome = () => {
     </Loading>
   )
 }
+
+export default WelcomePage

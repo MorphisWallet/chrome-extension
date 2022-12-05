@@ -1,30 +1,29 @@
 import { createHashRouter, RouterProvider, Navigate } from 'react-router-dom'
 
-import { Welcome } from '_app/pages/welcome'
+import ProtectedRouter from '_app/ProtectedRouter'
 
-import { Home } from '_app/pages/home'
-import { Landing } from '_app/pages/home/landing'
-import { Detail } from '_app/pages/home/landing/detail'
-import { Send } from '_app/pages/home/send'
-import { Nft } from '_app/pages/home/nft'
-import { History } from '_app/pages/home/history'
-import { Settings } from '_app/pages/home/settings'
-import { Sap } from '_app/pages/home/settings/sap'
+import LandingPage from '_app/pages/landing'
+import CoinDetailPage from '_app/pages/landing/coin_detail'
+import SendPage from '_app/pages/send'
+import NftPage from '_app/pages/nft'
+import HistoryPage from '_app/pages/history'
+import SettingsPage from '_app/pages/settings'
+import SapPage from '_app/pages/settings/sap'
 
-import { Initialize } from '_app/pages/initialize'
-import { Create } from '_app/pages/initialize/create'
-import { Backup } from '_app/pages/initialize/backup'
-import { Done } from '_app/pages/initialize/done'
-import { ImportPage } from '_app/pages/initialize/import'
+import InitializePage from '_app/pages/initialize'
+import CreatePage from '_app/pages/initialize/create'
+import BackupPage from '_app/pages/initialize/backup'
+import DonePage from '_app/pages/initialize/done'
+import ImportPage from '_app/pages/initialize/import'
 
-import { Locked } from '_app/pages/locked'
-
+import WelcomePage from '_app/pages/welcome'
+import LockedPage from '_app/pages/locked'
 import NotFound from '_app/pages/not_found'
 
 const router = createHashRouter([
   {
     path: '/*',
-    element: <Home />,
+    element: <ProtectedRouter />,
     children: [
       {
         path: '',
@@ -32,31 +31,31 @@ const router = createHashRouter([
       },
       {
         path: 'landing/',
-        element: <Landing />,
+        element: <LandingPage />,
       },
       {
         path: 'landing/:coin',
-        element: <Detail />,
+        element: <CoinDetailPage />,
       },
       {
         path: 'send',
-        element: <Send />,
+        element: <SendPage />,
       },
       {
         path: 'nft',
-        element: <Nft />,
+        element: <NftPage />,
       },
       {
         path: 'history',
-        element: <History />,
+        element: <HistoryPage />,
       },
       {
         path: 'settings',
-        element: <Settings />,
+        element: <SettingsPage />,
       },
       {
         path: 'settings/sap',
-        element: <Sap />,
+        element: <SapPage />,
       },
       {
         path: '*',
@@ -66,35 +65,45 @@ const router = createHashRouter([
   },
   {
     path: 'welcome',
-    element: <Welcome />,
+    element: <WelcomePage />,
   },
   {
     path: 'locked',
-    element: <Locked />,
+    element: <LockedPage />,
   },
   {
     path: '/initialize',
-    element: <Initialize />,
+    element: <InitializePage />,
     children: [
       {
         index: true,
-        element: <Create />,
+        element: <CreatePage />,
       },
       {
         path: 'create',
-        element: <Create />,
+        element: <CreatePage />,
       },
       {
         path: 'backup',
-        element: <Backup />,
+        element: <BackupPage />,
       },
       {
         path: 'done',
-        element: <Done />,
+        element: <DonePage />,
       },
       {
         path: 'import',
         element: <ImportPage />,
+      },
+    ],
+  },
+  {
+    path: '/dapp/*',
+    element: <ProtectedRouter />,
+    children: [
+      {
+        path: 'connect/:requestID',
+        element: null,
       },
     ],
   },
