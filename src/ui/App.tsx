@@ -5,10 +5,15 @@ import ProtectedRouter from '_app/ProtectedRouter'
 import LandingPage from '_app/pages/landing'
 import CoinDetailPage from '_app/pages/landing/coin_detail'
 import SendPage from '_app/pages/send'
+
 import NftPage from '_app/pages/nft'
+
 import HistoryPage from '_app/pages/history'
+
 import SettingsPage from '_app/pages/settings'
 import SapPage from '_app/pages/settings/sap'
+
+import ConnectPage from '_app/pages/dapp/connect'
 
 import InitializePage from '_app/pages/initialize'
 import CreatePage from '_app/pages/initialize/create'
@@ -103,7 +108,7 @@ const router = createHashRouter([
     children: [
       {
         path: 'connect/:requestID',
-        element: null,
+        element: <ConnectPage />,
       },
     ],
   },
