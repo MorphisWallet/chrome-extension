@@ -17,7 +17,7 @@ type AlertProps = {
 const mapIcon = (type: AlertType, size: number) => {
   switch (type) {
     case 'success': {
-      return <CheckIcon height={size} width={size} />
+      return <CheckIcon height={size} width={size} className="text-[#3ad337]" />
     }
     case 'error': {
       return <ErrorIcon height={size} width={size} />
