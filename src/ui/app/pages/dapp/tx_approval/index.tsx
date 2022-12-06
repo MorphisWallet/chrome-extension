@@ -311,6 +311,7 @@ const TxApprovalPage = () => {
             approveTitle="Approve"
             rejectTitle="Reject"
             onSubmit={handleOnSubmit}
+            requestType="Approval Request"
           >
             <section className="">
               <div className="">

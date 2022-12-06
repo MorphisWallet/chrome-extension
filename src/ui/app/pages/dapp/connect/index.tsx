@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
 import Layout from '_app/layouts'
@@ -33,7 +33,6 @@ const ConnectPage = () => {
     ? new URL(permissionRequest.origin)
     : null
   const isSecure = parsedOrigin?.protocol === 'https:'
-  const [displayWarning, setDisplayWarning] = useState(!isSecure)
 
   const activeAccount = useAppSelector(({ account }) => account.address)
 
@@ -51,41 +50,9 @@ const ConnectPage = () => {
     }
   }
 
-  const handleHideWarning = (allowed: boolean) => {
-    if (allowed) {
-      setDisplayWarning(false)
-    } else {
-      handleOnSubmit(false)
-    }
-  }
-
   const renderContainer = () => {
     if (!permissionRequest) {
       return null
-    }
-
-    if (displayWarning) {
-      ;<UserApproveContainer
-        origin={permissionRequest.origin}
-        originFavIcon={permissionRequest.favIcon}
-        approveTitle="Continue"
-        rejectTitle="Reject"
-        onSubmit={handleHideWarning}
-        isWarning
-        isConnect
-      >
-        <div className="">
-          <h1 className="">Your Connection is Not Secure</h1>
-        </div>
-
-        <div className="">
-          This site requesting this wallet connection is not secure, and
-          attackers might be trying to steal your information.
-          <br />
-          <br />
-          Continue at your own risk.
-        </div>
-      </UserApproveContainer>
     }
 
     return (
@@ -96,7 +63,8 @@ const ConnectPage = () => {
         rejectTitle="Cancel"
         onSubmit={handleOnSubmit}
         isConnect
-        requestType="App Permissions"
+        isWarning={!isSecure}
+        requestType="Connect"
       >
         <div className="flex flex-col text-sm py-4">
           <span className="mb-4">Allow this site to:</span>
@@ -118,10 +86,6 @@ const ConnectPage = () => {
       window.close()
     }
   }, [loading, permissionRequest])
-
-  useEffect(() => {
-    setDisplayWarning(!isSecure)
-  }, [isSecure])
 
   return (
     <Layout showNav={false}>
