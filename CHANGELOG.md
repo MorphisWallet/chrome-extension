@@ -1,6 +1,7 @@
 ## 0.0.2.0 (Dec 6, 2022)
 
 - Provide functionalities to connect and transact on dApp (based on Sui adapter)
+- Update extension icons
 
 ## 0.0.1.3 (Dec 5, 2022)
 
