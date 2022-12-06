@@ -66,7 +66,8 @@ function TransactionSummery({ label, content, loading }: TransferSummaryProps) {
   const isGasEstimate = label === GAS_ESTIMATE_LABEL
   const [gasEstimate, symbol] = useFormatCoin(
     (isGasEstimate && content) || 0,
-    GAS_TYPE_ARG
+    GAS_TYPE_ARG,
+    true
   )
   const valueContent =
     content === null
@@ -75,12 +76,12 @@ function TransactionSummery({ label, content, loading }: TransferSummaryProps) {
       ? `${gasEstimate} ${symbol}`
       : content
   return (
-    <>
-      <div className="">{label}</div>
-      <Loading loading={loading}>
-        <div className="">{valueContent}</div>
+    <div className="flex justify-between mb-1">
+      <div className="shrink-0 font-bold text-[#818181] mr-2">{label}</div>
+      <Loading loading={loading} className="grow-0 w-auto">
+        <div className="truncate">{valueContent}</div>
       </Loading>
-    </>
+    </div>
   )
 }
 
@@ -313,23 +314,22 @@ const TxApprovalPage = () => {
             onSubmit={handleOnSubmit}
             requestType="Approval Request"
           >
-            <section className="">
+            <div className="flex flex-col grow my-6 overflow-hidden">
+              <div className="text-sm text-[#373737] mb-4">
+                TRANSACTION SUMMARY
+              </div>
               <div className="">
-                <div className="">Transaction summary</div>
-                <div className="">
-                  {valuesContent.map(({ label, content, loading = false }) => (
-                    <div key={label} className="">
-                      <TransactionSummery
-                        label={label}
-                        content={content}
-                        loading={loading}
-                      />
-                    </div>
-                  ))}
-                </div>
+                {valuesContent.map(({ label, content, loading = false }) => (
+                  <TransactionSummery
+                    key={label}
+                    label={label}
+                    content={content}
+                    loading={loading}
+                  />
+                ))}
               </div>
               <Permissions metadata={metadata} />
-            </section>
+            </div>
           </UserApproveContainer>
         ) : null}
       </Loading>

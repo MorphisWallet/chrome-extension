@@ -73,7 +73,7 @@ export const UserApproveContainer = ({
           onClick={() => handleOnResponse({ allowed: false })}
           className={cl(
             '',
-            isWarning ? '' : isConnect ? '' : 'border-[#b74d4a]'
+            isWarning ? '' : isConnect ? '' :  'border-[#ed3939] text-[#ed3939]'
           )}
           disabled={submitting}
         >
