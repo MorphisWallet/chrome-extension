@@ -1,9 +1,7 @@
 import { useMemo, useState } from 'react'
 import cl from 'classnames'
 
-import { Loading, Button } from '_app/components'
-
-import { useAppSelector, useMiddleEllipsis } from '_hooks'
+import { Loading, Button, Address } from '_app/components'
 
 type UserApproveContainerProps = {
   children: React.ReactNode | React.ReactNode[]
@@ -28,9 +26,6 @@ export const UserApproveContainer = ({
   isConnect,
   isWarning,
 }: UserApproveContainerProps) => {
-  const address = useAppSelector(({ account: { address } }) => address)
-  const shortenAddress = useMiddleEllipsis(address, 10, 7)
-
   const [submitting, setSubmitting] = useState(false)
 
   const handleOnResponse = async ({ allowed }: { allowed: boolean }) => {
@@ -63,7 +58,7 @@ export const UserApproveContainer = ({
         >
           {origin}
         </a>
-        <p>{shortenAddress}</p>
+        <Address addressOnly />
       </div>
       <div className="flex grow overflow-y-auto">{children}</div>
       <div className="flex gap-3 shrink-0">

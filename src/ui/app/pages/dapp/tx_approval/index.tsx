@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 
+import Layout from '_app/layouts'
 import { Loading, UserApproveContainer } from '_components/index'
 import Permissions from './components/permissions'
 
@@ -301,35 +302,37 @@ const TxApprovalPage = () => {
   }, [txRequest, gasEstimation, txGasEstimationResult.isLoading])
 
   return (
-    <Loading loading={loadingState}>
-      {txRequest ? (
-        <UserApproveContainer
-          origin={txRequest.origin}
-          originFavIcon={txRequest.originFavIcon}
-          approveTitle="Approve"
-          rejectTitle="Reject"
-          onSubmit={handleOnSubmit}
-        >
-          <section className="">
-            <div className="">
-              <div className="">Transaction summary</div>
+    <Layout showNav={false}>
+      <Loading loading={loadingState}>
+        {txRequest ? (
+          <UserApproveContainer
+            origin={txRequest.origin}
+            originFavIcon={txRequest.originFavIcon}
+            approveTitle="Approve"
+            rejectTitle="Reject"
+            onSubmit={handleOnSubmit}
+          >
+            <section className="">
               <div className="">
-                {valuesContent.map(({ label, content, loading = false }) => (
-                  <div key={label} className="">
-                    <TransactionSummery
-                      label={label}
-                      content={content}
-                      loading={loading}
-                    />
-                  </div>
-                ))}
+                <div className="">Transaction summary</div>
+                <div className="">
+                  {valuesContent.map(({ label, content, loading = false }) => (
+                    <div key={label} className="">
+                      <TransactionSummery
+                        label={label}
+                        content={content}
+                        loading={loading}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-            <Permissions metadata={metadata} />
-          </section>
-        </UserApproveContainer>
-      ) : null}
-    </Loading>
+              <Permissions metadata={metadata} />
+            </section>
+          </UserApproveContainer>
+        ) : null}
+      </Loading>
+    </Layout>
   )
 }
 
