@@ -1,6 +1,6 @@
 import { useNavigate, Link } from 'react-router-dom'
 
-import { Layout } from '_app/layouts'
+import Layout from '_app/layouts'
 import { Button } from '_app/components'
 
 import { useAppDispatch } from '_hooks'
@@ -9,7 +9,7 @@ import { lockWallet } from '_redux/slices/wallet'
 
 import ArrowLong from '_assets/icons/arrow_long.svg'
 
-export const Settings = () => {
+const SettingsPage = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
@@ -64,3 +64,5 @@ export const Settings = () => {
     </Layout>
   )
 }
+
+export default SettingsPage

@@ -3,10 +3,8 @@ import ReactTooltip from 'react-tooltip'
 import { Formik, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
 
-import { Layout } from '_app/layouts'
-import { Loading } from '_components/loading'
-import { Input } from '_components/input'
-import { Button } from '_components/button'
+import Layout from '_app/layouts'
+import { Loading, Input, Button } from '_app/components'
 
 import { useAppDispatch, useInitializedGuard, useLockedGuard } from '_hooks'
 
@@ -20,7 +18,7 @@ type PasswordField = {
   password: string
 }
 
-export const Locked = () => {
+const LockedPage = () => {
   const dispatch = useAppDispatch()
   const initGuardLoading = useInitializedGuard(true)
   const lockedGuardLoading = useLockedGuard(true)
@@ -58,7 +56,14 @@ export const Locked = () => {
               })}
               onSubmit={onSubmit}
             >
-              {({ values, touched, errors, handleBlur, handleChange, handleSubmit }) => (
+              {({
+                values,
+                touched,
+                errors,
+                handleBlur,
+                handleChange,
+                handleSubmit,
+              }) => (
                 <form onSubmit={handleSubmit} className="w-full">
                   <Input
                     id="password"
@@ -97,3 +102,5 @@ export const Locked = () => {
     </Loading>
   )
 }
+
+export default LockedPage

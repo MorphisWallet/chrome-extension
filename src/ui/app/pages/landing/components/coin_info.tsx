@@ -9,7 +9,7 @@ type CoinInfoProps = {
   type: string
 } & React.DOMAttributes<HTMLDivElement>
 
-export const CoinInfo = ({ balance, type, ...rest }: CoinInfoProps) => {
+const CoinInfo = ({ balance, type, ...rest }: CoinInfoProps) => {
   const [formatted, symbol] = useFormatCoin(balance, type, true)
 
   const coinInfo: CoinInfoType | undefined = coinMap[type]
@@ -28,3 +28,5 @@ export const CoinInfo = ({ balance, type, ...rest }: CoinInfoProps) => {
     </div>
   )
 }
+
+export default CoinInfo

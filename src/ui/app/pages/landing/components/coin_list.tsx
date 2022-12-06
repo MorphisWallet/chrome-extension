@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Loading, Button } from '_app/components'
-import { CoinInfo } from './coin_info'
+import CoinInfo from './coin_info'
 
 import NoCoinPlaceholder from '_assets/icons/no_coin_placeholder.svg'
 
@@ -14,7 +14,7 @@ type CoinListProps = {
   onAirdrop: () => void
 }
 
-export const CoinList = ({
+const CoinList = ({
   airdropLoading,
   airdropDisabled,
   balanceLoading,
@@ -53,3 +53,5 @@ export const CoinList = ({
 
   return <Loading loading={balanceLoading}>{renderCoinList()}</Loading>
 }
+
+export default CoinList

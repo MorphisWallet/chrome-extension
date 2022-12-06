@@ -29,7 +29,7 @@ const generateRandomFieldCheckIndexes = () => {
   return indexes
 }
 
-export const StepTwo = ({ mnemonic, setStep }: StepTwoProps) => {
+const BackupStepTwo = ({ mnemonic, setStep }: StepTwoProps) => {
   const navigate = useNavigate()
 
   const [error, setError] = useState<string | null>(null)
@@ -119,3 +119,5 @@ export const StepTwo = ({ mnemonic, setStep }: StepTwoProps) => {
     </div>
   )
 }
+
+export default BackupStepTwo

@@ -10,7 +10,7 @@ import { fetchAllOwnedAndRequiredObjects } from '_redux/slices/sui-objects'
 
 import { POLL_SUI_OBJECTS_INTERVAL } from '_src/shared/constants'
 
-export const Home = () => {
+const ProtectedRouter = () => {
   const dispatch = useAppDispatch()
   const initChecking = useInitializedGuard(true)
   const lockedChecking = useLockedGuard(false)
@@ -54,3 +54,5 @@ export const Home = () => {
     </Loading>
   )
 }
+
+export default ProtectedRouter

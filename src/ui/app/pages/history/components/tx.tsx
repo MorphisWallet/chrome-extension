@@ -8,7 +8,7 @@ import { toRenderProps } from '../utils'
 import { ExplorerLinkType } from '_app/components/tx_link/type'
 import type { TxResultState } from '_redux/slices/txresults'
 
-export const Tx = (tx: TxResultState) => {
+const Tx = (tx: TxResultState) => {
   const renderProps = toRenderProps(tx)
 
   if (!renderProps) return null
@@ -53,3 +53,5 @@ export const Tx = (tx: TxResultState) => {
     </TxLink>
   )
 }
+
+export default Tx

@@ -5,10 +5,10 @@ import BigNumber from 'bignumber.js'
 import * as Yup from 'yup'
 import { getTransactionDigest } from '@mysten/sui.js'
 
-import { Layout } from '_app/layouts'
+import Layout from '_app/layouts'
 import { IconWrapper, toast, TxLink } from '_app/components'
-import { StepOne } from './components/step_one'
-import { StepTwo } from './components/step_two'
+import SendStepOne from './components/step_one'
+import SendStepTwo from './components/step_two'
 
 import {
   useAppDispatch,
@@ -34,7 +34,7 @@ import { ExplorerLinkType } from '_app/components/tx_link/type'
 import type { ConfirmFields } from './utils'
 import type { SerializedError } from '@reduxjs/toolkit'
 
-export const Send = () => {
+const SendPage = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const [searchParams] = useSearchParams()
@@ -128,7 +128,7 @@ export const Send = () => {
   const renderContent = (formikProps: FormikProps<ConfirmFields>) => {
     if (step === 0) {
       return (
-        <StepOne
+        <SendStepOne
           loading={loading}
           formikProps={formikProps}
           coinBalance={coinBalance}
@@ -138,7 +138,7 @@ export const Send = () => {
     }
 
     return (
-      <StepTwo
+      <SendStepTwo
         formikProps={formikProps}
         coinBalance={coinBalance}
         coinType={coinType}
@@ -241,3 +241,5 @@ export const Send = () => {
     </Layout>
   )
 }
+
+export default SendPage

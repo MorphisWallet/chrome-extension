@@ -1,4 +1,4 @@
-import { Layout } from '_app/layouts'
+import Layout from '_app/layouts'
 import { Button } from '_components/button'
 
 import { MAIN_UI_URL } from '_shared/utils'
@@ -7,7 +7,7 @@ import Logo from '_assets/icons/logo.svg'
 import TwitterIcon from '_assets/icons/twitter.svg'
 import DiscordIcon from '_assets/icons/discord.svg'
 
-export const Done = () => (
+const DonePage = () => (
   <Layout showHeader={false} showNav={false}>
     <div className="flex flex-col grow justify-center p-10 font-medium">
       <a href="https://morphiswallet.com" target="_blank" rel="noreferrer">
@@ -45,3 +45,5 @@ export const Done = () => (
     </div>
   </Layout>
 )
+
+export default DonePage

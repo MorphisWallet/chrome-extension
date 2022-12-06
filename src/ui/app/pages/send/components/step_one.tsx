@@ -15,7 +15,7 @@ type ConfirmStepOneProps = {
   formikProps: FormikProps<ConfirmFields>
 }
 
-export const StepOne = ({
+const SendStepOne = ({
   loading,
   coinBalance,
   coinType,
@@ -29,10 +29,7 @@ export const StepOne = ({
 
   return (
     <>
-      <SelectCoinModal
-        open={modalOpen}
-        setOpen={setModalOpen}
-      />
+      <SelectCoinModal open={modalOpen} setOpen={setModalOpen} />
       <div className="flex justify-between mb-1">
         <span>Asset</span>
         <Loading loading={loading} className="w-8 grow-0">
@@ -86,3 +83,5 @@ export const StepOne = ({
     </>
   )
 }
+
+export default SendStepOne

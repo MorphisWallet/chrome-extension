@@ -1,6 +1,6 @@
 import { Navigate, Link, useSearchParams } from 'react-router-dom'
 
-import { Layout } from '_app/layouts'
+import Layout from '_app/layouts'
 import { Loading, IconWrapper, Button, CoinIcon } from '_app/components/'
 
 import { useAppSelector, useFormatCoin, useObjectsState } from '_hooks'
@@ -11,7 +11,7 @@ import { coinMap } from '_app/utils/coin'
 
 import ArrowShort from '_assets/icons/arrow_short.svg'
 
-export const Detail = () => {
+const CoinDetailPage = () => {
   const [searchParams] = useSearchParams()
   const coinType = searchParams.get('type')
 
@@ -56,3 +56,5 @@ export const Detail = () => {
     </Layout>
   )
 }
+
+export default CoinDetailPage

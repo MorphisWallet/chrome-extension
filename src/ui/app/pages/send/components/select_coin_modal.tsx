@@ -1,7 +1,7 @@
 import { useSearchParams } from 'react-router-dom'
 
 import { Modal, IconWrapper } from '_app/components'
-import { CoinInfo } from '_src/ui/app/pages/home/landing/components/coin_info'
+import CoinInfo from '_pages/landing/components/coin_info'
 
 import { useAppSelector } from '_hooks'
 

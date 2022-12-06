@@ -2,15 +2,13 @@ import { memo, useState } from 'react'
 import { useLocation, Link } from 'react-router-dom'
 import { ToastContainer, Slide } from 'react-toastify'
 import cl from 'classnames'
-import copy from 'copy-to-clipboard'
 
-import { Button, IconWrapper, Modal, toast } from '_app/components'
-import { Network } from './components/network'
+import { Button, IconWrapper, Modal, Address } from '_app/components'
+import Network from './components/network'
 
-import { useAppSelector, useMiddleEllipsis } from '_hooks'
+import { useAppSelector } from '_hooks'
 
 import Logo from '_assets/icons/logo.svg'
-import CopyIcon from '_assets/icons/copy.svg'
 import CloseIcon from '_assets/icons/close.svg'
 import LandingIcon from '_assets/icons/landing.svg'
 import NftIcon from '_assets/icons/nft.svg'
@@ -52,26 +50,8 @@ const LayoutBase = ({
   // const dispatch = useAppDispatch()
   const location = useLocation()
   const network = useAppSelector(({ app }) => app.apiEnv)
-  const address = useAppSelector(({ account: { address } }) => address)
-
-  const shortenAddress = useMiddleEllipsis(address, 10, 7)
 
   const [modalOpen, setModalOpen] = useState(false)
-
-  const onCopy = () => {
-    if (!address) {
-      return
-    }
-
-    const copyRes = copy(address)
-    if (copyRes) {
-      toast({
-        type: 'success',
-        message: 'Copied to clipboard',
-        containerId: 'global-toast',
-      })
-    }
-  }
 
   return (
     <div className="flex flex-col grow relative overflow-hidden">
@@ -106,11 +86,7 @@ const LayoutBase = ({
             <Logo height={24} width={24} />
           </a>
           <div className="grow mx-2 text-center cursor-pointer">
-            <IconWrapper onClick={onCopy} className="!scale-100">
-              <CopyIcon height={14} width={14} className="mr-2" />
-              <span>Account1</span>
-              <span className="text-[#c0c0c0]">({shortenAddress})</span>
-            </IconWrapper>
+            <Address />
           </div>
           <Button
             title={network}
@@ -146,4 +122,4 @@ const LayoutBase = ({
   )
 }
 
-export const Layout = memo(LayoutBase)
+export default memo(LayoutBase)

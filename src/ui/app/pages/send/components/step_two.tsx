@@ -20,7 +20,7 @@ type ConfirmStepTwoProps = {
   allCoinsOfSelectedTypeArg: SuiMoveObject[]
 }
 
-export const StepTwo = ({
+const SendStepTwo = ({
   coinBalance,
   coinType,
   formikProps,
@@ -87,3 +87,5 @@ export const StepTwo = ({
     </div>
   )
 }
+
+export default SendStepTwo

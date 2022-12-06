@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Layout } from '_app/layouts'
+import Layout from '_app/layouts'
 import { Button, Loading, toast } from '_app/components'
-import { CoinList } from './components/coin_list'
+import CoinList from './components/coin_list'
 
 import {
   useAppSelector,
@@ -26,7 +26,7 @@ type LandingProps = {
   coinType?: string
 }
 
-export const Landing = ({ coinType }: LandingProps) => {
+const LandingPage = ({ coinType }: LandingProps) => {
   const activeCoinType = coinType || GAS_TYPE_ARG
 
   const dispatch = useAppDispatch()
@@ -145,3 +145,5 @@ export const Landing = ({ coinType }: LandingProps) => {
     </Layout>
   )
 }
+
+export default LandingPage

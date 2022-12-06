@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 
-import { Layout } from '_app/layouts'
+import Layout from '_app/layouts'
 import { Loading } from '_app/components'
-import { Tx } from './components/tx'
+import Tx from './components/tx'
 
 import { useAppSelector, useAppDispatch } from '_hooks'
 
@@ -10,7 +10,7 @@ import { getTransactionsByAddress } from '_redux/slices/txresults'
 
 import type { TxResultState } from '_redux/slices/txresults'
 
-export const History = () => {
+const HistoryPage = () => {
   const dispatch = useAppDispatch()
   const { loading, latestTx } = useAppSelector(({ txresults }) => ({
     loading: txresults.loading,
@@ -41,3 +41,5 @@ export const History = () => {
     </Layout>
   )
 }
+
+export default HistoryPage

@@ -2,13 +2,12 @@ import { Link } from 'react-router-dom'
 
 import { useInitializedGuard } from '_hooks'
 
-import { Layout } from '_app/layouts'
-import { Loading } from '_components/loading'
-import { Button } from '_components/button'
+import Layout from '_app/layouts'
+import { Loading, Button } from '_app/components'
 
 import Logo from '_assets/icons/logo.svg'
 
-export const Welcome = () => {
+const WelcomePage = () => {
   const checkingInitialized = useInitializedGuard(false)
 
   return (
@@ -33,3 +32,5 @@ export const Welcome = () => {
     </Loading>
   )
 }
+
+export default WelcomePage
