@@ -116,6 +116,6 @@
     "yup": "^0.32.11"
   },
   "lint-staged": {
-    "*.{js,ts,jsx,tsx,md,json}": "eslint"
+    "*.{js,ts,jsx,tsx,json}": "eslint"
   }
 }
