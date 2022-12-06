@@ -30,7 +30,7 @@ import { parseAmount } from './utils'
 
 import ArrowShort from '_assets/icons/arrow_short.svg'
 
-import { ExplorerLinkType } from '_app/components/tx_link/type'
+import { ExplorerLinkType } from '_src/ui/app/components/tx_link/types'
 import type { ConfirmFields } from './utils'
 import type { SerializedError } from '@reduxjs/toolkit'
 

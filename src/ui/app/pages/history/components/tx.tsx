@@ -5,7 +5,7 @@ import { useFormatCoin, useMiddleEllipsis } from '_hooks'
 import { GAS_TYPE_ARG } from '_redux/slices/sui-objects/Coin'
 import { toRenderProps } from '../utils'
 
-import { ExplorerLinkType } from '_app/components/tx_link/type'
+import { ExplorerLinkType } from '_src/ui/app/components/tx_link/types'
 import type { TxResultState } from '_redux/slices/txresults'
 
 const Tx = (tx: TxResultState) => {

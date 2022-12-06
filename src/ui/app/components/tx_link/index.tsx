@@ -7,7 +7,7 @@ import { activeAccountSelector } from '_redux/slices/account'
 
 import { getAddressUrl, getObjectUrl, getTransactionUrl } from './utils'
 import { API_ENV } from '_app/ApiProvider'
-import { ExplorerLinkType, TxObjectTypes } from './type'
+import { ExplorerLinkType, TxObjectTypes } from './types'
 
 type TxLinkProps = TxObjectTypes &
   React.DOMAttributes<HTMLAnchorElement> & {

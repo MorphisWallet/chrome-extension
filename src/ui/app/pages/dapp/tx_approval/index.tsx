@@ -1,18 +1,15 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useQuery } from '@tanstack/react-query'
-import cl from 'classnames'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 
-import { Loading, UserApproveContainer, TxLink } from '_components/index'
-import {
-  useAppDispatch,
-  useAppSelector,
-  useMiddleEllipsis,
-  useFormatCoin,
-} from '_hooks'
+import { Loading, UserApproveContainer } from '_components/index'
+import Permissions from './components/permissions'
+
+import { useAppDispatch, useAppSelector, useFormatCoin } from '_hooks'
+
 import { GAS_TYPE_ARG } from '_redux/slices/sui-objects/Coin'
 import {
   loadTransactionResponseMetadata,
@@ -22,14 +19,9 @@ import {
 } from '_redux/slices/transaction-requests'
 import { thunkExtras } from '_redux/store/thunk-extras'
 
-import { ExplorerLinkType } from '_app/components/tx_link/type'
+import type { MetadataGroup } from './types'
 import type { SuiMoveNormalizedType, MoveCallTransaction } from '@mysten/sui.js'
 import type { RootState } from '_redux/RootReducer'
-
-interface MetadataGroup {
-  name: string
-  children: { id: string; module: string }[]
-}
 
 interface TypeReference {
   address: string
@@ -59,85 +51,6 @@ function unwrapTypeReference(
     }
   }
   return null
-}
-
-type TabType = 'transfer' | 'modify' | 'read'
-
-const TRUNCATE_MAX_LENGTH = 10
-const TRUNCATE_PREFIX_LENGTH = 6
-
-function PassedObject({ id, module }: { id: string; module: string }) {
-  const objectId = useMiddleEllipsis(
-    id,
-    TRUNCATE_MAX_LENGTH,
-    TRUNCATE_PREFIX_LENGTH
-  )
-  return (
-    <div>
-      <TxLink type={ExplorerLinkType.object} objectID={id} className="">
-        {objectId}
-      </TxLink>
-      <div className="">{module}</div>
-    </div>
-  )
-}
-
-type PermissionsProps = {
-  metadata: {
-    transfer: MetadataGroup
-    modify: MetadataGroup
-    read: MetadataGroup
-  } | null
-}
-
-function Permissions({ metadata }: PermissionsProps) {
-  const [tab, setTab] = useState<TabType | null>(null)
-  // Set the initial tab state to whatever is visible:
-  useEffect(() => {
-    if (tab || !metadata) return
-    setTab(
-      metadata.transfer.children.length
-        ? 'transfer'
-        : metadata.modify.children.length
-        ? 'modify'
-        : metadata.read.children.length
-        ? 'read'
-        : null
-    )
-  }, [tab, metadata])
-  return (
-    metadata &&
-    tab && (
-      <div className="">
-        <div className="">Permissions requested</div>
-        <div className="">
-          <div className="">
-            {Object.entries(metadata).map(
-              ([key, value]) =>
-                value.children.length > 0 && (
-                  <button
-                    type="button"
-                    key={key}
-                    className={cl('', tab === key && '')}
-                    // eslint-disable-next-line react/jsx-no-bind
-                    onClick={() => {
-                      setTab(key as TabType)
-                    }}
-                  >
-                    {value.name}
-                  </button>
-                )
-            )}
-          </div>
-          <div className="">
-            {metadata[tab].children.map(({ id, module }, index) => (
-              <PassedObject key={index} id={id} module={module} />
-            ))}
-          </div>
-        </div>
-      </div>
-    )
-  )
 }
 
 type TransferSummaryProps = {
