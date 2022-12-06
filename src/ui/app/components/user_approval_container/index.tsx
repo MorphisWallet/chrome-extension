@@ -44,7 +44,7 @@ export const UserApproveContainer = ({
           <img
             src={originFavIcon}
             alt="Site favicon"
-            className="h-[69px] w-[69px] mb-5"
+            className="h-[69px] w-[69px] mb-5 rounded-full"
           />
         ) : null}
         <p className="mb-1">{parsedOrigin?.host?.split('.')?.[0]}</p>
