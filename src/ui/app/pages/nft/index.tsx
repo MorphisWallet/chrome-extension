@@ -1,15 +1,58 @@
+import { useEffect } from 'react'
+import { Link } from 'react-router-dom'
+
 import Layout from '_app/layouts'
+import { Loading, toast } from '_app/components'
+import NftCard from './components/nft_card'
 
-import ComingSoonImg from '_assets/icons/coming_soon.svg'
+import { useAppSelector, useObjectsState } from '_hooks'
+import { accountNftsSelector } from '_redux/slices/account'
 
-const NftPage = () => (
-  <Layout>
-    <div className="flex flex-col grow items-center justify-center">
-      <ComingSoonImg height={252} width={328} className="mb-5" />
-      <p className="text-[28px] font-black text-center">COMING</p>
-      <p className="text-[28px] font-black text-center">SOON</p>
-    </div>
-  </Layout>
-)
+const NftPage = () => {
+  const nfts = useAppSelector(accountNftsSelector)
+  const { error, loading, showError } = useObjectsState()
+
+  useEffect(() => {
+    if (showError && error) {
+      toast({
+        type: 'error',
+        message: error.message,
+      })
+    }
+  }, [error, showError])
+
+  const renderNfts = () => {
+    if (!nfts?.length) {
+      return (
+        <div className="flex grow justify-center items-center text-[#c4c4c4] text-lg">
+          No NFTs
+        </div>
+      )
+    }
+
+    return (
+      <div className="grid grid-cols-2 gap-x-2.5 gap-y-4 mx-[-24px] mb-[-24px] px-6 pt-2.5 pb-6 overflow-y-auto">
+        {nfts.map((nft) => (
+          <Link
+            to={`./${nft.reference.objectId}`}
+            key={nft.reference.objectId}
+            className="flex h-[152px] rounded bg-[#f0f0f0] transition-transform duration-100 ease-in-out hover:scale-105"
+          >
+            <NftCard nft={nft} />
+          </Link>
+        ))}
+      </div>
+    )
+  }
+
+  return (
+    <Layout>
+      <div className="flex flex-col grow font-medium px-6 pt-4 pb-6 overflow-hidden">
+        <p className="shrink-0 mb-2 text-xl font-bold">Collectables</p>
+        <Loading loading={loading}>{renderNfts()}</Loading>
+      </div>
+    </Layout>
+  )
+}
 
 export default NftPage
