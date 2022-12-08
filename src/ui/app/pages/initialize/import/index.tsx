@@ -14,7 +14,7 @@ import { entropyToSerialized, mnemonicToEntropy } from '_shared/utils/bip39'
 
 import Logo from '_assets/icons/logo.svg'
 
-import type { MnemonicField, PasswordField } from './type'
+import type { MnemonicField, PasswordField } from './types'
 
 const ImportPage = () => {
   const dispatch = useAppDispatch()

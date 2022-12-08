@@ -1,4 +1,5 @@
 import { useNavigate, Link } from 'react-router-dom'
+import Browser from 'webextension-polyfill'
 
 import Layout from '_app/layouts'
 import { Button } from '_app/components'
@@ -57,9 +58,12 @@ const SettingsPage = () => {
           </div>
         </Button>
         <div className="grow" />
-        <Button variant="outlined" onClick={onLock}>
+        <Button variant="outlined" onClick={onLock} className="mb-2">
           Log out
         </Button>
+        <p className="text-center text-sm text-[#c0c0c0] ">
+          Version {Browser.runtime.getManifest().version}
+        </p>
       </div>
     </Layout>
   )

@@ -5,7 +5,7 @@ import { Button } from '_app/components'
 
 import { normalizeMnemonics, validateMnemonics } from '_src/shared/utils/bip39'
 
-import type { MnemonicField } from '../type'
+import type { MnemonicField } from '../types'
 
 type StepOneProps = {
   mnemonic: string

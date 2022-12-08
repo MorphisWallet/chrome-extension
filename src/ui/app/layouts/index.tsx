@@ -78,7 +78,10 @@ const LayoutBase = ({
           </IconWrapper>
         )}
         transition={Slide}
-        className="h-10 !p-0 !top-12 !w-[360px] [&>div]:min-h-[40px] [&>div]:px-6 [&>div]:items-center [&>div]:rounded-none [&>div]:shadow-none !z-50"
+        className={cl([
+          'h-10 !p-0 !top-12 !w-[360px] [&>div]:min-h-[40px] [&>div]:px-6 [&>div]:items-center [&>div]:rounded-none [&>div]:shadow-none !z-50',
+          !showHeader && '!top-0 !z-[9999]'
+        ])}
       />
       {showHeader && (
         <header className="h-12 px-6 bg-white border-b border-b-[#e6e6e9] flex items-center shrink-0 font-medium z-[1010]">

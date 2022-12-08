@@ -8,7 +8,7 @@ import {
   getConfirmPasswordValidation,
 } from '_app/utils/validation'
 
-import { PasswordField } from '../type'
+import { PasswordField } from '../types'
 
 type StepTwoProps = {
   onBack: () => void

@@ -14,6 +14,7 @@ import SettingsPage from '_app/pages/settings'
 import SapPage from '_app/pages/settings/sap'
 
 import ConnectPage from '_app/pages/dapp/connect'
+import TxApprovalPage from '_app/pages/dapp/tx_approval'
 
 import InitializePage from '_app/pages/initialize'
 import CreatePage from '_app/pages/initialize/create'
@@ -109,6 +110,10 @@ const router = createHashRouter([
       {
         path: 'connect/:requestID',
         element: <ConnectPage />,
+      },
+      {
+        path: 'tx-approval/:txID',
+        element: <TxApprovalPage />,
       },
     ],
   },
