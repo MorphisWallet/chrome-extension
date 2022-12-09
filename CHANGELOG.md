@@ -1,7 +1,6 @@
 ## 0.0.2.1 (Dec 9, 2022)
 
-- Provide functionalities to display nfts and details
-- Provide functionalities to transfer nfts
+- Provide functionalities to display nfts
 
 ## 0.0.2.0 (Dec 6, 2022)
 

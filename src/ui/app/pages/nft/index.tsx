@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Link } from 'react-router-dom'
+// import { Link } from 'react-router-dom'
 
 import Layout from '_app/layouts'
 import { Loading, toast } from '_app/components'
@@ -33,13 +33,19 @@ const NftPage = () => {
     return (
       <div className="grid grid-cols-2 gap-x-2.5 gap-y-4 mx-[-24px] mb-[-24px] px-6 pt-2.5 pb-6 overflow-y-auto">
         {nfts.map((nft) => (
-          <Link
-            to={`./${nft.reference.objectId}`}
+          // <Link
+          //   to={`./${nft.reference.objectId}`}
+          //   key={nft.reference.objectId}
+          //   className="flex h-[152px] rounded bg-[#f0f0f0] transition-transform duration-100 ease-in-out hover:scale-105"
+          // >
+          //   <NftCard nft={nft} />
+          // </Link>
+          <div
             key={nft.reference.objectId}
             className="flex h-[152px] rounded bg-[#f0f0f0] transition-transform duration-100 ease-in-out hover:scale-105"
           >
             <NftCard nft={nft} />
-          </Link>
+          </div>
         ))}
       </div>
     )
