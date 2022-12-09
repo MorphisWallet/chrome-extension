@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, Outlet, useParams, useLocation } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 
 import Layout from '_app/layouts'
@@ -20,6 +20,7 @@ import { ExplorerLinkType } from '_src/ui/app/components/tx_link/types'
 import ArrowShort from '_assets/icons/arrow_short.svg'
 
 const NftDetail = () => {
+  const location = useLocation()
   const { objectId: nftId = '' } = useParams()
   const selectedNft = useAppSelector(createAccountNftByIdSelector(nftId))
   const { nftFields, fileExtensionType, filePath } =
@@ -48,6 +49,8 @@ const NftDetail = () => {
       )
     }
 
+    const sendFlag = /send$/.test(location.pathname)
+
     return (
       <div className="flex flex-col grow font-medium px-6 pb-6 overflow-hidden">
         <div className="flex shrink-0 px-6 pt-4 pb-3 mx-[-24px] border-b border-b-[#e6e6e9] text-xl text-center font-bold relative overflow-hidden">
@@ -62,53 +65,61 @@ const NftDetail = () => {
             </IconWrapper>
           </Link>
         </div>
-        <div className="flex flex-col grow py-4 px-6 mx-[-24px] overflow-y-auto">
+        <div className="flex flex-col grow px-6 pt-4 mx-[-24px] overflow-y-auto">
           <NftCard
             nft={selectedNft}
             className="h-[308px] shrink-0 mb-2 rounded bg-[#f0f0f0] overflow-hidden"
           />
-          {nftFields?.description && (
-            <p className="shrink-0 text-lg mb-2 truncate">
-              {nftFields.description}
-            </p>
+          {sendFlag ? (
+            <Outlet />
+          ) : (
+            <>
+              {nftFields?.description && (
+                <p className="shrink-0 text-lg mb-2 truncate">
+                  {nftFields.description}
+                </p>
+              )}
+              <div className="flex justify-between w-full text-sm mb-1">
+                <span className="text-[#9f9d9d] shrink-0 mr-2">Object ID</span>
+                <TxLink
+                  type={ExplorerLinkType.object}
+                  objectID={nftId}
+                  className="flex shrink text-[#6bb7e9] truncate"
+                >
+                  {shortAddress}
+                </TxLink>
+              </div>
+              <div className="flex justify-between w-full text-sm mb-2">
+                <span className="text-[#9f9d9d] shrink-0 mr-2">Media type</span>
+                <span className="flex shrink truncate">
+                  {filePath &&
+                  fileExtensionType?.name &&
+                  fileExtensionType?.type
+                    ? `${fileExtensionType.name} ${fileExtensionType.type}`
+                    : '-'}
+                </span>
+              </div>
+              <div className="flex gap-2 shrink-0">
+                <Link to="./send" className="w-full">
+                  <Button>Send</Button>
+                </Link>
+                <Button
+                  data-tip="Coming soon"
+                  data-for="button-tip"
+                  variant="outlined"
+                  className="cursor-not-allowed"
+                >
+                  Set as wallet PFP
+                </Button>
+                <ReactTooltip
+                  id="button-tip"
+                  effect="solid"
+                  className="before:hidden"
+                  backgroundColor="#000000"
+                />
+              </div>
+            </>
           )}
-          <div className="flex justify-between w-full text-sm mb-1">
-            <span className="text-[#9f9d9d] shrink-0 mr-2">Object ID</span>
-            <TxLink
-              type={ExplorerLinkType.object}
-              objectID={nftId}
-              className="flex shrink text-[#6bb7e9] truncate"
-            >
-              {shortAddress}
-            </TxLink>
-          </div>
-          <div className="flex justify-between w-full text-sm mb-1">
-            <span className="text-[#9f9d9d] shrink-0 mr-2">Media type</span>
-            <span className="flex shrink truncate">
-              {filePath && fileExtensionType?.name && fileExtensionType?.type
-                ? `${fileExtensionType.name} ${fileExtensionType.type}`
-                : '-'}
-            </span>
-          </div>
-        </div>
-        <div className="flex gap-2 shrink-0">
-          <Link to="./send" className="w-full">
-            <Button>Send</Button>
-          </Link>
-          <Button
-            data-tip="Coming soon"
-            data-for="button-tip"
-            variant="outlined"
-            className="cursor-not-allowed"
-          >
-            Set as wallet PFP
-          </Button>
-          <ReactTooltip
-            id="button-tip"
-            effect="solid"
-            className="before:hidden"
-            backgroundColor="#000000"
-          />
         </div>
       </div>
     )
