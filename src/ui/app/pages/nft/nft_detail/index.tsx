@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import ReactTooltip from 'react-tooltip'
 
 import Layout from '_app/layouts'
 import { Loading, IconWrapper, Button, TxLink, toast } from '_app/components'
@@ -90,9 +91,25 @@ const NftDetail = () => {
             </span>
           </div>
         </div>
-        <Link to="/" className="shrink-0">
-          <Button>Send</Button>
-        </Link>
+        <div className="flex gap-2 shrink-0">
+          <Link to="./send" className="w-full">
+            <Button>Send</Button>
+          </Link>
+          <Button
+            data-tip="Coming soon"
+            data-for="button-tip"
+            variant="outlined"
+            className="cursor-not-allowed"
+          >
+            Set as wallet PFP
+          </Button>
+          <ReactTooltip
+            id="button-tip"
+            effect="solid"
+            className="before:hidden"
+            backgroundColor="#000000"
+          />
+        </div>
       </div>
     )
   }

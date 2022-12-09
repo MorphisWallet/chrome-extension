@@ -55,6 +55,12 @@ const router = createHashRouter([
       {
         path: 'nft/:objectId',
         element: <NftDetailPage />,
+        children: [
+          {
+            path: 'send',
+            element: <h1>123</h1>,
+          },
+        ],
       },
       {
         path: 'history',
