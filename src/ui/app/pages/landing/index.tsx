@@ -35,7 +35,7 @@ const LandingPage = ({ coinType }: LandingProps) => {
     ({ faucet }) => faucet
   )
   const balances = useAppSelector(accountAggregateBalancesSelector)
-  const { loading } = useObjectsState()
+  const { loading, error, showError } = useObjectsState()
 
   const activeCoinBalance = balances[activeCoinType] || BigInt(0)
   const [formattedBalance, symbol] = useFormatCoin(
@@ -54,13 +54,23 @@ const LandingPage = ({ coinType }: LandingProps) => {
 
   const onAirdrop = async () => {
     setAirdropDelay(true)
-
-    await dispatch(requestGas()).unwrap()
-
-    setTimeout(() => {
-      setAirdropDelay(false)
-    }, POLL_SUI_OBJECTS_INTERVAL)
+    try {
+      await dispatch(requestGas()).unwrap()
+    } finally {
+      setTimeout(() => {
+        setAirdropDelay(false)
+      }, POLL_SUI_OBJECTS_INTERVAL)
+    }
   }
+
+  useEffect(() => {
+    if (showError && error) {
+      toast({
+        type: 'error',
+        message: error.message,
+      })
+    }
+  }, [error, showError])
 
   useEffect(() => {
     if (!faucetLoading && !!lastRequest) {
@@ -91,6 +101,7 @@ const LandingPage = ({ coinType }: LandingProps) => {
 
   const allowAirdrop = API_ENV.customRPC !== network
 
+  console.log(124, allowAirdrop, faucetLoading, loading, airdropDelay)
   return (
     <Layout>
       <div className="flex flex-col grow font-medium">

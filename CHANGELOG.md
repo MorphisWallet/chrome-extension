@@ -1,6 +1,11 @@
+## 0.0.2.2 (Dec 12, 2022)
+
+- Provide functionalities to display nft details and transfer nfs
+
 ## 0.0.2.1 (Dec 9, 2022)
 
 - Provide functionalities to display nfts
+- Fix the issue that the wallet status will be lost after update
 
 ## 0.0.2.0 (Dec 6, 2022)
 
@@ -22,14 +27,14 @@
 ## 0.0.1.1 (Dec 1, 2022)
 
 - Added the transaction detail link to sui explorer
-- Fix the user cannot input transaction amount, and allow users to input decimal pointor decimal comma
+- Fix the issue that the user cannot input transaction amount, and allow users to input decimal pointor decimal comma
 
 ## 0.0.1.0 (Nov 29, 2022)
 
 - Improve the UX, e.g. error and success toast, etc.
 - Refactor UI elements, and use tailwind instead of scss
 - Remove mui from morphis and use custom morphis components
-- Reduce the pack size by 60% (~1.2MB to 537KB)
+- Reduce the pack size by 50%+ (~1.2MB to <600KB)
 
 ## 0.0.0.2 (Nov 23, 2022)
 

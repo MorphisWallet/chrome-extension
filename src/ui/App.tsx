@@ -7,6 +7,8 @@ import CoinDetailPage from '_app/pages/landing/coin_detail'
 import SendPage from '_app/pages/send'
 
 import NftPage from '_app/pages/nft'
+import NftDetailPage from '_app/pages/nft/nft_detail'
+import NftSend from '_app/pages/nft/nft_send'
 
 import HistoryPage from '_app/pages/history'
 
@@ -50,6 +52,16 @@ const router = createHashRouter([
       {
         path: 'nft',
         element: <NftPage />,
+      },
+      {
+        path: 'nft/:objectId',
+        element: <NftDetailPage />,
+        children: [
+          {
+            path: 'send',
+            element: <NftSend />,
+          },
+        ],
       },
       {
         path: 'history',
