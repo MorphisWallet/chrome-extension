@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Link, Outlet, useParams, useLocation } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
+import { hasPublicTransfer } from '@mysten/sui.js'
 
 import Layout from '_app/layouts'
 import { Loading, IconWrapper, Button, TxLink, toast } from '_app/components'
@@ -36,6 +37,8 @@ const NftDetail = () => {
       })
     }
   }, [error, showError])
+
+  const isTransferable = !!selectedNft && hasPublicTransfer(selectedNft)
 
   const renderNft = () => {
     if (!selectedNft) {
@@ -79,29 +82,35 @@ const NftDetail = () => {
                   {nftFields.description}
                 </p>
               )}
-              <div className="flex justify-between w-full text-sm mb-1">
-                <span className="text-[#9f9d9d] shrink-0 mr-2">Object ID</span>
-                <TxLink
-                  type={ExplorerLinkType.object}
-                  objectID={nftId}
-                  className="flex shrink text-[#6bb7e9] truncate"
-                >
-                  {shortAddress}
-                </TxLink>
-              </div>
-              <div className="flex justify-between w-full text-sm mb-2">
-                <span className="text-[#9f9d9d] shrink-0 mr-2">Media type</span>
-                <span className="flex shrink truncate">
-                  {filePath &&
-                  fileExtensionType?.name &&
-                  fileExtensionType?.type
-                    ? `${fileExtensionType.name} ${fileExtensionType.type}`
-                    : '-'}
-                </span>
+              <div className="flex flex-col gap-1 mb-2">
+                <div className="flex justify-between w-full text-sm">
+                  <span className="text-[#9f9d9d] shrink-0 mr-2">
+                    Object ID
+                  </span>
+                  <TxLink
+                    type={ExplorerLinkType.object}
+                    objectID={nftId}
+                    className="flex shrink text-[#6bb7e9] truncate"
+                  >
+                    {shortAddress}
+                  </TxLink>
+                </div>
+                <div className="flex justify-between w-full text-sm">
+                  <span className="text-[#9f9d9d] shrink-0 mr-2">
+                    Media type
+                  </span>
+                  <span className="flex shrink truncate">
+                    {filePath &&
+                    fileExtensionType?.name &&
+                    fileExtensionType?.type
+                      ? `${fileExtensionType.name} ${fileExtensionType.type}`
+                      : '-'}
+                  </span>
+                </div>
               </div>
               <div className="flex gap-2 shrink-0">
                 <Link to="./send" className="w-full">
-                  <Button>Send</Button>
+                  <Button disabled={!isTransferable}>Send</Button>
                 </Link>
                 <Button
                   data-tip="Coming soon"
