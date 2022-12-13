@@ -101,7 +101,6 @@ const LandingPage = ({ coinType }: LandingProps) => {
 
   const allowAirdrop = API_ENV.customRPC !== network
 
-  console.log(124, allowAirdrop, faucetLoading, loading, airdropDelay)
   return (
     <Layout>
       <div className="flex flex-col grow font-medium">

@@ -77,7 +77,7 @@ const SeedPhrasePage = () => {
       <div className="flex flex-col grow font-medium px-6 pt-4 pb-6">
         <div className="mb-6 text-xl text-center font-bold relative">
           Seed Phrase
-          <Link to="/settings" className="absolute left-0 top-[7px]">
+          <Link to="/settings/sap" className="absolute left-0 top-[7px]">
             <IconWrapper>
               <ArrowShort height={10} width={13} />
             </IconWrapper>

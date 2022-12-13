@@ -1,4 +1,4 @@
-import { CSSTransition } from 'react-transition-group'
+import CSSTransition from 'react-transition-group/CSSTransition'
 
 import './modal.css'
 

@@ -21,7 +21,6 @@ export const Address = ({ addressOnly = false }: AddressProps) => {
     }
 
     const copyRes = copy(address)
-    console.log(123)
     if (copyRes) {
       toast({
         type: 'success',
