@@ -37,10 +37,6 @@ export const Button = ({
     disabled={disabled || loading}
     {...rest}
   >
-    {loading ? (
-      <Spinner/>
-    ) : (
-      children
-    )}
+    {loading ? <Spinner /> : children}
   </button>
 )
