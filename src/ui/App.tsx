@@ -15,6 +15,7 @@ import HistoryPage from '_app/pages/history'
 import SettingsPage from '_app/pages/settings'
 import SapPage from '_app/pages/settings/sap'
 import SeedPhrasePage from '_app/pages/settings/sap/seed_phrase'
+import ExportPrivateKeyPage from '_app/pages/settings/sap/export_private_key'
 
 import ConnectPage from '_app/pages/dapp/connect'
 import TxApprovalPage from '_app/pages/dapp/tx_approval'
@@ -79,6 +80,10 @@ const router = createHashRouter([
       {
         path: 'settings/sap/seed-phrase',
         element: <SeedPhrasePage />,
+      },
+      {
+        path: 'settings/sap/private-key',
+        element: <ExportPrivateKeyPage />,
       },
       {
         path: '*',
