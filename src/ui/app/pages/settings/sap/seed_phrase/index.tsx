@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import Layout from '_app/layouts'
 import { IconWrapper, SeedPhraseCard } from '_app/components'
-import Confirm from '../components/confirm'
+import Confirm from '../_components/confirm'
 
 import ArrowShort from '_assets/icons/arrow_short.svg'
 
