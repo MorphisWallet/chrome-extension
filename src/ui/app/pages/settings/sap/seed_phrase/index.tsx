@@ -23,7 +23,8 @@ const SeedPhrasePage = () => {
         </div>
         {showConfirm ? (
           <Confirm
-            subject="Seed Phrase"
+            warnings="Enter your password to show the seed phrase. Never share the recovery phrase. Anyone with these words will have full access to your wallet."
+            checkboxText="I will not share my seed phrase with anyone, including Morphis."
             onSuccess={() => setShowConfirm(false)}
           />
         ) : (

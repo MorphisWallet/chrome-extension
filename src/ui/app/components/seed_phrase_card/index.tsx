@@ -64,7 +64,6 @@ export const SeedPhraseCard = ({ className }: SeedPhraseCardProps) => {
     toast({
       type: 'error',
       message: 'Fail to copy, try to copy manually',
-      containerId: 'initialize-toast',
     })
   }
 

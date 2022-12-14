@@ -10,7 +10,8 @@ import { unlockWallet } from '_redux/slices/wallet'
 import { passwordValidation } from '_app/utils/validation'
 
 type ConfirmModalProps = {
-  subject: string
+  warnings: string
+  checkboxText: string
   onSuccess: () => void
 }
 
@@ -19,7 +20,7 @@ type Fields = {
   agreement: boolean
 }
 
-const Confirm = ({ subject, onSuccess }: ConfirmModalProps) => {
+const Confirm = ({ warnings, checkboxText, onSuccess }: ConfirmModalProps) => {
   const dispatch = useAppDispatch()
 
   const {
@@ -52,7 +53,7 @@ const Confirm = ({ subject, onSuccess }: ConfirmModalProps) => {
 
   return (
     <form className="flex flex-col grow" onSubmit={handleSubmit}>
-      <p className="mb-12 text-sm">{`Enter your password to show the ${subject}. Never share the ${subject}. Anyone with these words will have full access to your wallet. `}</p>
+      <p className="mb-12 text-sm">{warnings}</p>
       <div className="flex flex-col grow justify-center">
         <label htmlFor="password" className="mb-2">
           Password
@@ -74,9 +75,9 @@ const Confirm = ({ subject, onSuccess }: ConfirmModalProps) => {
           checked={values.agreement}
           onChange={handleChange}
           className="mb-4 !items-start"
-          inputClassName='mt-0.5'
+          inputClassName="mt-0.5"
           error={touched.agreement && !!errors.agreement}
-          label="I will not share my seed phrase with anyone, including Morphis."
+          label={checkboxText}
         />
       </div>
       <div className="grow" />
