@@ -81,7 +81,9 @@ const Confirm = ({ warnings, checkboxText, onSuccess }: ConfirmModalProps) => {
         />
       </div>
       <div className="grow" />
-      <Button loading={isSubmitting}>Confirm</Button>
+      <Button type="submit" loading={isSubmitting}>
+        Confirm
+      </Button>
     </form>
   )
 }
