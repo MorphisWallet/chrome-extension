@@ -1,3 +1,8 @@
+## 0.0.3.0 (Dec 12, 2022)
+
+- Provide functionalities to seed phrase and export private key
+- Fix typo
+
 ## 0.0.2.2 (Dec 12, 2022)
 
 - Provide functionalities to display nft details and transfer nfs

@@ -3,10 +3,12 @@ import cl from 'classnames'
 type CheckboxProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label?: React.ReactNode
   error?: boolean
+  inputClassName?: string
 }
 
 export const Checkbox = ({
   className,
+  inputClassName,
   name,
   label,
   error,
@@ -20,7 +22,10 @@ export const Checkbox = ({
     ])}
   >
     <input
-      className="h-4 w-4 mr-2 cursor-pointer accent-black"
+      className={cl([
+        'h-4 w-4 mr-2 cursor-pointer accent-black',
+        inputClassName,
+      ])}
       type="checkbox"
       {...rest}
     />

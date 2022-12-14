@@ -26,7 +26,8 @@ import type { ExecuteTransactionResponse } from '_payloads/transactions'
 import type { Runtime } from 'webextension-polyfill'
 
 export class ContentScriptConnection extends Connection {
-  public static readonly CHANNEL: PortChannelName = 'morphis_content<->background'
+  public static readonly CHANNEL: PortChannelName =
+    'morphis_content<->background'
   public readonly origin: string
   public readonly pagelink?: string | undefined
   public readonly originFavIcon: string | undefined

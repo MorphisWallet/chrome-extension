@@ -13,6 +13,10 @@ import { suiAddressValidation } from '_app/utils/validation'
 import type { SerializedError } from '@reduxjs/toolkit'
 import { ExplorerLinkType } from '_src/ui/app/components/tx_link/types'
 
+type Fields = {
+  address: string
+}
+
 const NftSend = () => {
   const navigate = useNavigate()
   const { objectId: nftId = '' } = useParams()
@@ -25,7 +29,7 @@ const NftSend = () => {
     handleSubmit,
     handleChange,
     handleBlur,
-  } = useFormik({
+  } = useFormik<Fields>({
     initialValues: {
       address: '',
     },

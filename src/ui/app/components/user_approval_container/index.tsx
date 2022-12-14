@@ -73,7 +73,7 @@ export const UserApproveContainer = ({
           onClick={() => handleOnResponse({ allowed: false })}
           className={cl(
             '',
-            isWarning ? '' : isConnect ? '' :  'border-[#ed3939] text-[#ed3939]'
+            isWarning ? '' : isConnect ? '' : 'border-[#ed3939] text-[#ed3939]'
           )}
           disabled={submitting}
         >
@@ -82,7 +82,11 @@ export const UserApproveContainer = ({
         <Button
           type="button"
           variant="contained"
-          className={cl('', isWarning ? 'text-[#d74b4a]' : '', submitting && '')}
+          className={cl(
+            '',
+            isWarning ? 'text-[#d74b4a]' : '',
+            submitting && ''
+          )}
           data-allow="true"
           onClick={() => handleOnResponse({ allowed: true })}
           loading={submitting}

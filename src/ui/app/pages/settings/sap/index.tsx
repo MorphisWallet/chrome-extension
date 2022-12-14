@@ -30,32 +30,22 @@ const SapPage = () => (
           <ArrowLong />
         </div>
       </Button>
-      <Button
-        variant="outlined"
-        disabled
-        className="rounded-[4px] mb-2 text-[13px]"
-      >
-        <div className="flex items-center justify-between">
-          <span>
+      <Link to="./seed-phrase">
+        <Button variant="outlined" className="rounded-[4px] mb-2 text-[13px]">
+          <div className="flex items-center justify-between">
             <span className="text-black">Seed phrase</span>
-            <span className="ml-4 text-[#c4c4c4]">Coming soon</span>
-          </span>
-          <ArrowLong />
-        </div>
-      </Button>
-      <Button
-        variant="outlined"
-        disabled
-        className="rounded-[4px] mb-2 text-[13px]"
-      >
-        <div className="flex items-center justify-between">
-          <span>
+            <ArrowLong />
+          </div>
+        </Button>
+      </Link>
+      <Link to="./private-key">
+        <Button variant="outlined" className="rounded-[4px] mb-2 text-[13px]">
+          <div className="flex items-center justify-between">
             <span className="text-black">Export private key</span>
-            <span className="ml-4 text-[#c4c4c4]">Coming soon</span>
-          </span>
-          <ArrowLong />
-        </div>
-      </Button>
+            <ArrowLong />
+          </div>
+        </Button>
+      </Link>
     </div>
   </Layout>
 )

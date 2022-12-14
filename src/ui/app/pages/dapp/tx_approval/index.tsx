@@ -312,7 +312,7 @@ const TxApprovalPage = () => {
             approveTitle="Approve"
             rejectTitle="Reject"
             onSubmit={handleOnSubmit}
-            requestType="Approval Request"
+            requestType="Approve Request"
           >
             <div className="flex flex-col grow my-6 overflow-hidden">
               <div className="text-sm text-[#373737] mb-4">

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Browser from 'webextension-polyfill'
-import { getObjectId } from '@mysten/sui.js';
+import { getObjectId } from '@mysten/sui.js'
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit'
 
 import { isKeyringPayload } from '_payloads/keyring'

@@ -80,7 +80,7 @@ const LayoutBase = ({
         transition={Slide}
         className={cl([
           'h-10 !p-0 !top-12 !w-[360px] [&>div]:min-h-[40px] [&>div]:px-6 [&>div]:items-center [&>div]:rounded-none [&>div]:shadow-none !z-50',
-          !showHeader && '!top-0 !z-[9999]'
+          !showHeader && '!top-0 !z-[9999]',
         ])}
       />
       {showHeader && (

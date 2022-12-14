@@ -21,7 +21,6 @@ export const Address = ({ addressOnly = false }: AddressProps) => {
     }
 
     const copyRes = copy(address)
-    console.log(123)
     if (copyRes) {
       toast({
         type: 'success',
@@ -33,11 +32,11 @@ export const Address = ({ addressOnly = false }: AddressProps) => {
 
   return (
     <IconWrapper onClick={onCopy} className="!scale-100">
-      <CopyIcon height={14} width={14} className="mr-2" />
       {!addressOnly && <span>Account1</span>}
       <span className="text-[#c0c0c0]">
         {addressOnly ? shortenAddress : `(${shortenAddress})`}
       </span>
+      <CopyIcon height={14} width={14} className="ml-2" />
     </IconWrapper>
   )
 }
