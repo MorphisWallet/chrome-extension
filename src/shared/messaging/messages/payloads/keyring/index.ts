@@ -14,6 +14,10 @@ type MethodToPayloads = {
     args: string | undefined
     return: string
   }
+  checkPassword: {
+    args: string
+    return: boolean
+  }
   unlock: {
     args: { password: string }
     return: never

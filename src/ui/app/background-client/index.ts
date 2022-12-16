@@ -184,6 +184,29 @@ export class BackgroundClient {
     )
   }
 
+  public async checkPassword(password: string) {
+    return await lastValueFrom(
+      this.sendMessage(
+        createMessage<KeyringPayload<'checkPassword'>>({
+          type: 'keyring',
+          method: 'checkPassword',
+          args: password,
+        })
+      ).pipe(
+        take(1),
+        map(({ payload }) => {
+          if (
+            isKeyringPayload(payload, 'checkPassword') &&
+            typeof payload.return === 'boolean'
+          ) {
+            return payload.return
+          }
+          throw new Error('Fail to check password')
+        })
+      )
+    )
+  }
+
   public async setKeyringLockTimeout(timeout: number) {
     return await lastValueFrom(
       this.sendMessage(
