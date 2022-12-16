@@ -5,7 +5,7 @@ import { Button, Input, Checkbox } from '_app/components'
 
 import { useAppDispatch } from '_hooks'
 
-import { unlockWallet } from '_redux/slices/wallet'
+import { checkPassword } from '_redux/slices/account'
 
 import { passwordValidation } from '_app/utils/validation'
 
@@ -43,8 +43,13 @@ const Confirm = ({ warnings, checkboxText, onSuccess }: ConfirmModalProps) => {
     }),
     onSubmit: async ({ password }) => {
       try {
-        await dispatch(unlockWallet({ password })).unwrap()
-        onSuccess()
+        const res = await dispatch(checkPassword(password)).unwrap()
+
+        if (res) {
+          onSuccess()
+        } else {
+          setFieldError('password', 'Incorrect password')
+        }
       } catch (e) {
         setFieldError('password', (e as Error).message || 'Incorrect password')
       }

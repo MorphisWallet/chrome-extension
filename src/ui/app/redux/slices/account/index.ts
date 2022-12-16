@@ -47,6 +47,12 @@ export const loadEntropyFromKeyring = createAsyncThunk<
     await background.getEntropy(password)
 )
 
+export const checkPassword = createAsyncThunk<boolean, string, AppThunkConfig>(
+  'account/checkPassword',
+  async (password, { extra: { background } }) =>
+    await background.checkPassword(password)
+)
+
 export const logout = createAsyncThunk<void, void, AppThunkConfig>(
   'account/logout',
   async (_, { extra: { background } }): Promise<void> => {
