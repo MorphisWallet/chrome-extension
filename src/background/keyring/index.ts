@@ -65,6 +65,10 @@ class Keyring {
     this.unlocked()
   }
 
+  public async checkPassword(password: string) {
+    return await this.#vault.checkPassword(password)
+  }
+
   public async clearVault() {
     this.lock()
     await this.#vault.clear()
@@ -144,6 +148,18 @@ class Keyring {
       } else if (isKeyringPayload(payload, 'unlock') && payload.args) {
         await this.unlock(payload.args.password)
         uiConnection.send(createMessage({ type: 'done' }, id))
+      } else if (isKeyringPayload(payload, 'checkPassword') && payload.args) {
+        const res = await this.checkPassword(payload.args)
+        uiConnection.send(
+          createMessage<KeyringPayload<'checkPassword'>>(
+            {
+              type: 'keyring',
+              method: 'checkPassword',
+              return: res,
+            },
+            id
+          )
+        )
       } else if (isKeyringPayload(payload, 'walletStatusUpdate')) {
         // wait to avoid ui showing locked and then unlocked screen
         // ui waits until it receives this status to render

@@ -120,6 +120,18 @@ export class VaultStorage {
     })
   }
 
+  public async checkPassword(password: string) {
+    const encryptedVault = await getFromStorage<StoredData>(
+      LOCAL_STORAGE,
+      VAULT_KEY
+    )
+    if (!encryptedVault) {
+      throw new Error('Wallet is not initialized. Create a new one first.')
+    }
+    const res = await this.#vault?.decrypt(password, encryptedVault)
+    return !!res
+  }
+
   public async revive(): Promise<boolean> {
     let unlocked = false
     await ifSessionStorage(async (sessionStorage) => {

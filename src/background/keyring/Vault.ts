@@ -60,6 +60,22 @@ export class Vault {
     }
   }
 
+  public async decrypt(password: string, data: StoredData): Promise<boolean> {
+    try {
+      // try to decrypt serialized entropy. wrong password will throw an error
+      if (typeof data === 'string') {
+        await decrypt<string>(password, data)
+      } else if (data.v === 1) {
+        await decrypt<string>(password, data.data)
+      } else {
+        throw new Error("Unknown data, provided data can't be used to decrypt")
+      }
+      return true
+    } catch (e) {
+      return false
+    }
+  }
+
   public getMnemonic() {
     return entropyToMnemonic(this.entropy)
   }
