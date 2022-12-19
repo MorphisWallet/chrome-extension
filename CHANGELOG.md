@@ -1,3 +1,7 @@
+## 0.0.3.1 (Dec 12, 2022)
+
+- Provide functionalities to change password
+
 ## 0.0.3.0 (Dec 12, 2022)
 
 - Provide functionalities to seed phrase and export private key
