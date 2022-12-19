@@ -53,6 +53,16 @@ export const checkPassword = createAsyncThunk<boolean, string, AppThunkConfig>(
     await background.checkPassword(password)
 )
 
+export const changePassword = createAsyncThunk<
+  boolean,
+  { oldPassword: string; newPassword: string },
+  AppThunkConfig
+>(
+  'account/changePassword',
+  async ({ oldPassword, newPassword }, { extra: { background } }) =>
+    await background.changePassword(oldPassword, newPassword)
+)
+
 export const logout = createAsyncThunk<void, void, AppThunkConfig>(
   'account/logout',
   async (_, { extra: { background } }): Promise<void> => {
