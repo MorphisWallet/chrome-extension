@@ -3,7 +3,11 @@ import { useFormik } from 'formik'
 import * as Yup from 'yup'
 
 import Layout from '_app/layouts'
-import { IconWrapper, Input, Button } from '_app/components'
+import { IconWrapper, Input, Button, toast } from '_app/components'
+
+import { useAppDispatch } from '_hooks'
+
+import { changePassword } from '_redux/slices/account'
 
 import {
   passwordValidation,
@@ -19,6 +23,7 @@ type Fields = {
 }
 
 const ChangePasswordPage = () => {
+  const dispatch = useAppDispatch()
   const {
     values,
     errors,
@@ -27,6 +32,7 @@ const ChangePasswordPage = () => {
     handleBlur,
     handleSubmit,
     isSubmitting,
+    setFieldError,
   } = useFormik<Fields>({
     initialValues: { oldPassword: '', password: '', confirmedPassword: '' },
     validationSchema: Yup.object().shape({
@@ -37,8 +43,29 @@ const ChangePasswordPage = () => {
     onSubmit,
   })
 
-  async function onSubmit(values: Fields) {
-    console.log(values)
+  async function onSubmit({ oldPassword, password }: Fields) {
+    if (oldPassword === password) {
+      setFieldError(
+        'password',
+        'New password should not be the same as the old one'
+      )
+      return
+    }
+
+    try {
+      const res = await dispatch(
+        changePassword({ oldPassword, newPassword: password })
+      ).unwrap()
+
+      if (res) {
+        toast({
+          type: 'success',
+          message: 'Successfully changed password',
+        })
+      }
+    } catch (e) {
+      setFieldError('oldPassword', (e as Error).message || 'Incorrect password')
+    }
   }
 
   return (
