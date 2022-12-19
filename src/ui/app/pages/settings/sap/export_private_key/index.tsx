@@ -74,7 +74,7 @@ const ExportPrivateKeyPage = () => {
       <Loading loading={mnemonicLoading}>
         <div className="flex flex-col grow font-medium px-6 pt-4 pb-6">
           <div className="mb-6 text-xl text-center font-bold relative">
-            Export Private Key
+            Export private key
             <Link to="/settings/sap" className="absolute left-0 top-[7px]">
               <IconWrapper>
                 <ArrowShort height={10} width={13} />

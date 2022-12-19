@@ -32,11 +32,11 @@ class Keyring {
   #locked = true
   #keypair: Keypair | null = null
   #vault: VaultStorage
-  #reviveDone: Promise<void>
+  public readonly reviveDone: Promise<void>
 
   constructor() {
     this.#vault = new VaultStorage()
-    this.#reviveDone = this.revive().catch(() => {
+    this.reviveDone = this.revive().catch(() => {
       // if for some reason decrypting the vault fails or anything else catch
       // the error to allow the user to login using the password
     })
@@ -63,6 +63,17 @@ class Keyring {
   public async unlock(password: string) {
     await this.#vault.unlock(password)
     this.unlocked()
+  }
+
+  public async checkPassword(password: string) {
+    return await this.#vault.checkPassword(password)
+  }
+
+  public async changePassword(args: {
+    oldPassword: string
+    newPassword: string
+  }) {
+    return await this.#vault.changePassword(args)
   }
 
   public async clearVault() {
@@ -109,7 +120,7 @@ class Keyring {
         const { password, importedEntropy } = payload.args
         await this.createVault(password, importedEntropy)
         await this.unlock(password)
-        if (!this.#vault?.entropy) {
+        if (!this.#keypair) {
           throw new Error('Error created vault is empty')
         }
         uiConnection.send(
@@ -118,7 +129,7 @@ class Keyring {
               type: 'keyring',
               method: 'create',
               return: {
-                entropy: entropyToSerialized(this.#vault.entropy),
+                keypair: this.#keypair.export(),
               },
             },
             id
@@ -144,10 +155,34 @@ class Keyring {
       } else if (isKeyringPayload(payload, 'unlock') && payload.args) {
         await this.unlock(payload.args.password)
         uiConnection.send(createMessage({ type: 'done' }, id))
+      } else if (isKeyringPayload(payload, 'checkPassword') && payload.args) {
+        const res = await this.checkPassword(payload.args)
+        uiConnection.send(
+          createMessage<KeyringPayload<'checkPassword'>>(
+            {
+              type: 'keyring',
+              method: 'checkPassword',
+              return: res,
+            },
+            id
+          )
+        )
+      } else if (isKeyringPayload(payload, 'changePassword') && payload.args) {
+        const res = await this.changePassword(payload.args)
+        uiConnection.send(
+          createMessage<KeyringPayload<'changePassword'>>(
+            {
+              type: 'keyring',
+              method: 'changePassword',
+              return: res,
+            },
+            id
+          )
+        )
       } else if (isKeyringPayload(payload, 'walletStatusUpdate')) {
         // wait to avoid ui showing locked and then unlocked screen
         // ui waits until it receives this status to render
-        await this.#reviveDone
+        await this.reviveDone
         uiConnection.send(
           createMessage<KeyringPayload<'walletStatusUpdate'>>(
             {
@@ -156,9 +191,7 @@ class Keyring {
               return: {
                 isLocked: this.isLocked,
                 isInitialized: await this.isWalletInitialized(),
-                entropy: this.#vault?.entropy
-                  ? entropyToSerialized(this.#vault.entropy)
-                  : undefined,
+                activeAccount: this.#keypair?.export(),
               },
             },
             id

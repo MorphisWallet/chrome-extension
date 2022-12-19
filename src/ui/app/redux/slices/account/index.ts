@@ -9,14 +9,19 @@ import { isKeyringPayload } from '_payloads/keyring'
 import { suiObjectsAdapterSelectors } from '_redux/slices/sui-objects'
 import { Coin } from '_redux/slices/sui-objects/Coin'
 
-import type { ObjectId, SuiAddress, SuiMoveObject } from '@mysten/sui.js'
+import type {
+  ObjectId,
+  SuiAddress,
+  SuiMoveObject,
+  ExportedKeypair,
+} from '@mysten/sui.js'
 import type { PayloadAction, Reducer } from '@reduxjs/toolkit'
 import type { KeyringPayload } from '_payloads/keyring'
 import type { RootState } from '_redux/RootReducer'
 import type { AppThunkConfig } from '_store/thunk-extras'
 
 export const createVault = createAsyncThunk<
-  string,
+  ExportedKeypair,
   {
     importedEntropy?: string
     password: string
@@ -30,10 +35,10 @@ export const createVault = createAsyncThunk<
     if (!isKeyringPayload(payload, 'create')) {
       throw new Error('Unknown payload')
     }
-    if (!payload.return?.entropy) {
-      throw new Error('Empty entropy in payload')
+    if (!payload.return?.keypair) {
+      throw new Error('Empty keypair in payload')
     }
-    return payload.return.entropy
+    return payload.return.keypair
   }
 )
 
@@ -45,6 +50,22 @@ export const loadEntropyFromKeyring = createAsyncThunk<
   'account/loadEntropyFromKeyring',
   async ({ password }, { extra: { background } }) =>
     await background.getEntropy(password)
+)
+
+export const checkPassword = createAsyncThunk<boolean, string, AppThunkConfig>(
+  'account/checkPassword',
+  async (password, { extra: { background } }) =>
+    await background.checkPassword(password)
+)
+
+export const changePassword = createAsyncThunk<
+  boolean,
+  { oldPassword: string; newPassword: string },
+  AppThunkConfig
+>(
+  'account/changePassword',
+  async ({ oldPassword, newPassword }, { extra: { background } }) =>
+    await background.changePassword(oldPassword, newPassword)
 )
 
 export const logout = createAsyncThunk<void, void, AppThunkConfig>(
