@@ -6,7 +6,6 @@ import {
   getCertifiedTransaction,
   getTransactionEffects,
   LocalTxnDataSerializer,
-  type SuiMoveNormalizedFunction,
 } from '@mysten/sui.js'
 import {
   createAsyncThunk,
@@ -15,6 +14,7 @@ import {
 } from '@reduxjs/toolkit'
 
 import type {
+  SuiMoveNormalizedFunction,
   SuiTransactionResponse,
   SignableTransaction,
   SuiExecuteTransactionResponse,
@@ -76,17 +76,22 @@ export const deserializeTxn = createAsyncThunk<
   'deserialize-transaction',
   async (data, { dispatch, extra: { api, keypairVault } }) => {
     const { id, serializedTxn } = data
-    const signer = api.getSignerInstance(keypairVault.getKeyPair())
+    const signer = api.getSignerInstance(keypairVault.getKeypair())
     const localSerializer = new LocalTxnDataSerializer(signer.provider)
     const txnBytes = new Base64DataBuffer(serializedTxn)
+    const version = await api.instance.fullNode.getRpcApiVersion()
 
     //TODO: Error handling - either show the error or use the serialized txn
+    const useIntentSigning =
+      version != null && version.major >= 0 && version.minor > 18
     const deserializeTx =
       (await localSerializer.deserializeTransactionBytesToSignableTransaction(
+        useIntentSigning,
         txnBytes
       )) as UnserializedSignableTransaction
 
     const deserializeData = deserializeTx?.data as MoveCallTransaction
+
     const normalized = {
       ...deserializeData,
       gasBudget: Number(deserializeData.gasBudget.toString(10)),
@@ -138,7 +143,7 @@ export const respondToTransactionRequest = createAsyncThunk<
     let txResult: SuiTransactionResponse | undefined = undefined
     let tsResultError: string | undefined
     if (approved) {
-      const signer = api.getSignerInstance(keypairVault.getKeyPair())
+      const signer = api.getSignerInstance(keypairVault.getKeypair())
       try {
         let response: SuiExecuteTransactionResponse
         if (txRequest.tx.type === 'v2' || txRequest.tx.type === 'move-call') {
@@ -216,7 +221,6 @@ const slice = createSlice({
     build.addCase(deserializeTxn.rejected, (state) => {
       state.deserializeTxnFailed = true
     })
-
     build.addCase(deserializeTxn.fulfilled, (state, { payload }) => {
       const { txRequestID, unSerializedTxn } = payload
       if (unSerializedTxn) {

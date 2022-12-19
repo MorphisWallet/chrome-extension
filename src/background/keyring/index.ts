@@ -32,11 +32,11 @@ class Keyring {
   #locked = true
   #keypair: Keypair | null = null
   #vault: VaultStorage
-  #reviveDone: Promise<void>
+  public readonly reviveDone: Promise<void>
 
   constructor() {
     this.#vault = new VaultStorage()
-    this.#reviveDone = this.revive().catch(() => {
+    this.reviveDone = this.revive().catch(() => {
       // if for some reason decrypting the vault fails or anything else catch
       // the error to allow the user to login using the password
     })
@@ -120,7 +120,7 @@ class Keyring {
         const { password, importedEntropy } = payload.args
         await this.createVault(password, importedEntropy)
         await this.unlock(password)
-        if (!this.#vault?.entropy) {
+        if (!this.#keypair) {
           throw new Error('Error created vault is empty')
         }
         uiConnection.send(
@@ -129,7 +129,7 @@ class Keyring {
               type: 'keyring',
               method: 'create',
               return: {
-                entropy: entropyToSerialized(this.#vault.entropy),
+                keypair: this.#keypair.export(),
               },
             },
             id
@@ -182,7 +182,7 @@ class Keyring {
       } else if (isKeyringPayload(payload, 'walletStatusUpdate')) {
         // wait to avoid ui showing locked and then unlocked screen
         // ui waits until it receives this status to render
-        await this.#reviveDone
+        await this.reviveDone
         uiConnection.send(
           createMessage<KeyringPayload<'walletStatusUpdate'>>(
             {
@@ -191,9 +191,7 @@ class Keyring {
               return: {
                 isLocked: this.isLocked,
                 isInitialized: await this.isWalletInitialized(),
-                entropy: this.#vault?.entropy
-                  ? entropyToSerialized(this.#vault.entropy)
-                  : undefined,
+                activeAccount: this.#keypair?.export(),
               },
             },
             id

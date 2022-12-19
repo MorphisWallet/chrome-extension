@@ -225,7 +225,7 @@ const TxApprovalPage = () => {
     queryFn: () => {
       if (txRequest) {
         const signer = thunkExtras.api.getSignerInstance(
-          thunkExtras.keypairVault.getKeyPair()
+          thunkExtras.keypairVault.getKeypair()
         )
         let txToEstimate: Parameters<typeof signer.dryRunTransaction>['0']
         const txType = txRequest.tx.type

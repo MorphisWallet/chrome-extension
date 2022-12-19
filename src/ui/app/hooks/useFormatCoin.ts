@@ -57,7 +57,7 @@ export function useCoinDecimals(coinType?: string | null) {
         )
       }
 
-      return api.instance.fullNode.getCoinDenominationInfo(coinType)
+      return api.instance.fullNode.getCoinMetadata(coinType)
     },
     {
       // This is currently expected to fail for non-SUI tokens, so disable retries:
@@ -71,7 +71,7 @@ export function useCoinDecimals(coinType?: string | null) {
     }
   )
 
-  return [queryResult.data?.decimalNumber || 0, queryResult] as const
+  return [queryResult.data?.decimals || 0, queryResult] as const
 }
 
 // TODO: This handles undefined values to make it easier to integrate with the reset of the app as it is
