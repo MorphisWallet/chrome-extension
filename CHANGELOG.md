@@ -1,4 +1,10 @@
-## 0.0.3.1 (Dec 12, 2022)
+## 0.0.3.2 (Dec 19, 2022)
+
+- Upgrade @mysten/sui.js to 0.20.0
+- Fix the issue of transaction failure
+- Perf the code by latest @mysten/sui.js 0.20.0
+
+## 0.0.3.1 (Dec 19, 2022)
 
 - Provide functionalities to change password
 
