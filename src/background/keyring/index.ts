@@ -69,6 +69,13 @@ class Keyring {
     return await this.#vault.checkPassword(password)
   }
 
+  public async changePassword(args: {
+    oldPassword: string
+    newPassword: string
+  }) {
+    return await this.#vault.changePassword(args)
+  }
+
   public async clearVault() {
     this.lock()
     await this.#vault.clear()
@@ -155,6 +162,18 @@ class Keyring {
             {
               type: 'keyring',
               method: 'checkPassword',
+              return: res,
+            },
+            id
+          )
+        )
+      } else if (isKeyringPayload(payload, 'changePassword') && payload.args) {
+        const res = await this.changePassword(payload.args)
+        uiConnection.send(
+          createMessage<KeyringPayload<'changePassword'>>(
+            {
+              type: 'keyring',
+              method: 'changePassword',
               return: res,
             },
             id

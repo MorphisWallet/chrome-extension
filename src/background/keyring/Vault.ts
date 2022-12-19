@@ -23,7 +23,8 @@ export class Vault {
   public static async from(
     password: string,
     data: StoredData,
-    onMigrateCallback?: (vault: Vault) => Promise<void>
+    onMigrateCallback?: (vault: Vault) => Promise<void>,
+    forceMigrate?: boolean
   ) {
     let entropy: Uint8Array | null = null
     let doMigrate = false
@@ -31,6 +32,7 @@ export class Vault {
       entropy = mnemonicToEntropy(
         Buffer.from(await decrypt<string>(password, data)).toString('utf-8')
       )
+      // for encrypted data, do the migration
       doMigrate = true
     } else if (data.v === 1) {
       entropy = toEntropy(await decrypt<string>(password, data.data))
@@ -43,7 +45,11 @@ export class Vault {
       throw new Error("Can't restore Vault, entropy is invalid.")
     }
     const vault = new Vault(entropy)
-    if (doMigrate && typeof onMigrateCallback === 'function') {
+    if (
+      // to change password, we may force to do the migration
+      (doMigrate || forceMigrate) &&
+      typeof onMigrateCallback === 'function'
+    ) {
       await onMigrateCallback(vault)
     }
     return vault
