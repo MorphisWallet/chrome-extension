@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 
@@ -23,6 +23,7 @@ type Fields = {
 }
 
 const ChangePasswordPage = () => {
+  const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const {
     values,
@@ -58,10 +59,13 @@ const ChangePasswordPage = () => {
       ).unwrap()
 
       if (res) {
-        toast({
-          type: 'success',
-          message: 'Successfully changed password',
-        })
+        navigate('/settings/sap')
+        setTimeout(() => {
+          toast({
+            type: 'success',
+            message: 'Successfully changed password',
+          })
+        }, 0)
       }
     } catch (e) {
       setFieldError('oldPassword', (e as Error).message || 'Incorrect password')
