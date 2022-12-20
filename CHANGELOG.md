@@ -1,3 +1,7 @@
+## 0.0.4.0 ()
+
+- Provide ability to customize the wallet, e.g. alias and avatar
+
 ## 0.0.3.2 (Dec 19, 2022)
 
 - Upgrade @mysten/sui.js to 0.20.0
@@ -6,25 +10,25 @@
 
 ## 0.0.3.1 (Dec 19, 2022)
 
-- Provide functionalities to change password
+- Provide ability to change password
 
 ## 0.0.3.0 (Dec 12, 2022)
 
-- Provide functionalities to seed phrase and export private key
+- Provide ability to seed phrase and export private key
 - Fix typo
 
 ## 0.0.2.2 (Dec 12, 2022)
 
-- Provide functionalities to display nft details and transfer nfs
+- Provide new feature to display nft details and transfer nfs
 
 ## 0.0.2.1 (Dec 9, 2022)
 
-- Provide functionalities to display nfts
+- Provide new feature to display nfts
 - Fix the issue that the wallet status will be lost after update
 
 ## 0.0.2.0 (Dec 6, 2022)
 
-- Provide functionalities to connect and transact on dApp (based on Sui adapter)
+- Provide ability to connect and transact on dApp (based on Sui adapter)
 - Update extension icons
 
 ## 0.0.1.3 (Dec 5, 2022)
@@ -41,7 +45,7 @@
 
 ## 0.0.1.1 (Dec 1, 2022)
 
-- Added the transaction detail link to sui explorer
+- Add the transaction detail link to sui explorer
 - Fix the issue that the user cannot input transaction amount, and allow users to input decimal pointor decimal comma
 
 ## 0.0.1.0 (Nov 29, 2022)
@@ -53,7 +57,7 @@
 
 ## 0.0.0.2 (Nov 23, 2022)
 
-- Provide the functionality to view the detail of coins
+- Provide new feature to view the detail of coins
 - Use morphis unique messaging
 - Fix the toast display position
 
