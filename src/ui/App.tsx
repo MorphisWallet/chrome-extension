@@ -105,7 +105,7 @@ const router = createHashRouter([
     element: <LockedPage />,
   },
   {
-    path: '/initialize',
+    path: '/initialize/*',
     element: <InitializePage />,
     children: [
       {
