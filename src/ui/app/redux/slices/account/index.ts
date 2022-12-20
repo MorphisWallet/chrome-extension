@@ -29,7 +29,10 @@ export const createVault = createAsyncThunk<
   AppThunkConfig
 >(
   'account/createVault',
-  async ({ importedEntropy, password }, { extra: { background } }) => {
+  async (
+    { importedEntropy, password },
+    { extra: { background }, dispatch }
+  ) => {
     const { payload } = await background.createVault(password, importedEntropy)
     await background.unlockWallet(password)
     if (!isKeyringPayload(payload, 'create')) {
@@ -38,6 +41,7 @@ export const createVault = createAsyncThunk<
     if (!payload.return?.keypair) {
       throw new Error('Empty keypair in payload')
     }
+    dispatch(setAlias(payload.return.alias))
     return payload.return.keypair
   }
 )
@@ -79,6 +83,7 @@ export const logout = createAsyncThunk<void, void, AppThunkConfig>(
 type AccountState = {
   creating: boolean
   address: SuiAddress | null
+  alias: string | null
   isLocked: boolean | null
   isInitialized: boolean | null
 }
@@ -86,6 +91,7 @@ type AccountState = {
 const initialState: AccountState = {
   creating: false,
   address: null,
+  alias: null,
   isLocked: null,
   isInitialized: null,
 }
@@ -107,6 +113,12 @@ const accountSlice = createSlice({
       if (typeof payload?.isInitialized !== 'undefined') {
         state.isInitialized = payload.isInitialized
       }
+      if (payload?.alias !== undefined) {
+        state.alias = payload.alias
+      }
+    },
+    setAlias: (state, action: PayloadAction<string | null>) => {
+      state.alias = action.payload
     },
   },
   extraReducers: (builder) =>
@@ -123,7 +135,7 @@ const accountSlice = createSlice({
       }),
 })
 
-export const { setAddress, setKeyringStatus } = accountSlice.actions
+export const { setAddress, setKeyringStatus, setAlias } = accountSlice.actions
 
 const reducer: Reducer<typeof initialState> = accountSlice.reducer
 export default reducer
