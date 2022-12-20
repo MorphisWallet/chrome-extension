@@ -85,9 +85,9 @@ const LayoutBase = ({
       />
       {showHeader && (
         <header className="h-12 px-6 bg-white border-b border-b-[#e6e6e9] flex items-center shrink-0 font-medium z-[1010]">
-          <a href="https://morphiswallet.com" target="_blank" rel="noreferrer">
+          <Link to="/settings/wallet-management">
             <Logo height={24} width={24} />
-          </a>
+          </Link>
           <div className="grow mx-2 text-center cursor-pointer">
             <Address />
           </div>
