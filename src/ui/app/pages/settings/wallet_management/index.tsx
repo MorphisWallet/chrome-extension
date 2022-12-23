@@ -10,6 +10,7 @@ import ArrowShort from '_assets/icons/arrow_short.svg'
 import ImportIcon from '_assets/icons/import.svg'
 import SettingsIcon from '_assets/icons/settings.svg'
 import Logo from '_assets/icons/logo.svg'
+import AddIcon from '_assets/icons/add.svg'
 
 const WalletManagementPage = () => {
   const { address, alias } = useAppSelector(
@@ -22,7 +23,7 @@ const WalletManagementPage = () => {
 
   return (
     <Layout showNav={false}>
-      <div className="flex flex-col grow shrink-0 font-medium px-6 pt-4 pb-6 overflow-hidden">
+      <div className="flex flex-col grow shrink-0 font-medium px-6 pt-4 pb-6 overflow-hidden text-sm">
         <div className="mb-6 text-xl text-center font-bold relative">
           Wallet Management
           <Link to="/" className="absolute left-0 top-[7px]">
@@ -33,12 +34,9 @@ const WalletManagementPage = () => {
         </div>
         <div className="flex flex-col grow">
           <div className="flex flex-col gap-2 overflow-y-auto">
-            <Button
-              variant="outlined"
-              className="flex items-center h-[60px] px-4 rounded border border-[#7db4ff] cursor-pointer"
-            >
+            <div className="flex items-center h-[60px] px-4 rounded border border-[#7db4ff] cursor-pointer">
               <div className="mr-2">
-                <Logo height={16} width={16} />
+                <Logo height={28} width={28} />
               </div>
               <div className="flex flex-col grow items-start">
                 <div>{alias || 'Account'}</div>
@@ -49,14 +47,24 @@ const WalletManagementPage = () => {
                 width={18}
                 className="transition duration-100 ease-in-out hover:scale-110"
               />
-            </Button>
+            </div>
+            <div
+              data-tip="Coming soon"
+              data-for="button-tip"
+              className="flex items-center h-[60px] px-4 rounded border border-[#e2e2e2] cursor-not-allowed transition duration-300 ease-in-out hover:border-[#7db4ff]"
+            >
+              <div className="mr-2">
+                <AddIcon height={28} width={28} />
+              </div>
+              <div>Add a new account</div>
+            </div>
           </div>
           <hr className="my-6 border-black" />
           <Button
             data-tip="Coming soon"
             data-for="button-tip"
             variant="outlined"
-            className="flex justify-center items-center rounded-[4px] cursor-not-allowed"
+            className="flex justify-center items-center rounded-[4px] cursor-not-allowed font-bold"
           >
             <ImportIcon height={13} width={9} className="mr-3" />
             Import an existing wallet
