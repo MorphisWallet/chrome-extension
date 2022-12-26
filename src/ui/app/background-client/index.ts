@@ -242,6 +242,26 @@ export class BackgroundClient {
     )
   }
 
+  public async setMeta(meta: { alias?: string; avatar?: string }) {
+    return await lastValueFrom(
+      this.sendMessage(
+        createMessage<KeyringPayload<'setMeta'>>({
+          type: 'keyring',
+          method: 'setMeta',
+          args: meta,
+        })
+      ).pipe(
+        take(1),
+        map(({ payload }) => {
+          if (isKeyringPayload(payload, 'setMeta') && !!payload.return) {
+            return payload.return
+          }
+          throw new Error('Fail to change password')
+        })
+      )
+    )
+  }
+
   private setupAppStatusUpdateInterval() {
     setInterval(() => {
       this.sendAppStatus()

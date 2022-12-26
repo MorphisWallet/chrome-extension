@@ -81,6 +81,26 @@ export const logout = createAsyncThunk<void, void, AppThunkConfig>(
   }
 )
 
+export const setMeta = createAsyncThunk<
+  void,
+  { alias?: string; avatar?: string },
+  AppThunkConfig
+>(
+  'account/setMeta',
+  async ({ alias, avatar }, { extra: { background }, dispatch }) => {
+    const { alias: _alias, avatar: _avatar } = await background.setMeta({
+      alias,
+      avatar,
+    })
+    if (_alias) {
+      dispatch(setAlias(_alias))
+    }
+    if (_avatar) {
+      dispatch(setAvatar(_avatar))
+    }
+  }
+)
+
 type AccountState = {
   creating: boolean
   address: SuiAddress | null
