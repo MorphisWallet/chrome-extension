@@ -16,6 +16,7 @@ import {
   AUTO_LOCK_TIMER_MIN_MINUTES,
   AUTO_LOCK_TIMER_STORAGE_KEY,
   ALIAS_STORAGE_KEY,
+  AVATAR_STORAGE_KEY,
 } from '_src/shared/constants'
 
 import type { Keypair } from '@mysten/sui.js'
@@ -91,6 +92,11 @@ class Keyring {
       [ALIAS_STORAGE_KEY]: alias,
     })
   }
+  public async setAvatar(avatar: string) {
+    await Browser.storage.local.set({
+      [AVATAR_STORAGE_KEY]: avatar,
+    })
+  }
 
   public get isLocked() {
     return this.#locked
@@ -120,6 +126,10 @@ class Keyring {
     return Browser.storage.local.get(ALIAS_STORAGE_KEY)
   }
 
+  public get avatar() {
+    return Browser.storage.local.get(AVATAR_STORAGE_KEY)
+  }
+
   public on = this.#events.on
 
   public off = this.#events.off
@@ -143,6 +153,7 @@ class Keyring {
               return: {
                 keypair: this.#keypair.export(),
                 alias: (await this.alias)[ALIAS_STORAGE_KEY],
+                avatar: (await this.avatar)[AVATAR_STORAGE_KEY],
               },
             },
             id
@@ -206,6 +217,7 @@ class Keyring {
                 isInitialized: await this.isWalletInitialized(),
                 activeAccount: this.#keypair?.export(),
                 alias: (await this.alias)[ALIAS_STORAGE_KEY],
+                avatar: (await this.avatar)[AVATAR_STORAGE_KEY],
               },
             },
             id

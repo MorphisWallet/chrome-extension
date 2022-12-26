@@ -41,7 +41,8 @@ export const createVault = createAsyncThunk<
     if (!payload.return?.keypair) {
       throw new Error('Empty keypair in payload')
     }
-    dispatch(setAlias(payload.return.alias))
+    dispatch(setAlias(payload.return.alias || null))
+    dispatch(setAvatar(payload.return.avatar || null))
     return payload.return.keypair
   }
 )
@@ -84,6 +85,7 @@ type AccountState = {
   creating: boolean
   address: SuiAddress | null
   alias: string | null
+  avatar: string | null
   isLocked: boolean | null
   isInitialized: boolean | null
 }
@@ -92,6 +94,7 @@ const initialState: AccountState = {
   creating: false,
   address: null,
   alias: null,
+  avatar: null,
   isLocked: null,
   isInitialized: null,
 }
@@ -113,12 +116,14 @@ const accountSlice = createSlice({
       if (typeof payload?.isInitialized !== 'undefined') {
         state.isInitialized = payload.isInitialized
       }
-      if (payload?.alias !== undefined) {
-        state.alias = payload.alias
-      }
+      state.alias = payload?.alias || null
+      state.avatar = payload?.avatar || null
     },
     setAlias: (state, action: PayloadAction<string | null>) => {
       state.alias = action.payload
+    },
+    setAvatar: (state, action: PayloadAction<string | null>) => {
+      state.avatar = action.payload
     },
   },
   extraReducers: (builder) =>
@@ -135,7 +140,8 @@ const accountSlice = createSlice({
       }),
 })
 
-export const { setAddress, setKeyringStatus, setAlias } = accountSlice.actions
+export const { setAddress, setKeyringStatus, setAlias, setAvatar } =
+  accountSlice.actions
 
 const reducer: Reducer<typeof initialState> = accountSlice.reducer
 export default reducer
