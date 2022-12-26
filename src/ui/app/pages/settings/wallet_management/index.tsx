@@ -42,11 +42,12 @@ const WalletManagementPage = () => {
                 <div>{alias || 'Account'}</div>
                 <div className="text-[#c0c0c0]">{shortenAddress}</div>
               </div>
-              <SettingsIcon
-                height={19}
-                width={18}
+              <Link
+                to={`./${address}`}
                 className="transition duration-100 ease-in-out hover:scale-110"
-              />
+              >
+                <SettingsIcon height={19} width={18} />
+              </Link>
             </div>
             <div
               data-tip="Coming soon"
