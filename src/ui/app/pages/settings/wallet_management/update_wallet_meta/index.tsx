@@ -33,7 +33,7 @@ const UpdateWalletMetaPage = () => {
       alias: alias || '',
     },
     validationSchema: Yup.object().shape({
-      alias: Yup.string().min(1).required('At least one character'),
+      alias: Yup.string().min(1).max(16).required('At least one character'),
     }),
     onSubmit: async ({ alias: _alias }) => {
       try {
