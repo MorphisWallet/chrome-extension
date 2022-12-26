@@ -56,7 +56,7 @@ type MethodToPayloads = {
   }
   setMeta: {
     args: { alias?: string; avatar?: string }
-    return: boolean
+    return: { alias?: string; avatar?: string }
   }
 }
 

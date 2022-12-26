@@ -239,6 +239,26 @@ class Keyring {
           await this.setLockTimeout(payload.args.timeout)
         }
         uiConnection.send(createMessage({ type: 'done' }, id))
+      } else if (isKeyringPayload(payload, 'setMeta')) {
+        if (payload.args?.alias !== undefined) {
+          await this.setAlias(payload.args.alias)
+        }
+        if (payload.args?.avatar !== undefined) {
+          await this.setAvatar(payload.args.avatar)
+        }
+        uiConnection.send(
+          createMessage<KeyringPayload<'setMeta'>>(
+            {
+              type: 'keyring',
+              method: 'setMeta',
+              return: {
+                alias: (await this.alias)[ALIAS_STORAGE_KEY],
+                avatar: (await this.avatar)[AVATAR_STORAGE_KEY],
+              },
+            },
+            id
+          )
+        )
       }
     } catch (e) {
       uiConnection.send(
