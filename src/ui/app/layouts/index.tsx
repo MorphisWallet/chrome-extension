@@ -8,7 +8,8 @@ import Network from './components/network'
 
 import { useAppSelector } from '_hooks'
 
-import Logo from '_assets/icons/logo.svg'
+import { DEFAULT_AVATAR } from '_shared/constants'
+
 import CloseIcon from '_assets/icons/close.svg'
 import LandingIcon from '_assets/icons/landing.svg'
 import NftIcon from '_assets/icons/nft.svg'
@@ -50,6 +51,7 @@ const LayoutBase = ({
   // const dispatch = useAppDispatch()
   const location = useLocation()
   const network = useAppSelector(({ app }) => app.apiEnv)
+  const avatar = useAppSelector(({ account: { avatar } }) => avatar)
 
   const [modalOpen, setModalOpen] = useState(false)
 
@@ -86,7 +88,11 @@ const LayoutBase = ({
       {showHeader && (
         <header className="h-12 px-6 bg-white border-b border-b-[#e6e6e9] flex items-center shrink-0 font-medium z-[1010]">
           <Link to="/settings/wallet-management">
-            <Logo height={24} width={24} />
+            <img
+              alt="avatar"
+              src={avatar || DEFAULT_AVATAR}
+              className="h-[24px] w-[24px] rounded-full"
+            />
           </Link>
           <div className="grow mx-2 text-center cursor-pointer">
             <Address />

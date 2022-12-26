@@ -6,17 +6,19 @@ import { IconWrapper, Button } from '_app/components'
 
 import { useAppSelector, useMiddleEllipsis } from '_hooks'
 
+import { DEFAULT_AVATAR } from '_shared/constants'
+
 import ArrowShort from '_assets/icons/arrow_short.svg'
 import ImportIcon from '_assets/icons/import.svg'
 import SettingsIcon from '_assets/icons/settings.svg'
-import Logo from '_assets/icons/logo.svg'
 import AddIcon from '_assets/icons/add.svg'
 
 const WalletManagementPage = () => {
-  const { address, alias } = useAppSelector(
-    ({ account: { address, alias } }) => ({
+  const { address, alias, avatar } = useAppSelector(
+    ({ account: { address, alias, avatar } }) => ({
       address,
       alias,
+      avatar,
     })
   )
   const shortenAddress = useMiddleEllipsis(address, 10, 7)
@@ -34,9 +36,13 @@ const WalletManagementPage = () => {
         </div>
         <div className="flex flex-col grow">
           <div className="flex flex-col gap-2 overflow-y-auto">
-            <div className="flex items-center h-[60px] px-4 rounded border border-[#7db4ff] cursor-pointer">
+            <div className="flex items-center h-[60px] px-4 rounded border border-[#7db4ff] cursor-pointer group">
               <div className="mr-2">
-                <Logo height={28} width={28} />
+                <img
+                  alt="avatar"
+                  src={avatar || DEFAULT_AVATAR}
+                  className="h-[28px] w-[28px] rounded-full"
+                />
               </div>
               <div className="flex flex-col grow items-start">
                 <div>{alias || 'Account'}</div>
@@ -44,7 +50,7 @@ const WalletManagementPage = () => {
               </div>
               <Link
                 to={`./${address}`}
-                className="transition duration-100 ease-in-out hover:scale-110"
+                className="invisible transition duration-100 ease-in-out hover:scale-110 group-hover:visible"
               >
                 <SettingsIcon height={19} width={18} />
               </Link>
