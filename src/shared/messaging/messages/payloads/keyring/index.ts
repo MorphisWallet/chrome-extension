@@ -9,7 +9,7 @@ import type { BasePayload, Payload } from '_payloads'
 type MethodToPayloads = {
   create: {
     args: { password: string; importedEntropy?: string }
-    return: { keypair: ExportedKeypair }
+    return: { keypair: ExportedKeypair; alias?: string; avatar?: string }
   }
   getEntropy: {
     args: string | undefined
@@ -34,6 +34,8 @@ type MethodToPayloads = {
       isInitialized: boolean
       // we can replace keypair (once we stop signing from the UI) with the account address
       activeAccount: ExportedKeypair
+      alias?: string
+      avatar?: string
     }>
   }
   lock: {
@@ -51,6 +53,10 @@ type MethodToPayloads = {
   setLockTimeout: {
     args: { timeout: number }
     return: never
+  }
+  setMeta: {
+    args: { alias?: string; avatar?: string }
+    return: { alias?: string; avatar?: string }
   }
 }
 

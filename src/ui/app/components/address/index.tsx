@@ -11,9 +11,15 @@ type AddressProps = {
 }
 
 export const Address = ({ addressOnly = false }: AddressProps) => {
-  const address = useAppSelector(({ account: { address } }) => address)
+  const { address, alias } = useAppSelector(
+    ({ account: { address, alias } }) => ({
+      address,
+      alias,
+    })
+  )
 
   const shortenAddress = useMiddleEllipsis(address, 10, 7)
+  const shortenAlias = useMiddleEllipsis(alias, 10, 7)
 
   const onCopy = () => {
     if (!address) {
@@ -32,7 +38,7 @@ export const Address = ({ addressOnly = false }: AddressProps) => {
 
   return (
     <IconWrapper onClick={onCopy} className="!scale-100">
-      {!addressOnly && <span>Account1</span>}
+      {!addressOnly && <span>{shortenAlias}</span>}
       <span className="text-[#c0c0c0]">
         {addressOnly ? shortenAddress : `(${shortenAddress})`}
       </span>

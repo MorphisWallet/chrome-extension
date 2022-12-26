@@ -56,6 +56,8 @@ const LandingPage = ({ coinType }: LandingProps) => {
     setAirdropDelay(true)
     try {
       await dispatch(requestGas()).unwrap()
+    } catch (err) {
+      console.error(err)
     } finally {
       setTimeout(() => {
         setAirdropDelay(false)

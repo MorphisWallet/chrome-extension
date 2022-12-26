@@ -15,6 +15,8 @@ import {
   AUTO_LOCK_TIMER_MAX_MINUTES,
   AUTO_LOCK_TIMER_MIN_MINUTES,
   AUTO_LOCK_TIMER_STORAGE_KEY,
+  ALIAS_STORAGE_KEY,
+  AVATAR_STORAGE_KEY,
 } from '_src/shared/constants'
 
 import type { Keypair } from '@mysten/sui.js'
@@ -85,6 +87,17 @@ class Keyring {
     return await this.#vault.isWalletInitialized()
   }
 
+  public async setAlias(alias: string) {
+    await Browser.storage.local.set({
+      [ALIAS_STORAGE_KEY]: alias,
+    })
+  }
+  public async setAvatar(avatar: string) {
+    await Browser.storage.local.set({
+      [AVATAR_STORAGE_KEY]: avatar,
+    })
+  }
+
   public get isLocked() {
     return this.#locked
   }
@@ -109,6 +122,14 @@ class Keyring {
     return null
   }
 
+  public get alias() {
+    return Browser.storage.local.get(ALIAS_STORAGE_KEY)
+  }
+
+  public get avatar() {
+    return Browser.storage.local.get(AVATAR_STORAGE_KEY)
+  }
+
   public on = this.#events.on
 
   public off = this.#events.off
@@ -123,6 +144,7 @@ class Keyring {
         if (!this.#keypair) {
           throw new Error('Error created vault is empty')
         }
+        await this.setAlias('Account1')
         uiConnection.send(
           createMessage<KeyringPayload<'create'>>(
             {
@@ -130,6 +152,8 @@ class Keyring {
               method: 'create',
               return: {
                 keypair: this.#keypair.export(),
+                alias: (await this.alias)[ALIAS_STORAGE_KEY],
+                avatar: (await this.avatar)[AVATAR_STORAGE_KEY],
               },
             },
             id
@@ -192,6 +216,8 @@ class Keyring {
                 isLocked: this.isLocked,
                 isInitialized: await this.isWalletInitialized(),
                 activeAccount: this.#keypair?.export(),
+                alias: (await this.alias)[ALIAS_STORAGE_KEY],
+                avatar: (await this.avatar)[AVATAR_STORAGE_KEY],
               },
             },
             id
@@ -213,6 +239,26 @@ class Keyring {
           await this.setLockTimeout(payload.args.timeout)
         }
         uiConnection.send(createMessage({ type: 'done' }, id))
+      } else if (isKeyringPayload(payload, 'setMeta')) {
+        if (payload.args?.alias !== undefined) {
+          await this.setAlias(payload.args.alias)
+        }
+        if (payload.args?.avatar !== undefined) {
+          await this.setAvatar(payload.args.avatar)
+        }
+        uiConnection.send(
+          createMessage<KeyringPayload<'setMeta'>>(
+            {
+              type: 'keyring',
+              method: 'setMeta',
+              return: {
+                alias: (await this.alias)[ALIAS_STORAGE_KEY],
+                avatar: (await this.avatar)[AVATAR_STORAGE_KEY],
+              },
+            },
+            id
+          )
+        )
       }
     } catch (e) {
       uiConnection.send(
