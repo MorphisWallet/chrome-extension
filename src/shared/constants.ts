@@ -9,6 +9,7 @@ export const AUTO_LOCK_TIMER_DEFAULT_INTERVAL_MINUTES = 5
 export const AUTO_LOCK_TIMER_MIN_MINUTES = 1
 export const AUTO_LOCK_TIMER_MAX_MINUTES = 30
 
+export const ACTIVE_WALLET_VAULT_ID = 'ACTIVE_WALLET_VAULT_ID'
 export const ALIAS_STORAGE_KEY = 'alias'
 export const AVATAR_STORAGE_KEY = 'avatar'
 export const DEFAULT_AVATAR =
