@@ -6,6 +6,7 @@ import Browser from 'webextension-polyfill'
 
 import { Vault } from './Vault'
 import { getRandomEntropy, toEntropy } from '_shared/utils/bip39'
+import { ACTIVE_WALLET_VAULT_ID } from '_src/shared/constants'
 
 import type { StoredData } from './Vault'
 import type { Storage } from 'webextension-polyfill'
@@ -79,24 +80,78 @@ export class VaultStorage {
         'Mnemonic already exists, creating a new one will override it. Clear the existing one first.'
       )
     }
-    let vault: Vault | null = new Vault(
+    const vault: Vault | null = new Vault(
       importedEntropy ? toEntropy(importedEntropy) : getRandomEntropy()
     )
-    await setToStorage(LOCAL_STORAGE, VAULT_KEY, await vault.encrypt(password))
-    vault = null
+    const encryptedVault = await vault.encrypt(password)
+    await setToStorage(LOCAL_STORAGE, VAULT_KEY, [encryptedVault])
+
+    return encryptedVault
   }
 
-  public async unlock(password: string) {
-    const encryptedVault = await getFromStorage<StoredData>(
+  public async addVault(password: string, importedEntropy?: string) {
+    const res = await this.checkPassword(password)
+
+    if (res) {
+      const encryptedVaults = await getFromStorage<StoredData[]>(
+        LOCAL_STORAGE,
+        VAULT_KEY
+      )
+      if (!encryptedVaults) {
+        await this.create(password, importedEntropy)
+        return
+      }
+
+      const newVault = new Vault(
+        importedEntropy ? toEntropy(importedEntropy) : getRandomEntropy()
+      )
+      await setToStorage(LOCAL_STORAGE, VAULT_KEY, [
+        ...encryptedVaults,
+        await newVault.encrypt(password),
+      ])
+    }
+  }
+
+  public async unlock(password: string, vaultId?: string) {
+    const encryptedVaults = await getFromStorage<StoredData[]>(
       LOCAL_STORAGE,
       VAULT_KEY
     )
-    if (!encryptedVault) {
+    if (!encryptedVaults) {
       throw new Error('Wallet is not initialized. Create a new one first.')
     }
-    this.#vault = await Vault.from(password, encryptedVault, async (aVault) =>
-      setToStorage(LOCAL_STORAGE, VAULT_KEY, await aVault.encrypt(password))
-    )
+
+    const vaultIdToUnlock =
+      vaultId ||
+      (await Browser.storage.local.get(ACTIVE_WALLET_VAULT_ID))[
+        ACTIVE_WALLET_VAULT_ID
+      ]
+
+    if (vaultIdToUnlock) {
+      const objectVaults: Exclude<StoredData, string>[] =
+        encryptedVaults.filter(
+          (_vault) => typeof _vault === 'object'
+        ) as Exclude<StoredData, string>[]
+      const targetVault = objectVaults.find(
+        (_vault: Exclude<StoredData, string>) => _vault.id === vaultIdToUnlock
+      )
+
+      if (!targetVault) {
+        throw new Error(`No vault with id ${vaultIdToUnlock} was found`)
+      }
+
+      this.#vault = await Vault.from(password, targetVault, async (aVault) =>
+        setToStorage(LOCAL_STORAGE, VAULT_KEY, await aVault.encrypt(password))
+      )
+    } else {
+      this.#vault = await Vault.from(
+        password,
+        encryptedVaults[0],
+        async (aVault) =>
+          setToStorage(LOCAL_STORAGE, VAULT_KEY, await aVault.encrypt(password))
+      )
+    }
+
     await ifSessionStorage(async (sessionStorage) => {
       if (!this.#vault) {
         return
@@ -189,7 +244,7 @@ export class VaultStorage {
   }
 
   public async isWalletInitialized() {
-    return !!(await getFromStorage<StoredData>(LOCAL_STORAGE, VAULT_KEY))
+    return !!(await getFromStorage<StoredData[]>(LOCAL_STORAGE, VAULT_KEY))
   }
 
   public getMnemonic() {

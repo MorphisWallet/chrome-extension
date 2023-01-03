@@ -27,8 +27,6 @@ import type { TransactionRequest } from '_payloads/transactions'
 import type { GetTransactionRequestsResponse } from '_payloads/transactions/ui/GetTransactionRequestsResponse'
 import type { Runtime } from 'webextension-polyfill'
 
-import { ALIAS_STORAGE_KEY, AVATAR_STORAGE_KEY } from '_shared/constants'
-
 export class UiConnection extends Connection {
   public static readonly CHANNEL: PortChannelName = 'morphis_ui<->background'
   private uiAppInitialized: BehaviorSubject<boolean> = new BehaviorSubject(
@@ -63,8 +61,8 @@ export class UiConnection extends Connection {
           isLocked,
           activeAccount: Keyring.keypair?.export(),
           isInitialized: await Keyring.isWalletInitialized(),
-          alias: (await Keyring.alias)[ALIAS_STORAGE_KEY],
-          avatar: (await Keyring.avatar)[AVATAR_STORAGE_KEY],
+          alias: await Keyring.activeAlias,
+          avatar: await Keyring.activeAvatar,
         },
       })
     )

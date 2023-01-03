@@ -17,6 +17,7 @@ import {
   AUTO_LOCK_TIMER_STORAGE_KEY,
   ALIAS_STORAGE_KEY,
   AVATAR_STORAGE_KEY,
+  ACTIVE_WALLET_VAULT_ID,
 } from '_src/shared/constants'
 
 import type { Keypair } from '@mysten/sui.js'
@@ -34,6 +35,8 @@ class Keyring {
   #locked = true
   #keypair: Keypair | null = null
   #vault: VaultStorage
+  #activeVaultId: string | null = null
+
   public readonly reviveDone: Promise<void>
 
   constructor() {
@@ -51,7 +54,11 @@ class Keyring {
    * @throws If the wallet exists or any other error during encrypting/saving to storage or if importedEntropy is invalid
    */
   public async createVault(password: string, importedEntropy?: string) {
-    await this.#vault.create(password, importedEntropy)
+    const createdVault = await this.#vault.create(password, importedEntropy)
+    this.#activeVaultId = createdVault.id
+    await Browser.storage.local.set({
+      [ACTIVE_WALLET_VAULT_ID]: ACTIVE_WALLET_VAULT_ID,
+    })
   }
 
   public async lock() {
@@ -63,7 +70,7 @@ class Keyring {
   }
 
   public async unlock(password: string) {
-    await this.#vault.unlock(password)
+    await this.#vault.unlock(password, this.#activeVaultId as string)
     this.unlocked()
   }
 
@@ -87,14 +94,38 @@ class Keyring {
     return await this.#vault.isWalletInitialized()
   }
 
-  public async setAlias(alias: string) {
+  public async setActiveVaultId(vaultId: string) {
+    this.#activeVaultId = vaultId
     await Browser.storage.local.set({
-      [ALIAS_STORAGE_KEY]: alias,
+      [ACTIVE_WALLET_VAULT_ID]: vaultId,
     })
   }
-  public async setAvatar(avatar: string) {
+
+  public async setAlias(alias: string) {
+    if (!this.#activeVaultId) {
+      throw new Error('No active vault')
+    }
+
+    const allAliases = await this.allAliases
     await Browser.storage.local.set({
-      [AVATAR_STORAGE_KEY]: avatar,
+      [ALIAS_STORAGE_KEY]: {
+        ...allAliases,
+        [this.#activeVaultId]: alias,
+      },
+    })
+  }
+
+  public async setAvatar(avatar: string) {
+    if (!this.#activeVaultId) {
+      throw new Error('No active vault')
+    }
+
+    const allAvatars = await this.allAvatars
+    await Browser.storage.local.set({
+      [AVATAR_STORAGE_KEY]: {
+        ...allAvatars,
+        [this.#activeVaultId]: avatar,
+      },
     })
   }
 
@@ -122,12 +153,42 @@ class Keyring {
     return null
   }
 
-  public get alias() {
-    return Browser.storage.local.get(ALIAS_STORAGE_KEY)
+  public get allAliases(): Promise<Record<string, string>> {
+    return (async () =>
+      (await Browser.storage.local.get(ALIAS_STORAGE_KEY))[ALIAS_STORAGE_KEY])()
   }
 
-  public get avatar() {
-    return Browser.storage.local.get(AVATAR_STORAGE_KEY)
+  public get allAvatars(): Promise<Record<string, string>> {
+    return (async () =>
+      (await Browser.storage.local.get(AVATAR_STORAGE_KEY))[
+        AVATAR_STORAGE_KEY
+      ])()
+  }
+
+  public get activeAlias(): Promise<string | undefined> {
+    return (async () => {
+      const allAliases = await this.allAliases
+      if (!this.#activeVaultId) {
+        return undefined
+      }
+      return allAliases?.[this.#activeVaultId]
+    })()
+  }
+
+  public get activeAvatar(): Promise<string | undefined> {
+    return (async () => {
+      const allAvatars = (await Browser.storage.local.get(AVATAR_STORAGE_KEY))[
+        AVATAR_STORAGE_KEY
+      ]
+      if (!this.#activeVaultId) {
+        return undefined
+      }
+      return allAvatars?.[this.#activeVaultId]
+    })()
+  }
+
+  public get activeVaultId() {
+    return this.#activeVaultId
   }
 
   public on = this.#events.on
@@ -152,8 +213,8 @@ class Keyring {
               method: 'create',
               return: {
                 keypair: this.#keypair.export(),
-                alias: (await this.alias)[ALIAS_STORAGE_KEY],
-                avatar: (await this.avatar)[AVATAR_STORAGE_KEY],
+                alias: await this.activeAlias,
+                avatar: await this.activeAvatar,
               },
             },
             id
@@ -216,8 +277,8 @@ class Keyring {
                 isLocked: this.isLocked,
                 isInitialized: await this.isWalletInitialized(),
                 activeAccount: this.#keypair?.export(),
-                alias: (await this.alias)[ALIAS_STORAGE_KEY],
-                avatar: (await this.avatar)[AVATAR_STORAGE_KEY],
+                alias: await this.activeAlias,
+                avatar: await this.activeAvatar,
               },
             },
             id
@@ -252,8 +313,8 @@ class Keyring {
               type: 'keyring',
               method: 'setMeta',
               return: {
-                alias: (await this.alias)[ALIAS_STORAGE_KEY],
-                avatar: (await this.avatar)[AVATAR_STORAGE_KEY],
+                alias: await this.activeAlias,
+                avatar: await this.activeAvatar,
               },
             },
             id
