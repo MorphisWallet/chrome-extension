@@ -1,6 +1,8 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
+import { v4 as uuidV4 } from 'uuid'
+
 import { encrypt, decrypt } from '_shared/cryptography/keystore'
 import {
   entropyToMnemonic,
@@ -12,7 +14,7 @@ import {
 
 export const LATEST_VAULT_VERSION = 1
 
-export type StoredData = string | { v: number; data: string }
+export type StoredData = string | { id: string; v: number; data: string }
 
 /**
  * Holds the mnemonic of the wallet and provides functionality to create/encrypt/decrypt it.
@@ -59,9 +61,10 @@ export class Vault {
     this.entropy = entropy
   }
 
-  public async encrypt(password: string) {
+  public async encrypt(password: string, id?: string) {
     return {
       v: LATEST_VAULT_VERSION,
+      id: id || uuidV4(),
       data: await encrypt(password, entropyToSerialized(this.entropy)),
     }
   }
