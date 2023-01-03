@@ -219,26 +219,12 @@ export class VaultStorage {
       throw new Error(`No vault with id ${activeVaultId} was found`)
     }
 
-    this.#vault = await Vault.from(
-      oldPassword,
-      targetVault
-      // async (aVault) =>
-      //   setToStorage(
-      //     LOCAL_STORAGE,
-      //     VAULT_KEY,
-      //     await aVault.encrypt(newPassword)
-      //   ),
-      // true
-    )
-
     const revealedVaults = await Promise.all(
       objectVaults.map(async (_vault) => ({
         entropy: await Vault.reveal(oldPassword, _vault),
         id: _vault.id,
       }))
     )
-    console.log(111, revealedVaults)
-
     if (revealedVaults.some((_vault) => !_vault.entropy)) {
       throw new Error('Some vaults have unknown entropy')
     }
@@ -252,7 +238,6 @@ export class VaultStorage {
           )
       )
     )
-    console.log(222, newlyEncryptedVault)
     await setToStorage(LOCAL_STORAGE, VAULT_KEY, newlyEncryptedVault)
 
     return true

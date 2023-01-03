@@ -47,6 +47,34 @@ export const createVault = createAsyncThunk<
   }
 )
 
+// To add multiple wallet vaults
+export const addVault = createAsyncThunk<
+  ExportedKeypair,
+  {
+    importedEntropy?: string
+    password: string
+  },
+  AppThunkConfig
+>(
+  'account/addVault',
+  async (
+    { importedEntropy, password },
+    { extra: { background }, dispatch }
+  ) => {
+    const { payload } = await background.addVault(password, importedEntropy)
+    await background.unlockWallet(password)
+    if (!isKeyringPayload(payload, 'add')) {
+      throw new Error('Unknown payload')
+    }
+    if (!payload.return?.keypair) {
+      throw new Error('Empty keypair in payload')
+    }
+    dispatch(setAlias(payload.return.alias || null))
+    dispatch(setAvatar(payload.return.avatar || null))
+    return payload.return.keypair
+  }
+)
+
 export const loadEntropyFromKeyring = createAsyncThunk<
   string,
   { password?: string }, // can be undefined when we know Keyring is unlocked

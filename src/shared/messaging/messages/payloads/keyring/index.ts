@@ -11,6 +11,10 @@ type MethodToPayloads = {
     args: { password: string; importedEntropy?: string }
     return: { keypair: ExportedKeypair; alias?: string; avatar?: string }
   }
+  add: {
+    args: { password: string; importedEntropy?: string }
+    return: { keypair: ExportedKeypair; alias?: string; avatar?: string }
+  }
   getEntropy: {
     args: string | undefined
     return: string
@@ -37,6 +41,14 @@ type MethodToPayloads = {
       alias?: string
       avatar?: string
     }>
+  }
+  allWallets: {
+    args: never
+    return: {
+      account: ExportedKeypair
+      alias?: string
+      avatar?: string
+    }[]
   }
   lock: {
     args: never

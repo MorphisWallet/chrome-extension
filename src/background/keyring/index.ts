@@ -57,7 +57,7 @@ class Keyring {
     const createdVault = await this.#vault.create(password, importedEntropy)
     this.#activeVaultId = createdVault.id
     await Browser.storage.local.set({
-      [ACTIVE_WALLET_VAULT_ID]: ACTIVE_WALLET_VAULT_ID,
+      [ACTIVE_WALLET_VAULT_ID]: createdVault.id,
     })
   }
 
@@ -66,7 +66,7 @@ class Keyring {
     if (createdVault) {
       this.#activeVaultId = createdVault.id
       await Browser.storage.local.set({
-        [ACTIVE_WALLET_VAULT_ID]: ACTIVE_WALLET_VAULT_ID,
+        [ACTIVE_WALLET_VAULT_ID]: createdVault.id,
       })
     }
   }
@@ -219,7 +219,7 @@ class Keyring {
         await this.createVault(password, importedEntropy)
         await this.unlock(password)
         if (!this.#keypair) {
-          throw new Error('Error created vault is empty')
+          throw new Error('Error, created vault is empty')
         }
         const allVaults = (await this.#vault.allVaults) || []
         await this.setAlias(`Account${allVaults.length}`)
@@ -228,6 +228,32 @@ class Keyring {
             {
               type: 'keyring',
               method: 'create',
+              return: {
+                keypair: this.#keypair.export(),
+                alias: await this.activeAlias,
+                avatar: await this.activeAvatar,
+              },
+            },
+            id
+          )
+        )
+      } else if (
+        isKeyringPayload(payload, 'add') &&
+        payload.args !== undefined
+      ) {
+        const { password, importedEntropy } = payload.args
+        await this.addVault(password, importedEntropy)
+        await this.unlock(password)
+        if (!this.#keypair) {
+          throw new Error('Error, added vault is empty')
+        }
+        const allVaults = (await this.#vault.allVaults) || []
+        await this.setAlias(`Account${allVaults.length}`)
+        uiConnection.send(
+          createMessage<KeyringPayload<'add'>>(
+            {
+              type: 'keyring',
+              method: 'add',
               return: {
                 keypair: this.#keypair.export(),
                 alias: await this.activeAlias,
