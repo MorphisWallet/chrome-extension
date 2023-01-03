@@ -67,7 +67,7 @@ function makeEphemeraPassword(rndPass: string) {
 }
 
 export class VaultStorage {
-  #vault: Vault | null = null
+  #vault: Vault | null = null // the vault with active vaultId
 
   /**
    * See {@link Keyring.createVault}
@@ -146,15 +146,13 @@ export class VaultStorage {
       }
 
       this.#vault = await Vault.from(password, targetVault, async (aVault) =>
-        setToStorage(LOCAL_STORAGE, VAULT_KEY, await aVault.encrypt(password))
+        setToStorage(LOCAL_STORAGE, VAULT_KEY, [
+          ...(encryptedVaults || []),
+          await aVault.encrypt(password),
+        ])
       )
     } else {
-      this.#vault = await Vault.from(
-        password,
-        encryptedVaults[0],
-        async (aVault) =>
-          setToStorage(LOCAL_STORAGE, VAULT_KEY, await aVault.encrypt(password))
-      )
+      throw new Error(`No vault with id ${vaultIdToUnlock} was found`)
     }
 
     await ifSessionStorage(async (sessionStorage) => {
@@ -181,42 +179,81 @@ export class VaultStorage {
   }
 
   public async checkPassword(password: string) {
-    const encryptedVault = await getFromStorage<StoredData>(
+    const encryptedVaults = await getFromStorage<StoredData[]>(
       LOCAL_STORAGE,
       VAULT_KEY
     )
-    if (!encryptedVault) {
+    if (!encryptedVaults) {
       throw new Error('Wallet is not initialized. Create a new one first.')
     }
-    const res = await this.#vault?.decrypt(password, encryptedVault)
+    // all vaults share the same password, use first one to check
+    const res = await this.#vault?.decrypt(password, encryptedVaults[0])
     return !!res
   }
 
   public async changePassword({
     oldPassword,
     newPassword,
+    activeVaultId,
   }: {
     oldPassword: string
     newPassword: string
+    activeVaultId: string
   }) {
-    const encryptedVault = await getFromStorage<StoredData>(
+    const encryptedVaults = await getFromStorage<StoredData[]>(
       LOCAL_STORAGE,
       VAULT_KEY
     )
-    if (!encryptedVault) {
+    if (!encryptedVaults) {
       throw new Error('Wallet is not initialized. Create a new one first.')
     }
+
+    const objectVaults: Exclude<StoredData, string>[] = encryptedVaults.filter(
+      (_vault) => typeof _vault === 'object'
+    ) as Exclude<StoredData, string>[]
+    const targetVault = objectVaults.find(
+      (_vault: Exclude<StoredData, string>) => _vault.id === activeVaultId
+    )
+
+    if (!targetVault) {
+      throw new Error(`No vault with id ${activeVaultId} was found`)
+    }
+
     this.#vault = await Vault.from(
       oldPassword,
-      encryptedVault,
-      async (aVault) =>
-        setToStorage(
-          LOCAL_STORAGE,
-          VAULT_KEY,
-          await aVault.encrypt(newPassword)
-        ),
-      true
+      targetVault
+      // async (aVault) =>
+      //   setToStorage(
+      //     LOCAL_STORAGE,
+      //     VAULT_KEY,
+      //     await aVault.encrypt(newPassword)
+      //   ),
+      // true
     )
+
+    const revealedVaults = await Promise.all(
+      objectVaults.map(async (_vault) => ({
+        entropy: await Vault.reveal(oldPassword, _vault),
+        id: _vault.id,
+      }))
+    )
+    console.log(111, revealedVaults)
+
+    if (revealedVaults.some((_vault) => !_vault.entropy)) {
+      throw new Error('Some vaults have unknown entropy')
+    }
+
+    const newlyEncryptedVault = await Promise.all(
+      revealedVaults.map(
+        async (_vault) =>
+          await new Vault(toEntropy(_vault.entropy as string)).encrypt(
+            newPassword,
+            _vault.id
+          )
+      )
+    )
+    console.log(222, newlyEncryptedVault)
+    await setToStorage(LOCAL_STORAGE, VAULT_KEY, newlyEncryptedVault)
 
     return true
   }

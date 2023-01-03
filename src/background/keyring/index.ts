@@ -84,6 +84,12 @@ class Keyring {
     this.unlocked()
   }
 
+  public async checkActiveVaultId() {
+    if (!this.#activeVaultId) {
+      throw new Error('No active vault')
+    }
+  }
+
   public async checkPassword(password: string) {
     return await this.#vault.checkPassword(password)
   }
@@ -92,7 +98,11 @@ class Keyring {
     oldPassword: string
     newPassword: string
   }) {
-    return await this.#vault.changePassword(args)
+    this.checkActiveVaultId()
+    return await this.#vault.changePassword({
+      ...args,
+      activeVaultId: this.#activeVaultId as string,
+    })
   }
 
   public async clearVault() {
@@ -112,29 +122,25 @@ class Keyring {
   }
 
   public async setAlias(alias: string) {
-    if (!this.#activeVaultId) {
-      throw new Error('No active vault')
-    }
+    this.checkActiveVaultId()
 
     const allAliases = await this.allAliases
     await Browser.storage.local.set({
       [ALIAS_STORAGE_KEY]: {
         ...allAliases,
-        [this.#activeVaultId]: alias,
+        [this.#activeVaultId as string]: alias,
       },
     })
   }
 
   public async setAvatar(avatar: string) {
-    if (!this.#activeVaultId) {
-      throw new Error('No active vault')
-    }
+    this.checkActiveVaultId()
 
     const allAvatars = await this.allAvatars
     await Browser.storage.local.set({
       [AVATAR_STORAGE_KEY]: {
         ...allAvatars,
-        [this.#activeVaultId]: avatar,
+        [this.#activeVaultId as string]: avatar,
       },
     })
   }
@@ -234,6 +240,9 @@ class Keyring {
       } else if (isKeyringPayload(payload, 'getEntropy')) {
         if (this.#locked) {
           throw new Error('Keyring is locked. Unlock it first.')
+        }
+        if (!this.#activeVaultId) {
+          throw new Error('No active vault')
         }
         if (!this.#vault?.entropy) {
           throw new Error('Error vault is empty')

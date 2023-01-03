@@ -69,6 +69,7 @@ export class Vault {
     }
   }
 
+  // only try to decrypt and check the password
   public async decrypt(password: string, data: StoredData): Promise<boolean> {
     try {
       // try to decrypt serialized entropy. wrong password will throw an error
@@ -82,6 +83,24 @@ export class Vault {
       return true
     } catch (e) {
       return false
+    }
+  }
+
+  // decrypt and return the decrypted data
+  public static async reveal(
+    password: string,
+    data: StoredData
+  ): Promise<string | null> {
+    try {
+      if (typeof data === 'string') {
+        return await decrypt<string>(password, data)
+      } else if (data.v === 1) {
+        return await decrypt<string>(password, data.data)
+      } else {
+        throw new Error("Unknown data, provided data can't be used to decrypt")
+      }
+    } catch (e) {
+      return null
     }
   }
 
