@@ -61,6 +61,16 @@ class Keyring {
     })
   }
 
+  public async addVault(password: string, importedEntropy?: string) {
+    const createdVault = await this.#vault.addVault(password, importedEntropy)
+    if (createdVault) {
+      this.#activeVaultId = createdVault.id
+      await Browser.storage.local.set({
+        [ACTIVE_WALLET_VAULT_ID]: ACTIVE_WALLET_VAULT_ID,
+      })
+    }
+  }
+
   public async lock() {
     this.#keypair = null
     this.#locked = true
@@ -205,7 +215,8 @@ class Keyring {
         if (!this.#keypair) {
           throw new Error('Error created vault is empty')
         }
-        await this.setAlias('Account1')
+        const allVaults = (await this.#vault.allVaults) || []
+        await this.setAlias(`Account${allVaults.length}`)
         uiConnection.send(
           createMessage<KeyringPayload<'create'>>(
             {

@@ -77,10 +77,10 @@ export class VaultStorage {
   public async create(password: string, importedEntropy?: string) {
     if (await this.isWalletInitialized()) {
       throw new Error(
-        'Mnemonic already exists, creating a new one will override it. Clear the existing one first.'
+        'Vault is already initialized. If you want to have multiple wallets, use addVault instead'
       )
     }
-    const vault: Vault | null = new Vault(
+    const vault = new Vault(
       importedEntropy ? toEntropy(importedEntropy) : getRandomEntropy()
     )
     const encryptedVault = await vault.encrypt(password)
@@ -90,6 +90,12 @@ export class VaultStorage {
   }
 
   public async addVault(password: string, importedEntropy?: string) {
+    if (!(await this.isWalletInitialized())) {
+      throw new Error(
+        'Vault is not initialized. If you want to have multiple wallets, initialize the vault first'
+      )
+    }
+
     const res = await this.checkPassword(password)
 
     if (res) {
@@ -97,18 +103,17 @@ export class VaultStorage {
         LOCAL_STORAGE,
         VAULT_KEY
       )
-      if (!encryptedVaults) {
-        await this.create(password, importedEntropy)
-        return
-      }
-
       const newVault = new Vault(
         importedEntropy ? toEntropy(importedEntropy) : getRandomEntropy()
       )
+      const encryptedVault = await newVault.encrypt(password)
+
       await setToStorage(LOCAL_STORAGE, VAULT_KEY, [
-        ...encryptedVaults,
-        await newVault.encrypt(password),
+        ...(encryptedVaults || []),
+        encryptedVault,
       ])
+
+      return encryptedVault
     }
   }
 
@@ -249,6 +254,11 @@ export class VaultStorage {
 
   public getMnemonic() {
     return this.#vault?.getMnemonic() || null
+  }
+
+  public get allVaults() {
+    return (async () =>
+      await getFromStorage<StoredData[]>(LOCAL_STORAGE, VAULT_KEY))()
   }
 
   public get entropy() {
