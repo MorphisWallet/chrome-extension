@@ -128,26 +128,26 @@ export class BackgroundClient {
     )
   }
 
-  public async addVault(password: string, importedEntropy?: string) {
+  public async addVault(importedEntropy?: string) {
     return await lastValueFrom(
       this.sendMessage(
         createMessage<KeyringPayload<'add'>>({
           type: 'keyring',
           method: 'add',
-          args: { password, importedEntropy },
+          args: { importedEntropy },
           return: undefined,
         })
       ).pipe(take(1))
     )
   }
 
-  public async unlockWallet(password: string) {
+  public async unlockWallet(password?: string) {
     return await lastValueFrom(
       this.sendMessage(
         createMessage<KeyringPayload<'unlock'>>({
           type: 'keyring',
           method: 'unlock',
-          args: { password: password },
+          args: { password },
           return: undefined,
         })
       ).pipe(take(1))

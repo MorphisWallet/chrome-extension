@@ -4,7 +4,9 @@ import ReactTooltip from 'react-tooltip'
 import Layout from '_app/layouts'
 import { IconWrapper, Button } from '_app/components'
 
-import { useAppSelector, useMiddleEllipsis } from '_hooks'
+import { useAppDispatch, useAppSelector, useMiddleEllipsis } from '_hooks'
+
+import { addVault } from '_redux/slices/account'
 
 import { DEFAULT_AVATAR } from '_shared/constants'
 
@@ -14,6 +16,7 @@ import SettingsIcon from '_assets/icons/settings.svg'
 import AddIcon from '_assets/icons/add.svg'
 
 const WalletManagementPage = () => {
+  const dispatch = useAppDispatch()
   const { address, alias, avatar } = useAppSelector(
     ({ account: { address, alias, avatar } }) => ({
       address,
@@ -22,6 +25,10 @@ const WalletManagementPage = () => {
     })
   )
   const shortenAddress = useMiddleEllipsis(address, 10, 7)
+
+  const onAddWallet = async () => {
+    await dispatch(addVault({}))
+  }
 
   return (
     <Layout showNav={false}>
@@ -55,7 +62,8 @@ const WalletManagementPage = () => {
                 <SettingsIcon height={19} width={18} />
               </Link>
             </div>
-            <div
+            <Button
+              onClick={onAddWallet}
               data-tip="Coming soon"
               data-for="button-tip"
               className="flex items-center h-[60px] px-4 rounded border border-[#e2e2e2] cursor-not-allowed transition duration-300 ease-in-out hover:border-[#7db4ff]"
@@ -64,7 +72,7 @@ const WalletManagementPage = () => {
                 <AddIcon height={28} width={28} />
               </div>
               <div>Add a new account</div>
-            </div>
+            </Button>
           </div>
           <hr className="my-6 border-black" />
           <Button

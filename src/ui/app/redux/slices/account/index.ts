@@ -52,17 +52,13 @@ export const addVault = createAsyncThunk<
   ExportedKeypair,
   {
     importedEntropy?: string
-    password: string
   },
   AppThunkConfig
 >(
   'account/addVault',
-  async (
-    { importedEntropy, password },
-    { extra: { background }, dispatch }
-  ) => {
-    const { payload } = await background.addVault(password, importedEntropy)
-    await background.unlockWallet(password)
+  async ({ importedEntropy }, { extra: { background }, dispatch }) => {
+    const { payload } = await background.addVault(importedEntropy)
+    await background.unlockWallet()
     if (!isKeyringPayload(payload, 'add')) {
       throw new Error('Unknown payload')
     }
