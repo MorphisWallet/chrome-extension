@@ -1,36 +1,90 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
+import cl from 'classnames'
 
 import Layout from '_app/layouts'
-import { IconWrapper, Button } from '_app/components'
+import { IconWrapper, Button, Loading } from '_app/components'
 
 import { useAppDispatch, useAppSelector, useMiddleEllipsis } from '_hooks'
 
-import { addVault } from '_redux/slices/account'
+import { addVault, getAllAccounts } from '_redux/slices/account'
+
+import type { Account } from '_redux/slices/account'
 
 import ArrowShort from '_assets/icons/arrow_short.svg'
 import ImportIcon from '_assets/icons/import.svg'
 import SettingsIcon from '_assets/icons/settings.svg'
 import AddIcon from '_assets/icons/add.svg'
 
-const WalletManagementPage = () => {
-  const dispatch = useAppDispatch()
-  const { address, alias, avatar } = useAppSelector(
+const AccountSelect = ({ id, alias, avatar }: Account) => {
+  const { address } = useAppSelector(
     ({ account: { address, alias, avatar } }) => ({
       address,
       alias,
       avatar,
     })
   )
-  const shortenAddress = useMiddleEllipsis(address, 10, 7)
+  const shortenAddress = useMiddleEllipsis(id, 10, 7)
+
+  const isCurrentAccount = address === `0x${id}`
+
+  return (
+    <div
+      className={cl([
+        'flex items-center h-[60px] px-4 rounded border cursor-pointer group',
+        'transition duration-100 hover:border-[#7db4ff]',
+        isCurrentAccount && 'border-[#7db4ff]',
+      ])}
+    >
+      <div className="mr-2">
+        <img
+          alt="avatar"
+          src={avatar}
+          className="h-[28px] w-[28px] rounded-full"
+        />
+      </div>
+      <div className="flex flex-col grow items-start">
+        <div>{alias || 'No name'}</div>
+        <div className="text-[#c0c0c0]">{shortenAddress}</div>
+      </div>
+      <Link
+        to={`./${address}`}
+        className="invisible transition duration-100 ease-in-out hover:scale-110 group-hover:visible"
+      >
+        <SettingsIcon height={19} width={18} />
+      </Link>
+    </div>
+  )
+}
+
+const WalletManagementPage = () => {
+  const dispatch = useAppDispatch()
+
+  const [allAccounts, setAllAccounts] = useState<Account[]>([])
+  const [loading, setLoading] = useState(false)
 
   const onAddWallet = async () => {
     await dispatch(addVault({}))
+    fetchAllAccounts()
   }
+
+  const fetchAllAccounts = async () => {
+    setLoading(true)
+
+    const _allAccounts = await dispatch(getAllAccounts()).unwrap()
+
+    setAllAccounts(_allAccounts)
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    fetchAllAccounts()
+  }, [])
 
   return (
     <Layout showNav={false}>
-      <div className="flex flex-col grow shrink-0 font-medium px-6 pt-4 pb-6 overflow-hidden text-sm">
+      <div className="flex flex-col grow font-medium px-6 pt-4 pb-6 overflow-hidden text-sm">
         <div className="mb-6 text-xl text-center font-bold relative">
           Wallet Management
           <Link to="/" className="absolute left-0 top-[7px]">
@@ -39,32 +93,17 @@ const WalletManagementPage = () => {
             </IconWrapper>
           </Link>
         </div>
-        <div className="flex flex-col grow">
-          <div className="flex flex-col gap-2 overflow-y-auto">
-            <div className="flex items-center h-[60px] px-4 rounded border border-[#7db4ff] cursor-pointer group">
-              <div className="mr-2">
-                <img
-                  alt="avatar"
-                  src={avatar || ''}
-                  className="h-[28px] w-[28px] rounded-full"
-                />
-              </div>
-              <div className="flex flex-col grow items-start">
-                <div>{alias || 'Account'}</div>
-                <div className="text-[#c0c0c0]">{shortenAddress}</div>
-              </div>
-              <Link
-                to={`./${address}`}
-                className="invisible transition duration-100 ease-in-out hover:scale-110 group-hover:visible"
-              >
-                <SettingsIcon height={19} width={18} />
-              </Link>
-            </div>
+        <div className="flex flex-col grow overflow-y-auto px-6 mx-[-24px]">
+          <div className="flex flex-col gap-2">
+            <Loading loading={loading}>
+              {allAccounts.map((_account) => (
+                <AccountSelect key={_account.id} {..._account} />
+              ))}
+            </Loading>
+
             <Button
               onClick={onAddWallet}
-              data-tip="Coming soon"
-              data-for="button-tip"
-              className="flex items-center h-[60px] px-4 rounded border border-[#e2e2e2] cursor-not-allowed transition duration-300 ease-in-out hover:border-[#7db4ff]"
+              className="flex items-center h-[60px] px-4 rounded border border-[#e2e2e2] transition duration-300 ease-in-out hover:border-[#7db4ff]"
             >
               <div className="mr-2">
                 <AddIcon height={28} width={28} />
@@ -77,7 +116,7 @@ const WalletManagementPage = () => {
             data-tip="Coming soon"
             data-for="button-tip"
             variant="outlined"
-            className="flex justify-center items-center rounded-[4px] cursor-not-allowed font-bold"
+            className="flex justify-center items-center shrink-0 rounded-[4px] cursor-not-allowed font-bold"
           >
             <ImportIcon height={13} width={9} className="mr-3" />
             Import an existing wallet

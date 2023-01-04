@@ -242,6 +242,17 @@ export class BackgroundClient {
     )
   }
 
+  public async getAllAccounts() {
+    return await lastValueFrom(
+      this.sendMessage(
+        createMessage<KeyringPayload<'allAccounts'>>({
+          type: 'keyring',
+          method: 'allAccounts',
+        })
+      ).pipe(take(1))
+    )
+  }
+
   public async setKeyringLockTimeout(timeout: number) {
     return await lastValueFrom(
       this.sendMessage(

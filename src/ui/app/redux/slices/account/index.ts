@@ -20,6 +20,12 @@ import type { KeyringPayload } from '_payloads/keyring'
 import type { RootState } from '_redux/RootReducer'
 import type { AppThunkConfig } from '_store/thunk-extras'
 
+export type Account = {
+  id: string
+  alias?: string
+  avatar?: string
+}
+
 export const createVault = createAsyncThunk<
   ExportedKeypair,
   {
@@ -95,6 +101,17 @@ export const changePassword = createAsyncThunk<
   'account/changePassword',
   async ({ oldPassword, newPassword }, { extra: { background } }) =>
     await background.changePassword(oldPassword, newPassword)
+)
+
+export const getAllAccounts = createAsyncThunk<Account[], void, AppThunkConfig>(
+  'account/getAllAccounts',
+  async (_, { extra: { background } }) => {
+    const { payload } = await background.getAllAccounts()
+    if (!isKeyringPayload(payload, 'allAccounts')) {
+      throw new Error('Unknown payload')
+    }
+    return payload.return || []
+  }
 )
 
 export const logout = createAsyncThunk<void, void, AppThunkConfig>(
