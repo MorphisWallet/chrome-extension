@@ -8,8 +8,6 @@ import Network from './components/network'
 
 import { useAppSelector } from '_hooks'
 
-import { DEFAULT_AVATAR } from '_shared/constants'
-
 import CloseIcon from '_assets/icons/close.svg'
 import LandingIcon from '_assets/icons/landing.svg'
 import NftIcon from '_assets/icons/nft.svg'
@@ -90,7 +88,7 @@ const LayoutBase = ({
           <Link to="/settings/wallet-management">
             <img
               alt="avatar"
-              src={avatar || DEFAULT_AVATAR}
+              src={avatar || ''}
               className="h-[24px] w-[24px] rounded-full"
             />
           </Link>

@@ -8,8 +8,6 @@ import { useAppDispatch, useAppSelector, useMiddleEllipsis } from '_hooks'
 
 import { addVault } from '_redux/slices/account'
 
-import { DEFAULT_AVATAR } from '_shared/constants'
-
 import ArrowShort from '_assets/icons/arrow_short.svg'
 import ImportIcon from '_assets/icons/import.svg'
 import SettingsIcon from '_assets/icons/settings.svg'
@@ -47,7 +45,7 @@ const WalletManagementPage = () => {
               <div className="mr-2">
                 <img
                   alt="avatar"
-                  src={avatar || DEFAULT_AVATAR}
+                  src={avatar || ''}
                   className="h-[28px] w-[28px] rounded-full"
                 />
               </div>

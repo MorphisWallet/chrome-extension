@@ -10,8 +10,6 @@ import { useAppDispatch, useAppSelector } from '_hooks'
 
 import { setMeta } from '_redux/slices/account'
 
-import { DEFAULT_AVATAR } from '_shared/constants'
-
 import ArrowShort from '_assets/icons/arrow_short.svg'
 
 const UpdateWalletMetaPage = () => {
@@ -115,7 +113,7 @@ const UpdateWalletMetaPage = () => {
             />
             <img
               alt="avatar"
-              src={avatarPath || DEFAULT_AVATAR}
+              src={avatar || ''}
               className="h-full w-full"
             />
           </div>
