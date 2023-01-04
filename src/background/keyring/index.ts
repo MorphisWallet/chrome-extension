@@ -235,6 +235,22 @@ class Keyring {
             id
           )
         )
+      } else if (isKeyringPayload(payload, 'allAccounts')) {
+        const accounts = (await this.#vaultStorage.allVaults) || []
+        uiConnection.send(
+          createMessage<KeyringPayload<'allAccounts'>>(
+            {
+              type: 'keyring',
+              method: 'allAccounts',
+              return: accounts.map((_account) => ({
+                id: _account.id,
+                alias: _account.alias,
+                avatar: _account.avatar,
+              })),
+            },
+            id
+          )
+        )
       } else if (isKeyringPayload(payload, 'lock')) {
         this.lock()
         uiConnection.send(createMessage({ type: 'done' }, id))

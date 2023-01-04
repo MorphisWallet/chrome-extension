@@ -42,7 +42,7 @@ type MethodToPayloads = {
       avatar?: string
     }>
   }
-  allWallets: {
+  allAccounts: {
     args: never
     return: {
       id: string
@@ -64,6 +64,10 @@ type MethodToPayloads = {
   }
   setLockTimeout: {
     args: { timeout: number }
+    return: never
+  }
+  setActiveAccount: {
+    args: { id: string }
     return: never
   }
   setMeta: {
