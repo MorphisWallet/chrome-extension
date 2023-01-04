@@ -82,7 +82,8 @@ export class VaultStorage {
       )
     }
     const vault = new Vault(
-      importedEntropy ? toEntropy(importedEntropy) : getRandomEntropy()
+      importedEntropy ? toEntropy(importedEntropy) : getRandomEntropy(),
+      { alias: 'Account1' }
     )
     const encryptedVault = await vault.encrypt(password)
     await setToStorage(LOCAL_STORAGE, VAULT_KEY, [encryptedVault])
@@ -99,12 +100,11 @@ export class VaultStorage {
       )
     }
 
-    const encryptedVaults = await getFromStorage<StoredData[]>(
-      LOCAL_STORAGE,
-      VAULT_KEY
-    )
+    const encryptedVaults =
+      (await getFromStorage<StoredData[]>(LOCAL_STORAGE, VAULT_KEY)) || []
     const newVault = new Vault(
-      importedEntropy ? toEntropy(importedEntropy) : getRandomEntropy()
+      importedEntropy ? toEntropy(importedEntropy) : getRandomEntropy(),
+      { alias: `Account${encryptedVaults.length + 1}` }
     )
     const cachedPwd = this.#cachedPwd
     if (!cachedPwd) {
@@ -116,7 +116,7 @@ export class VaultStorage {
     const encryptedVault = await newVault.encrypt(cachedPwd)
 
     await setToStorage(LOCAL_STORAGE, VAULT_KEY, [
-      ...(encryptedVaults || []),
+      ...encryptedVaults,
       encryptedVault,
     ])
     await this.setActiveVaultId(encryptedVault.id)
@@ -129,11 +129,14 @@ export class VaultStorage {
       throw new Error('No password is provided or cached')
     }
 
-    const activeVault = await this.getActiveVault()
+    const activeVault = await this.getVaultById()
 
     this.#vault = await Vault.from(
       password || (this.#cachedPwd as string),
-      activeVault
+      activeVault,
+      undefined,
+      undefined,
+      { alias: activeVault.alias, avatar: activeVault.avatar }
     )
     this.#cachedPwd = password || this.#cachedPwd
 
@@ -273,7 +276,8 @@ export class VaultStorage {
     return await getFromStorage<string>(LOCAL_STORAGE, ACTIVE_WALLET_VAULT_ID)
   }
 
-  public async getActiveVault() {
+  // if no id is specified, it means to get active vault
+  public async getVaultById(vaultId?: string) {
     const encryptedVaults = await getFromStorage<StoredData[]>(
       LOCAL_STORAGE,
       VAULT_KEY
@@ -282,20 +286,15 @@ export class VaultStorage {
       throw new Error('Wallet is not initialized. Create a new one first.')
     }
 
-    const activeVaultId = await this.getActiveVaultId()
-    if (!activeVaultId) {
-      throw new Error('No vaultId is cached')
-    }
+    const _vaultId = vaultId || (await this.getActiveVaultId())
 
-    const objectVaults: Exclude<StoredData, string>[] = encryptedVaults.filter(
-      (_vault) => typeof _vault === 'object'
-    ) as Exclude<StoredData, string>[]
-    const targetVault = objectVaults.find(
-      (_vault: Exclude<StoredData, string>) => _vault.id === activeVaultId
+    const targetVault = encryptedVaults.find(
+      (_vault: Exclude<StoredData, string>) => _vault.id === _vaultId
     )
-
     if (!targetVault) {
-      throw new Error(`No vault with id ${activeVaultId} was found`)
+      throw new Error(
+        vaultId ? `No vault with id ${vaultId} is found` : 'No active vault'
+      )
     }
 
     return targetVault
@@ -307,8 +306,31 @@ export class VaultStorage {
     })
   }
 
-  public async setMeta(meta: { avatar?: string; alias?: string }) {
-    this.#vault?.setMeta(meta)
+  public async setMeta(
+    meta: { avatar?: string; alias?: string },
+    vaultId?: string
+  ) {
+    // update #vault object
+    if (!vaultId) {
+      this.#vault?.setMeta(meta)
+    }
+
+    // update vault in storage
+    const encryptedVaults = await getFromStorage<StoredData[]>(
+      LOCAL_STORAGE,
+      VAULT_KEY
+    )
+    if (!encryptedVaults) {
+      throw new Error('Wallet is not initialized. Create a new one first.')
+    }
+
+    const _vaultId = vaultId || (await this.getActiveVaultId())
+
+    const updatedVaults = encryptedVaults.map((_vault) =>
+      _vault.id === _vaultId ? { ..._vault, ...meta } : _vault
+    )
+
+    await setToStorage(LOCAL_STORAGE, VAULT_KEY, updatedVaults)
   }
 
   public get allVaults() {
@@ -322,5 +344,12 @@ export class VaultStorage {
 
   public get keypair() {
     return this.#vault?.keypair
+  }
+
+  public get meta() {
+    return {
+      alias: this.#vault?.alias,
+      avatar: this.#vault?.avatar,
+    }
   }
 }

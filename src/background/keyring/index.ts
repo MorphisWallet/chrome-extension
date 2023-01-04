@@ -87,12 +87,12 @@ class Keyring {
     return await this.#vaultStorage.isWalletInitialized()
   }
 
-  public async setAlias(alias: string) {
-    //
+  public async setMeta(meta: { alias?: string; avatar?: string }) {
+    await this.#vaultStorage.setMeta(meta)
   }
 
-  public async setAvatar(avatar: string) {
-    //
+  public get meta() {
+    return this.#vaultStorage.meta
   }
 
   public get isLocked() {
@@ -104,7 +104,7 @@ class Keyring {
   }
 
   public get entropy() {
-    return this.#vaultStorage.getActiveVault()
+    return this.#vaultStorage.entropy
   }
 
   public on = this.#events.on
@@ -124,9 +124,6 @@ class Keyring {
           throw new Error('Error, created vault is empty')
         }
 
-        const allVaults = (await this.#vaultStorage.allVaults) || []
-        await this.setAlias(`Account${allVaults.length}`)
-
         uiConnection.send(
           createMessage<KeyringPayload<'create'>>(
             {
@@ -136,8 +133,7 @@ class Keyring {
                 keypair: (
                   this.#vaultStorage.keypair as Ed25519Keypair
                 ).export(),
-                alias: '',
-                avatar: '',
+                ...this.#vaultStorage.meta,
               },
             },
             id
@@ -156,9 +152,6 @@ class Keyring {
           throw new Error('Error, added vault is empty')
         }
 
-        const allVaults = (await this.#vaultStorage.allVaults) || []
-        await this.setAlias(`Account${allVaults.length}`)
-
         uiConnection.send(
           createMessage<KeyringPayload<'add'>>(
             {
@@ -168,8 +161,7 @@ class Keyring {
                 keypair: (
                   this.#vaultStorage.keypair as Ed25519Keypair
                 ).export(),
-                alias: '',
-                avatar: '',
+                ...this.#vaultStorage.meta,
               },
             },
             id
@@ -237,8 +229,7 @@ class Keyring {
                 isLocked: this.isLocked,
                 isInitialized: await this.isWalletInitialized(),
                 activeAccount: this.#vaultStorage.keypair?.export(),
-                alias: '',
-                avatar: '',
+                ...this.#vaultStorage.meta,
               },
             },
             id
@@ -261,20 +252,14 @@ class Keyring {
         }
         uiConnection.send(createMessage({ type: 'done' }, id))
       } else if (isKeyringPayload(payload, 'setMeta')) {
-        if (payload.args?.alias !== undefined) {
-          await this.setAlias(payload.args.alias)
-        }
-        if (payload.args?.avatar !== undefined) {
-          await this.setAvatar(payload.args.avatar)
-        }
+        await this.setMeta(payload.args || {})
         uiConnection.send(
           createMessage<KeyringPayload<'setMeta'>>(
             {
               type: 'keyring',
               method: 'setMeta',
               return: {
-                alias: '',
-                avatar: '',
+                ...this.#vaultStorage.meta,
               },
             },
             id

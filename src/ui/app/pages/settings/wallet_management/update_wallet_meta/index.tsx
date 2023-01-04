@@ -85,7 +85,7 @@ const UpdateWalletMetaPage = () => {
     <Layout showNav={false}>
       <div className="flex flex-col grow shrink-0 font-medium px-6 pt-4 pb-6 overflow-hidden text-sm">
         <div className="mb-2 text-xl text-center font-bold relative">
-          {alias}
+          {alias || 'Account'}
           <Link
             to="/settings/wallet-management"
             className="absolute left-0 top-[7px]"
@@ -113,7 +113,7 @@ const UpdateWalletMetaPage = () => {
             />
             <img
               alt="avatar"
-              src={avatar || ''}
+              src={avatarPath || ''}
               className="h-full w-full"
             />
           </div>

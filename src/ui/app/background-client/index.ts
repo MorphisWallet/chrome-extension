@@ -122,7 +122,6 @@ export class BackgroundClient {
           type: 'keyring',
           method: 'create',
           args: { password, importedEntropy },
-          return: undefined,
         })
       ).pipe(take(1))
     )

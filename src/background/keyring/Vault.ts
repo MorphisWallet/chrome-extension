@@ -34,20 +34,21 @@ export class Vault {
 
   public static async from(
     password: string,
-    data: StoredData,
+    vault: StoredData,
     onMigrateCallback?: (vault: Vault) => Promise<void>,
-    forceMigrate?: boolean
+    forceMigrate?: boolean,
+    meta?: { alias?: string; avatar?: string }
   ) {
     let entropy: Uint8Array | null = null
     let doMigrate = false
-    if (typeof data === 'string') {
+    if (typeof vault === 'string') {
       entropy = mnemonicToEntropy(
-        Buffer.from(await decrypt<string>(password, data)).toString('utf-8')
+        Buffer.from(await decrypt<string>(password, vault)).toString('utf-8')
       )
       // for encrypted data, do the migration
       doMigrate = true
-    } else if (data.v === 1) {
-      entropy = toEntropy(await decrypt<string>(password, data.data))
+    } else if (vault.v === 1) {
+      entropy = toEntropy(await decrypt<string>(password, vault.data))
     } else {
       throw new Error(
         "Unknown data, provided data can't be used to create a Vault"
@@ -56,15 +57,18 @@ export class Vault {
     if (!validateEntropy(entropy)) {
       throw new Error("Can't restore Vault, entropy is invalid.")
     }
-    const vault = new Vault(entropy)
+    const newVault = new Vault(
+      entropy,
+      meta || { alias: vault.alias, avatar: vault.avatar }
+    )
     if (
       // to change password, we may force to do the migration
       (doMigrate || forceMigrate) &&
       typeof onMigrateCallback === 'function'
     ) {
-      await onMigrateCallback(vault)
+      await onMigrateCallback(newVault)
     }
-    return vault
+    return newVault
   }
 
   constructor(entropy: Uint8Array, meta?: { alias?: string; avatar?: string }) {
