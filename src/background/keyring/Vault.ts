@@ -14,7 +14,13 @@ import {
 
 export const LATEST_VAULT_VERSION = 1
 
-export type StoredData = string | { id: string; v: number; data: string }
+export type StoredData = {
+  id: string // use public key as vaultId
+  v: number
+  data: string //
+  avatar?: string
+  alias?: string
+}
 
 /**
  * Holds the mnemonic of the wallet and provides functionality to create/encrypt/decrypt it.

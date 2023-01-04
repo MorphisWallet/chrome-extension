@@ -12,7 +12,7 @@ type MethodToPayloads = {
     return: { keypair: ExportedKeypair; alias?: string; avatar?: string }
   }
   add: {
-    args: { password: string; importedEntropy?: string }
+    args: { importedEntropy?: string }
     return: { keypair: ExportedKeypair; alias?: string; avatar?: string }
   }
   getEntropy: {
@@ -28,7 +28,7 @@ type MethodToPayloads = {
     return: boolean
   }
   unlock: {
-    args: { password: string }
+    args: { password?: string }
     return: never
   }
   walletStatusUpdate: {

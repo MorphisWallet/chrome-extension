@@ -68,6 +68,7 @@ function makeEphemeraPassword(rndPass: string) {
 
 export class VaultStorage {
   #vault: Vault | null = null // the vault with active vaultId
+  #cachedPwd: string | null = null
 
   /**
    * See {@link Keyring.createVault}
@@ -89,32 +90,35 @@ export class VaultStorage {
     return encryptedVault
   }
 
-  public async addVault(password: string, importedEntropy?: string) {
+  public async addVault(importedEntropy?: string) {
     if (!(await this.isWalletInitialized())) {
       throw new Error(
         'Vault is not initialized. If you want to have multiple wallets, initialize the vault first'
       )
     }
 
-    const res = await this.checkPassword(password)
-
-    if (res) {
-      const encryptedVaults = await getFromStorage<StoredData[]>(
-        LOCAL_STORAGE,
-        VAULT_KEY
-      )
-      const newVault = new Vault(
-        importedEntropy ? toEntropy(importedEntropy) : getRandomEntropy()
-      )
-      const encryptedVault = await newVault.encrypt(password)
-
-      await setToStorage(LOCAL_STORAGE, VAULT_KEY, [
-        ...(encryptedVaults || []),
-        encryptedVault,
-      ])
-
-      return encryptedVault
+    const encryptedVaults = await getFromStorage<StoredData[]>(
+      LOCAL_STORAGE,
+      VAULT_KEY
+    )
+    const newVault = new Vault(
+      importedEntropy ? toEntropy(importedEntropy) : getRandomEntropy()
+    )
+    const cachedPwd = this.#cachedPwd
+    if (!cachedPwd) {
+      throw new Error('Password cache failed')
     }
+
+    await this.checkPassword(cachedPwd)
+
+    const encryptedVault = await newVault.encrypt(cachedPwd)
+
+    await setToStorage(LOCAL_STORAGE, VAULT_KEY, [
+      ...(encryptedVaults || []),
+      encryptedVault,
+    ])
+
+    return encryptedVault
   }
 
   public async unlock(password: string, vaultId?: string) {
@@ -151,6 +155,7 @@ export class VaultStorage {
           await aVault.encrypt(password),
         ])
       )
+      this.#cachedPwd = password
     } else {
       throw new Error(`No vault with id ${vaultIdToUnlock} was found`)
     }
@@ -172,6 +177,7 @@ export class VaultStorage {
 
   public async lock() {
     this.#vault = null
+    this.#cachedPwd = null
     await ifSessionStorage(async (sessionStorage) => {
       await setToStorage(sessionStorage, EPHEMERAL_PASSWORD_KEY, null)
       await setToStorage(sessionStorage, EPHEMERAL_VAULT_KEY, null)
@@ -239,6 +245,7 @@ export class VaultStorage {
       )
     )
     await setToStorage(LOCAL_STORAGE, VAULT_KEY, newlyEncryptedVault)
+    this.#cachedPwd = newPassword
 
     return true
   }
@@ -268,6 +275,7 @@ export class VaultStorage {
   public async clear() {
     await this.lock()
     await setToStorage(LOCAL_STORAGE, VAULT_KEY, null)
+    this.#cachedPwd = null
   }
 
   public async isWalletInitialized() {
@@ -276,6 +284,10 @@ export class VaultStorage {
 
   public getMnemonic() {
     return this.#vault?.getMnemonic() || null
+  }
+
+  public getCachedPassword() {
+    return this.#cachedPwd
   }
 
   public get allVaults() {

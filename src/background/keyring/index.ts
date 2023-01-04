@@ -34,13 +34,13 @@ class Keyring {
   #events = mitt<KeyringEvents>()
   #locked = true
   #keypair: Keypair | null = null
-  #vault: VaultStorage
+  #vaultStorage: VaultStorage
   #activeVaultId: string | null = null
 
   public readonly reviveDone: Promise<void>
 
   constructor() {
-    this.#vault = new VaultStorage()
+    this.#vaultStorage = new VaultStorage()
     this.reviveDone = this.revive().catch(() => {
       // if for some reason decrypting the vault fails or anything else catch
       // the error to allow the user to login using the password
@@ -54,15 +54,18 @@ class Keyring {
    * @throws If the wallet exists or any other error during encrypting/saving to storage or if importedEntropy is invalid
    */
   public async createVault(password: string, importedEntropy?: string) {
-    const createdVault = await this.#vault.create(password, importedEntropy)
+    const createdVault = await this.#vaultStorage.create(
+      password,
+      importedEntropy
+    )
     this.#activeVaultId = createdVault.id
     await Browser.storage.local.set({
       [ACTIVE_WALLET_VAULT_ID]: createdVault.id,
     })
   }
 
-  public async addVault(password: string, importedEntropy?: string) {
-    const createdVault = await this.#vault.addVault(password, importedEntropy)
+  public async addVault(importedEntropy?: string) {
+    const createdVault = await this.#vaultStorage.addVault(importedEntropy)
     if (createdVault) {
       this.#activeVaultId = createdVault.id
       await Browser.storage.local.set({
@@ -74,13 +77,25 @@ class Keyring {
   public async lock() {
     this.#keypair = null
     this.#locked = true
-    await this.#vault.lock()
+    await this.#vaultStorage.lock()
     await Alarms.clearLockAlarm()
     this.notifyLockedStatusUpdate(this.#locked)
   }
 
-  public async unlock(password: string) {
-    await this.#vault.unlock(password, this.#activeVaultId as string)
+  public async unlock(password?: string) {
+    let realPassword
+
+    if (password) {
+      realPassword = password
+    } else {
+      realPassword = this.#vaultStorage.getCachedPassword()
+    }
+
+    if (!realPassword) {
+      throw new Error('No password is provided or cached')
+    }
+
+    await this.#vaultStorage.unlock(realPassword, this.#activeVaultId as string)
     this.unlocked()
   }
 
@@ -91,7 +106,7 @@ class Keyring {
   }
 
   public async checkPassword(password: string) {
-    return await this.#vault.checkPassword(password)
+    return await this.#vaultStorage.checkPassword(password)
   }
 
   public async changePassword(args: {
@@ -99,7 +114,7 @@ class Keyring {
     newPassword: string
   }) {
     this.checkActiveVaultId()
-    return await this.#vault.changePassword({
+    return await this.#vaultStorage.changePassword({
       ...args,
       activeVaultId: this.#activeVaultId as string,
     })
@@ -107,11 +122,11 @@ class Keyring {
 
   public async clearVault() {
     this.lock()
-    await this.#vault.clear()
+    await this.#vaultStorage.clear()
   }
 
   public async isWalletInitialized() {
-    return await this.#vault.isWalletInitialized()
+    return await this.#vaultStorage.isWalletInitialized()
   }
 
   public async setActiveVaultId(vaultId: string) {
@@ -154,7 +169,7 @@ class Keyring {
   }
 
   public get entropy() {
-    return this.#vault?.entropy
+    return this.#vaultStorage?.entropy
   }
 
   // sui address always prefixed with 0x
@@ -221,7 +236,7 @@ class Keyring {
         if (!this.#keypair) {
           throw new Error('Error, created vault is empty')
         }
-        const allVaults = (await this.#vault.allVaults) || []
+        const allVaults = (await this.#vaultStorage.allVaults) || []
         await this.setAlias(`Account${allVaults.length}`)
         uiConnection.send(
           createMessage<KeyringPayload<'create'>>(
@@ -241,13 +256,13 @@ class Keyring {
         isKeyringPayload(payload, 'add') &&
         payload.args !== undefined
       ) {
-        const { password, importedEntropy } = payload.args
-        await this.addVault(password, importedEntropy)
-        await this.unlock(password)
+        const { importedEntropy } = payload.args
+        await this.addVault(importedEntropy)
+        await this.unlock()
         if (!this.#keypair) {
           throw new Error('Error, added vault is empty')
         }
-        const allVaults = (await this.#vault.allVaults) || []
+        const allVaults = (await this.#vaultStorage.allVaults) || []
         await this.setAlias(`Account${allVaults.length}`)
         uiConnection.send(
           createMessage<KeyringPayload<'add'>>(
@@ -270,7 +285,7 @@ class Keyring {
         if (!this.#activeVaultId) {
           throw new Error('No active vault')
         }
-        if (!this.#vault?.entropy) {
+        if (!this.#vaultStorage?.entropy) {
           throw new Error('Error vault is empty')
         }
         uiConnection.send(
@@ -278,7 +293,7 @@ class Keyring {
             {
               type: 'keyring',
               method: 'getEntropy',
-              return: entropyToSerialized(this.#vault.entropy),
+              return: entropyToSerialized(this.#vaultStorage.entropy),
             },
             id
           )
@@ -407,14 +422,14 @@ class Keyring {
   }
 
   private async revive() {
-    const unlocked = await this.#vault.revive()
+    const unlocked = await this.#vaultStorage.revive()
     if (unlocked) {
       this.unlocked()
     }
   }
 
   private unlocked() {
-    let mnemonic = this.#vault.getMnemonic()
+    let mnemonic = this.#vaultStorage.getMnemonic()
     if (!mnemonic) {
       return
     }
