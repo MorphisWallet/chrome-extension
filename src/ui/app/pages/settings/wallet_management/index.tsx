@@ -16,6 +16,7 @@ import ArrowShort from '_assets/icons/arrow_short.svg'
 import ImportIcon from '_assets/icons/import.svg'
 import SettingsIcon from '_assets/icons/settings.svg'
 import AddIcon from '_assets/icons/add.svg'
+import Logo from '_assets/icons/logo.svg'
 
 const AccountSelect = ({ id, alias, avatar }: Account) => {
   const { address } = useAppSelector(
@@ -25,9 +26,10 @@ const AccountSelect = ({ id, alias, avatar }: Account) => {
       avatar,
     })
   )
-  const shortenAddress = useMiddleEllipsis(id, 10, 7)
+  const idAddress = `0x${id}`
+  const isCurrentAccount = address === idAddress
 
-  const isCurrentAccount = address === `0x${id}`
+  const shortenAddress = useMiddleEllipsis(idAddress, 10, 7)
 
   return (
     <div
@@ -38,11 +40,15 @@ const AccountSelect = ({ id, alias, avatar }: Account) => {
       ])}
     >
       <div className="mr-2">
-        <img
-          alt="avatar"
-          src={avatar}
-          className="h-[28px] w-[28px] rounded-full"
-        />
+        {avatar?.[0] === '#' ? (
+          <Logo height={28} width={28} color={avatar} />
+        ) : (
+          <img
+            alt="avatar"
+            src={avatar}
+            className="h-[28px] w-[28px] rounded-full"
+          />
+        )}
       </div>
       <div className="flex flex-col grow items-start">
         <div>{alias || 'No name'}</div>
