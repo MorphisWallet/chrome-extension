@@ -61,8 +61,8 @@ export class UiConnection extends Connection {
           isLocked,
           activeAccount: Keyring.keypair?.export(),
           isInitialized: await Keyring.isWalletInitialized(),
-          alias: await Keyring.activeAlias,
-          avatar: await Keyring.activeAvatar,
+          alias: '',
+          avatar: '',
         },
       })
     )

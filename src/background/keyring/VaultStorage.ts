@@ -86,6 +86,8 @@ export class VaultStorage {
     )
     const encryptedVault = await vault.encrypt(password)
     await setToStorage(LOCAL_STORAGE, VAULT_KEY, [encryptedVault])
+    await this.setActiveVaultId(encryptedVault.id)
+    this.#cachedPwd = password
 
     return encryptedVault
   }
@@ -117,48 +119,23 @@ export class VaultStorage {
       ...(encryptedVaults || []),
       encryptedVault,
     ])
+    await this.setActiveVaultId(encryptedVault.id)
 
     return encryptedVault
   }
 
-  public async unlock(password: string, vaultId?: string) {
-    const encryptedVaults = await getFromStorage<StoredData[]>(
-      LOCAL_STORAGE,
-      VAULT_KEY
+  public async unlock(password?: string) {
+    if (!password && !this.#cachedPwd) {
+      throw new Error('No password is provided or cached')
+    }
+
+    const activeVault = await this.getActiveVault()
+
+    this.#vault = await Vault.from(
+      password || (this.#cachedPwd as string),
+      activeVault
     )
-    if (!encryptedVaults) {
-      throw new Error('Wallet is not initialized. Create a new one first.')
-    }
-
-    const vaultIdToUnlock =
-      vaultId ||
-      (await Browser.storage.local.get(ACTIVE_WALLET_VAULT_ID))[
-        ACTIVE_WALLET_VAULT_ID
-      ]
-
-    if (vaultIdToUnlock) {
-      const objectVaults: Exclude<StoredData, string>[] =
-        encryptedVaults.filter(
-          (_vault) => typeof _vault === 'object'
-        ) as Exclude<StoredData, string>[]
-      const targetVault = objectVaults.find(
-        (_vault: Exclude<StoredData, string>) => _vault.id === vaultIdToUnlock
-      )
-
-      if (!targetVault) {
-        throw new Error(`No vault with id ${vaultIdToUnlock} was found`)
-      }
-
-      this.#vault = await Vault.from(password, targetVault, async (aVault) =>
-        setToStorage(LOCAL_STORAGE, VAULT_KEY, [
-          ...(encryptedVaults || []),
-          await aVault.encrypt(password),
-        ])
-      )
-      this.#cachedPwd = password
-    } else {
-      throw new Error(`No vault with id ${vaultIdToUnlock} was found`)
-    }
+    this.#cachedPwd = password || this.#cachedPwd
 
     await ifSessionStorage(async (sessionStorage) => {
       if (!this.#vault) {
@@ -200,11 +177,9 @@ export class VaultStorage {
   public async changePassword({
     oldPassword,
     newPassword,
-    activeVaultId,
   }: {
     oldPassword: string
     newPassword: string
-    activeVaultId: string
   }) {
     const encryptedVaults = await getFromStorage<StoredData[]>(
       LOCAL_STORAGE,
@@ -212,6 +187,11 @@ export class VaultStorage {
     )
     if (!encryptedVaults) {
       throw new Error('Wallet is not initialized. Create a new one first.')
+    }
+
+    const activeVaultId = await this.getActiveVaultId()
+    if (!activeVaultId) {
+      throw new Error('No vaultId is cached')
     }
 
     const objectVaults: Exclude<StoredData, string>[] = encryptedVaults.filter(
@@ -274,7 +254,6 @@ export class VaultStorage {
 
   public async clear() {
     await this.lock()
-    await setToStorage(LOCAL_STORAGE, VAULT_KEY, null)
     this.#cachedPwd = null
   }
 
@@ -290,6 +269,48 @@ export class VaultStorage {
     return this.#cachedPwd
   }
 
+  public async getActiveVaultId() {
+    return await getFromStorage<string>(LOCAL_STORAGE, ACTIVE_WALLET_VAULT_ID)
+  }
+
+  public async getActiveVault() {
+    const encryptedVaults = await getFromStorage<StoredData[]>(
+      LOCAL_STORAGE,
+      VAULT_KEY
+    )
+    if (!encryptedVaults) {
+      throw new Error('Wallet is not initialized. Create a new one first.')
+    }
+
+    const activeVaultId = await this.getActiveVaultId()
+    if (!activeVaultId) {
+      throw new Error('No vaultId is cached')
+    }
+
+    const objectVaults: Exclude<StoredData, string>[] = encryptedVaults.filter(
+      (_vault) => typeof _vault === 'object'
+    ) as Exclude<StoredData, string>[]
+    const targetVault = objectVaults.find(
+      (_vault: Exclude<StoredData, string>) => _vault.id === activeVaultId
+    )
+
+    if (!targetVault) {
+      throw new Error(`No vault with id ${activeVaultId} was found`)
+    }
+
+    return targetVault
+  }
+
+  public async setActiveVaultId(id: string) {
+    await Browser.storage.local.set({
+      [ACTIVE_WALLET_VAULT_ID]: id,
+    })
+  }
+
+  public async setMeta(meta: { avatar?: string; alias?: string }) {
+    this.#vault?.setMeta(meta)
+  }
+
   public get allVaults() {
     return (async () =>
       await getFromStorage<StoredData[]>(LOCAL_STORAGE, VAULT_KEY))()
@@ -297,5 +318,9 @@ export class VaultStorage {
 
   public get entropy() {
     return this.#vault?.entropy || null
+  }
+
+  public get keypair() {
+    return this.#vault?.keypair
   }
 }

@@ -45,7 +45,7 @@ type MethodToPayloads = {
   allWallets: {
     args: never
     return: {
-      account: ExportedKeypair
+      id: string
       alias?: string
       avatar?: string
     }[]

@@ -1,7 +1,7 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { v4 as uuidV4 } from 'uuid'
+import { Ed25519Keypair } from '@mysten/sui.js'
 
 import { encrypt, decrypt } from '_shared/cryptography/keystore'
 import {
@@ -17,7 +17,7 @@ export const LATEST_VAULT_VERSION = 1
 export type StoredData = {
   id: string // use public key as vaultId
   v: number
-  data: string //
+  data: string // encrypted entropy (for local storage)
   avatar?: string
   alias?: string
 }
@@ -27,6 +27,10 @@ export type StoredData = {
  */
 export class Vault {
   public readonly entropy: Uint8Array
+  public readonly id: string
+  public avatar?: string
+  public alias?: string
+  #keypair: Ed25519Keypair
 
   public static async from(
     password: string,
@@ -63,15 +67,25 @@ export class Vault {
     return vault
   }
 
-  constructor(entropy: Uint8Array) {
+  constructor(entropy: Uint8Array, meta?: { alias?: string; avatar?: string }) {
     this.entropy = entropy
+
+    const mnemonic = this.getMnemonic(entropy)
+    const keypair = Ed25519Keypair.deriveKeypair(mnemonic)
+    this.#keypair = keypair
+    this.id = keypair.getPublicKey().toSuiAddress()
+
+    this.alias = meta?.alias
+    this.avatar = meta?.avatar
   }
 
-  public async encrypt(password: string, id?: string) {
+  public async encrypt(password: string, id?: string): Promise<StoredData> {
     return {
       v: LATEST_VAULT_VERSION,
-      id: id || uuidV4(),
+      id: id || this.id,
       data: await encrypt(password, entropyToSerialized(this.entropy)),
+      avatar: this.avatar,
+      alias: this.alias,
     }
   }
 
@@ -110,7 +124,16 @@ export class Vault {
     }
   }
 
-  public getMnemonic() {
-    return entropyToMnemonic(this.entropy)
+  public setMeta({ avatar, alias }: { avatar?: string; alias?: string }) {
+    this.avatar = avatar || this.avatar
+    this.alias = alias || this.alias
+  }
+
+  public getMnemonic(entropy?: Uint8Array) {
+    return entropyToMnemonic(entropy || this.entropy)
+  }
+
+  public get keypair() {
+    return this.#keypair
   }
 }
