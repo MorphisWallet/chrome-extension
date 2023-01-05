@@ -25,7 +25,7 @@ type MethodToPayloads = {
   }
   changePassword: {
     args: { oldPassword: string; newPassword: string }
-    return: boolean
+    return: never
   }
   unlock: {
     args: { password?: string }

@@ -198,45 +198,32 @@ export class VaultStorage {
       throw new Error('Wallet is not initialized. Create a new one first.')
     }
 
-    const activeVaultId = await this.getActiveVaultId()
-    if (!activeVaultId) {
-      throw new Error('No vaultId is cached')
-    }
-
-    const objectVaults: Exclude<StoredData, string>[] = encryptedVaults.filter(
-      (_vault) => typeof _vault === 'object'
-    ) as Exclude<StoredData, string>[]
-    const targetVault = objectVaults.find(
-      (_vault: Exclude<StoredData, string>) => _vault.id === activeVaultId
-    )
-
-    if (!targetVault) {
-      throw new Error(`No vault with id ${activeVaultId} was found`)
-    }
-
-    const revealedVaults = await Promise.all(
-      objectVaults.map(async (_vault) => ({
-        entropy: await Vault.reveal(oldPassword, _vault),
-        id: _vault.id,
-      }))
-    )
-    if (revealedVaults.some((_vault) => !_vault.entropy)) {
-      throw new Error('Some vaults have unknown entropy')
-    }
-
-    const newlyEncryptedVault = await Promise.all(
-      revealedVaults.map(
-        async (_vault) =>
-          await new Vault(toEntropy(_vault.entropy as string)).encrypt(
-            newPassword,
-            _vault.id
-          )
+    try {
+      const revealedVaults = await Promise.all(
+        encryptedVaults.map(async (_vault) => ({
+          entropy: await Vault.reveal(oldPassword, _vault),
+          id: _vault.id,
+        }))
       )
-    )
-    await setToStorage(LOCAL_STORAGE, VAULT_KEY, newlyEncryptedVault)
-    this.#cachedPwd = newPassword
 
-    return true
+      if (revealedVaults.some((_vault) => !_vault.entropy)) {
+        throw new Error('Some vaults have unknown entropy')
+      }
+
+      const newlyEncryptedVault = await Promise.all(
+        revealedVaults.map(
+          async (_vault) =>
+            await new Vault(toEntropy(_vault.entropy as string)).encrypt(
+              newPassword,
+              _vault.id
+            )
+        )
+      )
+      await setToStorage(LOCAL_STORAGE, VAULT_KEY, newlyEncryptedVault)
+      this.#cachedPwd = newPassword
+    } catch (e) {
+      throw new Error('Password does not match')
+    }
   }
 
   public async revive(): Promise<boolean> {

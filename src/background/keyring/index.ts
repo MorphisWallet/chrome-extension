@@ -204,13 +204,13 @@ class Keyring {
           )
         )
       } else if (isKeyringPayload(payload, 'changePassword') && payload.args) {
-        const res = await this.changePassword(payload.args)
+        await this.changePassword(payload.args)
+
         uiConnection.send(
           createMessage<KeyringPayload<'changePassword'>>(
             {
               type: 'keyring',
               method: 'changePassword',
-              return: res,
             },
             id
           )

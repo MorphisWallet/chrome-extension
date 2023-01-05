@@ -94,13 +94,14 @@ export const checkPassword = createAsyncThunk<boolean, string, AppThunkConfig>(
 )
 
 export const changePassword = createAsyncThunk<
-  boolean,
+  void,
   { oldPassword: string; newPassword: string },
   AppThunkConfig
 >(
   'account/changePassword',
-  async ({ oldPassword, newPassword }, { extra: { background } }) =>
+  async ({ oldPassword, newPassword }, { extra: { background } }) => {
     await background.changePassword(oldPassword, newPassword)
+  }
 )
 
 export const setActiveAccount = createAsyncThunk<

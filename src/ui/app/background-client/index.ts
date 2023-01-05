@@ -227,18 +227,7 @@ export class BackgroundClient {
           method: 'changePassword',
           args: { oldPassword, newPassword },
         })
-      ).pipe(
-        take(1),
-        map(({ payload }) => {
-          if (
-            isKeyringPayload(payload, 'changePassword') &&
-            typeof payload.return === 'boolean'
-          ) {
-            return payload.return
-          }
-          throw new Error('Fail to change password')
-        })
-      )
+      ).pipe(take(1))
     )
   }
 
