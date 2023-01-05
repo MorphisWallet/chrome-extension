@@ -203,6 +203,8 @@ export class VaultStorage {
         encryptedVaults.map(async (_vault) => ({
           entropy: await Vault.reveal(oldPassword, _vault),
           id: _vault.id,
+          alias: _vault.alias,
+          avatar: _vault.avatar,
         }))
       )
 
@@ -213,10 +215,10 @@ export class VaultStorage {
       const newlyEncryptedVault = await Promise.all(
         revealedVaults.map(
           async (_vault) =>
-            await new Vault(toEntropy(_vault.entropy as string)).encrypt(
-              newPassword,
-              _vault.id
-            )
+            await new Vault(toEntropy(_vault.entropy as string), {
+              alias: _vault.alias,
+              avatar: _vault.avatar,
+            }).encrypt(newPassword, _vault.id)
         )
       )
       await setToStorage(LOCAL_STORAGE, VAULT_KEY, newlyEncryptedVault)
