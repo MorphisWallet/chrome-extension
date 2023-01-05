@@ -71,7 +71,7 @@ type MethodToPayloads = {
     return: { keypair: ExportedKeypair; alias?: string; avatar?: string }
   }
   setMeta: {
-    args: { alias?: string; avatar?: string }
+    args: { address: string; alias?: string; avatar?: string }
     return: { alias?: string; avatar?: string }
   }
 }

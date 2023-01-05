@@ -41,7 +41,7 @@ const UpdateWalletMetaPage = () => {
       try {
         await dispatch(
           setMeta({
-            id: address,
+            address,
             alias: alias === _alias ? undefined : _alias,
             avatar: avatar === avatarPath ? undefined : avatarPath || undefined,
           })
@@ -102,7 +102,7 @@ const UpdateWalletMetaPage = () => {
         </div>
         <div className="flex flex-col grow">
           <div className="mb-4">
-            <Address addressOnly />
+            <Address addressOnly address={address} />
           </div>
           <div className="mb-6 mx-auto rounded-full overflow-hidden h-[102px] w-[102px] relative">
             <label

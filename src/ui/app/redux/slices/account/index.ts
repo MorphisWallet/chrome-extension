@@ -150,12 +150,13 @@ export const logout = createAsyncThunk<void, void, AppThunkConfig>(
 
 export const setMeta = createAsyncThunk<
   void,
-  { id: string; alias?: string; avatar?: string },
+  { address: string; alias?: string; avatar?: string },
   AppThunkConfig
 >(
   'account/setMeta',
-  async ({ alias, avatar }, { extra: { background }, dispatch }) => {
+  async ({ address, alias, avatar }, { extra: { background }, dispatch }) => {
     await background.setMeta({
+      address,
       alias,
       avatar,
     })

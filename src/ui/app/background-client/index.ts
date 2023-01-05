@@ -9,7 +9,7 @@ import { isKeyringPayload } from '_payloads/keyring'
 import { isPermissionRequests } from '_payloads/permissions'
 import { isUpdateActiveOrigin } from '_payloads/tabs/updateActiveOrigin'
 import { isGetTransactionRequestsResponse } from '_payloads/transactions/ui/GetTransactionRequestsResponse'
-import { setKeyringStatus } from '_redux/slices/account'
+import { setKeyringStatus, setAllAccounts } from '_redux/slices/account'
 import { setActiveOrigin } from '_redux/slices/app'
 import { setPermissions } from '_redux/slices/permissions'
 import { setTransactionRequests } from '_redux/slices/transaction-requests'
@@ -267,7 +267,11 @@ export class BackgroundClient {
     )
   }
 
-  public async setMeta(meta: { alias?: string; avatar?: string }) {
+  public async setMeta(meta: {
+    address: string
+    alias?: string
+    avatar?: string
+  }) {
     return await lastValueFrom(
       this.sendMessage(
         createMessage<KeyringPayload<'setMeta'>>({
@@ -334,6 +338,11 @@ export class BackgroundClient {
       payload.return
     ) {
       action = setKeyringStatus(payload.return)
+    } else if (
+      isKeyringPayload<'allAccounts'>(payload, 'allAccounts') &&
+      payload.return
+    ) {
+      action = setAllAccounts(payload.return)
     }
     if (action) {
       this._dispatch(action)

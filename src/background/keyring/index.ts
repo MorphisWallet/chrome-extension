@@ -91,8 +91,21 @@ class Keyring {
     return await this.#vaultStorage.isWalletInitialized()
   }
 
-  public async setMeta(meta: { alias?: string; avatar?: string }) {
-    await this.#vaultStorage.setMeta(meta)
+  public async setMeta(meta?: {
+    address: string
+    alias?: string
+    avatar?: string
+  }) {
+    if (!meta) {
+      throw new Error('No meta data provided')
+    }
+
+    const { address, alias, avatar } = meta
+    if (!address) {
+      throw new Error('Provide a address')
+    }
+
+    await this.#vaultStorage.setMeta({ alias, avatar }, address.slice(2))
   }
 
   public get meta() {
@@ -292,7 +305,7 @@ class Keyring {
         }
         uiConnection.send(createMessage({ type: 'done' }, id))
       } else if (isKeyringPayload(payload, 'setMeta')) {
-        await this.setMeta(payload.args || {})
+        await this.setMeta(payload.args)
         uiConnection.send(
           createMessage<KeyringPayload<'setMeta'>>(
             {

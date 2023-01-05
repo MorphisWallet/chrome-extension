@@ -60,7 +60,7 @@ const AccountSelect = ({
         <div className="text-[#c0c0c0]">{shortenAddress}</div>
       </div>
       <Link
-        to={`./${address}`}
+        to={`./${idAddress}`}
         onClick={(e) => e.stopPropagation()}
         className="invisible transition duration-100 ease-in-out hover:scale-110 group-hover:visible"
       >

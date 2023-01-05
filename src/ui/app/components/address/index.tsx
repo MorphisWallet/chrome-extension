@@ -13,14 +13,14 @@ import CopyIcon from '_assets/icons/copy.svg'
 
 type AddressProps = {
   addressOnly?: boolean
+  address?: string
 }
 
-export const Address = ({ addressOnly = false }: AddressProps) => {
+export const Address = ({ addressOnly = false, address }: AddressProps) => {
   const activeAddress = useAppSelector(activeAccountSelector)
   const { alias = '' } =
     useAppSelector(getAccountSelector(activeAddress || '')) || {}
-
-  const shortenAddress = useMiddleEllipsis(activeAddress, 10, 7)
+  const shortenAddress = useMiddleEllipsis(address || activeAddress, 10, 7)
   const shortenAlias = useMiddleEllipsis(alias, 10, 7)
 
   const onCopy = () => {
