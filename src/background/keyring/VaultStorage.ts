@@ -66,8 +66,22 @@ function makeEphemeraPassword(rndPass: string) {
   return `${PASSWORD}${rndPass}`
 }
 
-const genRandomHexColor = () =>
-  `#${Math.floor(Math.random() * 16777215).toString(16)}`
+const DEFAULT_AVATAR_COLOR_POOL = [
+  '#BEF9FF',
+  '#FFF3EC',
+  '#82FFAC',
+  '#E3C8F3',
+  '#FEBBA8',
+  '#000000',
+  '#FFFFFF',
+  '#FFFFC7',
+  '#3FFFE4',
+  '#9B72F3',
+]
+const genRandomAvatarColor = () =>
+  DEFAULT_AVATAR_COLOR_POOL[
+    Math.floor(Math.random() * DEFAULT_AVATAR_COLOR_POOL.length)
+  ]
 
 export class VaultStorage {
   #vault: Vault | null = null // the vault with active vaultId
@@ -86,7 +100,7 @@ export class VaultStorage {
     }
     const vault = new Vault(
       importedEntropy ? toEntropy(importedEntropy) : getRandomEntropy(),
-      { alias: 'Account1', avatar: genRandomHexColor() }
+      { alias: 'Account1', avatar: genRandomAvatarColor() }
     )
     const encryptedVault = await vault.encrypt(password)
     await setToStorage(LOCAL_STORAGE, VAULT_KEY, [encryptedVault])
@@ -109,7 +123,7 @@ export class VaultStorage {
       importedEntropy ? toEntropy(importedEntropy) : getRandomEntropy(),
       {
         alias: `Account${encryptedVaults.length + 1}`,
-        avatar: genRandomHexColor(),
+        avatar: genRandomAvatarColor(),
       }
     )
     const cachedPwd = this.#cachedPwd

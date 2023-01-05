@@ -4,7 +4,7 @@ import ReactTooltip from 'react-tooltip'
 import cl from 'classnames'
 
 import Layout from '_app/layouts'
-import { IconWrapper, Button, Loading } from '_app/components'
+import { IconWrapper, Button, Loading, Avatar } from '_app/components'
 
 import { useAppDispatch, useAppSelector, useMiddleEllipsis } from '_hooks'
 
@@ -21,7 +21,6 @@ import ArrowShort from '_assets/icons/arrow_short.svg'
 import ImportIcon from '_assets/icons/import.svg'
 import SettingsIcon from '_assets/icons/settings.svg'
 import AddIcon from '_assets/icons/add.svg'
-import Logo from '_assets/icons/logo.svg'
 
 const AccountSelect = ({
   id,
@@ -45,15 +44,7 @@ const AccountSelect = ({
       ])}
     >
       <div className="mr-2">
-        {avatar?.[0] === '#' ? (
-          <Logo height={28} width={28} color={avatar} />
-        ) : (
-          <img
-            alt="avatar"
-            src={avatar}
-            className="h-[28px] w-[28px] rounded-full"
-          />
-        )}
+        <Avatar avatar={avatar} size={28} />
       </div>
       <div className="flex flex-col grow items-start">
         <div>{alias || 'No name'}</div>
