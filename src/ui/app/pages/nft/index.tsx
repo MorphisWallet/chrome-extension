@@ -48,7 +48,7 @@ const NftPage = () => {
   return (
     <Layout>
       <div className="flex flex-col grow font-medium px-6 pt-4 pb-6 overflow-hidden">
-        <p className="shrink-0 mb-2 text-xl font-bold">Collectables</p>
+        <p className="shrink-0 mb-2 text-xl font-bold">Collectibles</p>
         <Loading loading={loading}>{renderNfts()}</Loading>
       </div>
     </Layout>
