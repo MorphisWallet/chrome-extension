@@ -7,13 +7,20 @@ import {
   setAddress,
   createVault,
   setKeyringStatus,
+  setActiveAccount,
+  addVault,
 } from '_redux/slices/account'
 import { thunkExtras } from '_store/thunk-extras'
 
 import type { Middleware } from '@reduxjs/toolkit'
 
 const keypairVault = thunkExtras.keypairVault
-const matchUpdateKeypairVault = isAnyOf(createVault.fulfilled, setKeyringStatus)
+const matchUpdateKeypairVault = isAnyOf(
+  createVault.fulfilled,
+  addVault.fulfilled,
+  setKeyringStatus,
+  setActiveAccount.fulfilled
+)
 
 export const KeypairVaultMiddleware: Middleware =
   ({ dispatch }) =>

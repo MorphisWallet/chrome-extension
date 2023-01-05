@@ -242,6 +242,18 @@ export class BackgroundClient {
     )
   }
 
+  public async setActiveAccount(id: string) {
+    return await lastValueFrom(
+      this.sendMessage(
+        createMessage<KeyringPayload<'setActiveAccount'>>({
+          type: 'keyring',
+          method: 'setActiveAccount',
+          args: { id },
+        })
+      ).pipe(take(1))
+    )
+  }
+
   public async getAllAccounts() {
     return await lastValueFrom(
       this.sendMessage(

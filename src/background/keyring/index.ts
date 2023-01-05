@@ -253,8 +253,7 @@ class Keyring {
               method: 'setActiveAccount',
               return: {
                 keypair: (keypair as Ed25519Keypair).export(),
-                alias: '',
-                avatar: '',
+                ...this.#vaultStorage.meta,
               },
             },
             id

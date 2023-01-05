@@ -8,7 +8,11 @@ import { IconWrapper, Button, Loading } from '_app/components'
 
 import { useAppDispatch, useAppSelector, useMiddleEllipsis } from '_hooks'
 
-import { addVault, getAllAccounts } from '_redux/slices/account'
+import {
+  addVault,
+  getAllAccounts,
+  setActiveAccount,
+} from '_redux/slices/account'
 
 import type { Account } from '_redux/slices/account'
 
@@ -18,7 +22,12 @@ import SettingsIcon from '_assets/icons/settings.svg'
 import AddIcon from '_assets/icons/add.svg'
 import Logo from '_assets/icons/logo.svg'
 
-const AccountSelect = ({ id, alias, avatar }: Account) => {
+const AccountSelect = ({
+  id,
+  alias,
+  avatar,
+  onSetActiveAccount,
+}: Account & { onSetActiveAccount: (id: string) => void }) => {
   const { address } = useAppSelector(
     ({ account: { address, alias, avatar } }) => ({
       address,
@@ -33,6 +42,7 @@ const AccountSelect = ({ id, alias, avatar }: Account) => {
 
   return (
     <div
+      onClick={() => onSetActiveAccount(id)}
       className={cl([
         'flex items-center h-[60px] px-4 rounded border cursor-pointer group',
         'transition duration-100 hover:border-[#7db4ff]',
@@ -84,6 +94,14 @@ const WalletManagementPage = () => {
     setLoading(false)
   }
 
+  const onSetActiveAccount = async (id: string) => {
+    setLoading(true)
+
+    await dispatch(setActiveAccount(id)).unwrap()
+
+    setLoading(false)
+  }
+
   useEffect(() => {
     fetchAllAccounts()
   }, [])
@@ -103,7 +121,11 @@ const WalletManagementPage = () => {
           <div className="flex flex-col gap-2">
             <Loading loading={loading}>
               {allAccounts.map((_account) => (
-                <AccountSelect key={_account.id} {..._account} />
+                <AccountSelect
+                  key={_account.id}
+                  {..._account}
+                  onSetActiveAccount={onSetActiveAccount}
+                />
               ))}
             </Loading>
 

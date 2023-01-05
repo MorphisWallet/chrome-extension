@@ -103,6 +103,30 @@ export const changePassword = createAsyncThunk<
     await background.changePassword(oldPassword, newPassword)
 )
 
+export const setActiveAccount = createAsyncThunk<
+  ExportedKeypair,
+  string,
+  AppThunkConfig
+>(
+  'account/setActiveAccount',
+  async (id, { extra: { background }, dispatch }) => {
+    const { payload } = await background.setActiveAccount(id)
+    if (!isKeyringPayload(payload, 'setActiveAccount')) {
+      throw new Error('Unknown payload')
+    }
+
+    if (!payload.return) {
+      throw new Error('No response from service worker')
+    }
+
+    const { keypair, alias, avatar } = payload.return
+    dispatch(setAlias(alias || null))
+    dispatch(setAvatar(avatar || null))
+
+    return keypair
+  }
+)
+
 export const getAllAccounts = createAsyncThunk<Account[], void, AppThunkConfig>(
   'account/getAllAccounts',
   async (_, { extra: { background } }) => {
