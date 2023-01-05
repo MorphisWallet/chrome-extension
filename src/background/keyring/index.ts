@@ -78,6 +78,10 @@ class Keyring {
     return await this.#vaultStorage.changePassword(args)
   }
 
+  public async setActiveAccount(id: string) {
+    return await this.#vaultStorage.setActiveAccount(id)
+  }
+
   public async clearVault() {
     this.lock()
     await this.#vaultStorage.clear()
@@ -130,9 +134,7 @@ class Keyring {
               type: 'keyring',
               method: 'create',
               return: {
-                keypair: (
-                  this.#vaultStorage.keypair as Ed25519Keypair
-                ).export(),
+                keypair: (keypair as Ed25519Keypair).export(),
                 ...this.#vaultStorage.meta,
               },
             },
@@ -158,9 +160,7 @@ class Keyring {
               type: 'keyring',
               method: 'add',
               return: {
-                keypair: (
-                  this.#vaultStorage.keypair as Ed25519Keypair
-                ).export(),
+                keypair: (keypair as Ed25519Keypair).export(),
                 ...this.#vaultStorage.meta,
               },
             },
@@ -230,6 +230,31 @@ class Keyring {
                 isInitialized: await this.isWalletInitialized(),
                 activeAccount: this.#vaultStorage.keypair?.export(),
                 ...this.#vaultStorage.meta,
+              },
+            },
+            id
+          )
+        )
+      } else if (
+        isKeyringPayload(payload, 'setActiveAccount') &&
+        payload.args
+      ) {
+        await this.setActiveAccount(payload.args.id)
+
+        const keypair = this.#vaultStorage.keypair
+        if (!keypair) {
+          throw new Error('Error, added vault is empty')
+        }
+
+        uiConnection.send(
+          createMessage<KeyringPayload<'setActiveAccount'>>(
+            {
+              type: 'keyring',
+              method: 'setActiveAccount',
+              return: {
+                keypair: (keypair as Ed25519Keypair).export(),
+                alias: '',
+                avatar: '',
               },
             },
             id

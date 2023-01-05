@@ -68,7 +68,7 @@ type MethodToPayloads = {
   }
   setActiveAccount: {
     args: { id: string }
-    return: never
+    return: { keypair: ExportedKeypair; alias?: string; avatar?: string }
   }
   setMeta: {
     args: { alias?: string; avatar?: string }

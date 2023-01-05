@@ -312,6 +312,30 @@ export class VaultStorage {
     })
   }
 
+  public async setActiveAccount(id: string) {
+    const encryptedVaults = await getFromStorage<StoredData[]>(
+      LOCAL_STORAGE,
+      VAULT_KEY
+    )
+    if (!encryptedVaults) {
+      throw new Error('Wallet is not initialized. Create a new one first.')
+    }
+
+    const targetVault = encryptedVaults.find(
+      (_vault: Exclude<StoredData, string>) => _vault.id === id
+    )
+    if (!targetVault) {
+      throw new Error(`No vault with id ${id} is found`)
+    }
+
+    if (!this.#cachedPwd) {
+      throw new Error('No password is provided or cached')
+    }
+
+    this.#vault = await Vault.from(this.#cachedPwd, targetVault)
+    await this.setActiveVaultId(id)
+  }
+
   public async setMeta(
     meta: { avatar?: string; alias?: string },
     vaultId?: string
