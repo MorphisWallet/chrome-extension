@@ -36,6 +36,7 @@ export const Avatar = ({ avatar, size = 24 }: AvatarProps) => {
     <img
       alt="avatar"
       src={avatar || ''}
+      className="rounded-full"
       style={{
         height: `${size}px`,
         width: `${size}px`,

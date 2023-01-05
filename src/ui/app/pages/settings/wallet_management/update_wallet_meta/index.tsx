@@ -4,7 +4,14 @@ import { useFormik } from 'formik'
 import * as Yup from 'yup'
 
 import Layout from '_app/layouts'
-import { IconWrapper, Address, Input, Button, toast } from '_app/components'
+import {
+  IconWrapper,
+  Address,
+  Input,
+  Button,
+  toast,
+  Avatar,
+} from '_app/components'
 
 import { useAppDispatch, useAppSelector } from '_hooks'
 
@@ -116,11 +123,7 @@ const UpdateWalletMetaPage = () => {
               className="opacity-0 absolute z-[-1]"
               onChange={onUpload}
             />
-            <img
-              alt="avatar"
-              src={avatarPath || ''}
-              className="h-full w-full"
-            />
+            <Avatar avatar={avatarPath} size={102} />
           </div>
           <form onSubmit={handleSubmit} className="flex flex-col grow">
             <label htmlFor="alias">Name</label>
