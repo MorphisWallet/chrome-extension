@@ -47,8 +47,9 @@ export const createVault = createAsyncThunk<
     if (!payload.return?.keypair) {
       throw new Error('Empty keypair in payload')
     }
-    dispatch(setAlias(payload.return.alias || null))
-    dispatch(setAvatar(payload.return.avatar || null))
+
+    await dispatch(getAllAccounts()).unwrap()
+
     return payload.return.keypair
   }
 )
@@ -71,8 +72,9 @@ export const addVault = createAsyncThunk<
     if (!payload.return?.keypair) {
       throw new Error('Empty keypair in payload')
     }
-    dispatch(setAlias(payload.return.alias || null))
-    dispatch(setAvatar(payload.return.avatar || null))
+
+    await dispatch(getAllAccounts()).unwrap()
+
     return payload.return.keypair
   }
 )
@@ -108,34 +110,33 @@ export const setActiveAccount = createAsyncThunk<
   ExportedKeypair,
   string,
   AppThunkConfig
->(
-  'account/setActiveAccount',
-  async (id, { extra: { background }, dispatch }) => {
-    const { payload } = await background.setActiveAccount(id)
-    if (!isKeyringPayload(payload, 'setActiveAccount')) {
-      throw new Error('Unknown payload')
-    }
-
-    if (!payload.return) {
-      throw new Error('No response from service worker')
-    }
-
-    const { keypair, alias, avatar } = payload.return
-    dispatch(setAlias(alias || null))
-    dispatch(setAvatar(avatar || null))
-
-    return keypair
+>('account/setActiveAccount', async (id, { extra: { background } }) => {
+  const { payload } = await background.setActiveAccount(id)
+  if (!isKeyringPayload(payload, 'setActiveAccount')) {
+    throw new Error('Unknown payload')
   }
-)
+
+  if (!payload.return) {
+    throw new Error('No response from service worker')
+  }
+
+  const { keypair } = payload.return
+
+  return keypair
+})
 
 export const getAllAccounts = createAsyncThunk<Account[], void, AppThunkConfig>(
   'account/getAllAccounts',
-  async (_, { extra: { background } }) => {
+  async (_, { extra: { background }, dispatch }) => {
     const { payload } = await background.getAllAccounts()
     if (!isKeyringPayload(payload, 'allAccounts')) {
       throw new Error('Unknown payload')
     }
-    return payload.return || []
+
+    const allAccounts = payload.return || []
+    dispatch(setAllAccounts(allAccounts))
+
+    return allAccounts
   }
 )
 
@@ -149,40 +150,33 @@ export const logout = createAsyncThunk<void, void, AppThunkConfig>(
 
 export const setMeta = createAsyncThunk<
   void,
-  { alias?: string; avatar?: string },
+  { id: string; alias?: string; avatar?: string },
   AppThunkConfig
 >(
   'account/setMeta',
   async ({ alias, avatar }, { extra: { background }, dispatch }) => {
-    const { alias: _alias, avatar: _avatar } = await background.setMeta({
+    await background.setMeta({
       alias,
       avatar,
     })
-    if (_alias) {
-      dispatch(setAlias(_alias))
-    }
-    if (_avatar) {
-      dispatch(setAvatar(_avatar))
-    }
+    await dispatch(getAllAccounts()).unwrap()
   }
 )
 
 type AccountState = {
   creating: boolean
   address: SuiAddress | null
-  alias: string | null
-  avatar: string | null
   isLocked: boolean | null
   isInitialized: boolean | null
+  allAccounts: Account[]
 }
 
 const initialState: AccountState = {
   creating: false,
   address: null,
-  alias: null,
-  avatar: null,
   isLocked: null,
   isInitialized: null,
+  allAccounts: [],
 }
 
 const accountSlice = createSlice({
@@ -202,14 +196,9 @@ const accountSlice = createSlice({
       if (typeof payload?.isInitialized !== 'undefined') {
         state.isInitialized = payload.isInitialized
       }
-      state.alias = payload?.alias || null
-      state.avatar = payload?.avatar || null
     },
-    setAlias: (state, action: PayloadAction<string | null>) => {
-      state.alias = action.payload
-    },
-    setAvatar: (state, action: PayloadAction<string | null>) => {
-      state.avatar = action.payload
+    setAllAccounts: (state, action: PayloadAction<Account[]>) => {
+      state.allAccounts = action.payload
     },
   },
   extraReducers: (builder) =>
@@ -226,13 +215,15 @@ const accountSlice = createSlice({
       }),
 })
 
-export const { setAddress, setKeyringStatus, setAlias, setAvatar } =
+export const { setAddress, setKeyringStatus, setAllAccounts } =
   accountSlice.actions
 
 const reducer: Reducer<typeof initialState> = accountSlice.reducer
 export default reducer
 
 export const activeAccountSelector = ({ account }: RootState) => account.address
+export const allAccountsSelector = ({ account }: RootState) =>
+  account.allAccounts
 
 export const ownedObjects = createSelector(
   suiObjectsAdapterSelectors.selectAll,
@@ -300,10 +291,17 @@ export const accountNftsSelector = createSelector(
   }
 )
 
-export function createAccountNftByIdSelector(nftId: ObjectId) {
-  return createSelector(
+export const createAccountNftByIdSelector = (nftId: ObjectId) =>
+  createSelector(
     accountNftsSelector,
     (allNfts) =>
       allNfts.find((nft) => getObjectId(nft.reference) === nftId) || null
   )
-}
+
+// get account by id(address). if no id provided, return active account
+export const getAccountSelector = (address: string) =>
+  createSelector(
+    allAccountsSelector,
+    (allAccounts: Account[]): Account | null =>
+      allAccounts.find((_account) => _account.id === address.slice(2)) || null
+  )

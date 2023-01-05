@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 
@@ -8,16 +8,18 @@ import { IconWrapper, Address, Input, Button, toast } from '_app/components'
 
 import { useAppDispatch, useAppSelector } from '_hooks'
 
-import { setMeta } from '_redux/slices/account'
+import { setMeta, getAccountSelector } from '_redux/slices/account'
 
 import ArrowShort from '_assets/icons/arrow_short.svg'
 
 const UpdateWalletMetaPage = () => {
+  const { address } = useParams()
   const dispatch = useAppDispatch()
-  const { alias, avatar } = useAppSelector(({ account }) => ({
-    alias: account.alias,
-    avatar: account.avatar,
-  }))
+  const account = useAppSelector(getAccountSelector(address || ''))
+  if (!account) return null
+
+  const { alias, avatar } = account
+
   const {
     values,
     errors,
@@ -34,9 +36,12 @@ const UpdateWalletMetaPage = () => {
       alias: Yup.string().min(1).max(16).required('At least one character'),
     }),
     onSubmit: async ({ alias: _alias }) => {
+      if (!address) return
+
       try {
         await dispatch(
           setMeta({
+            id: address,
             alias: alias === _alias ? undefined : _alias,
             avatar: avatar === avatarPath ? undefined : avatarPath || undefined,
           })

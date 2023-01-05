@@ -50,6 +50,7 @@ export class BackgroundClient {
       this.sendGetPermissionRequests(),
       this.sendGetTransactionRequests(),
       this.getWalletStatus(),
+      this.getAllAccounts(),
     ]).then(() => undefined)
   }
 
@@ -280,7 +281,7 @@ export class BackgroundClient {
           if (isKeyringPayload(payload, 'setMeta') && !!payload.return) {
             return payload.return
           }
-          throw new Error('Fail to change password')
+          throw new Error('Fail to set meta')
         })
       )
     )

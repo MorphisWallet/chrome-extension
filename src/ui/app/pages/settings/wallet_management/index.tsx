@@ -12,6 +12,7 @@ import {
   addVault,
   getAllAccounts,
   setActiveAccount,
+  activeAccountSelector,
 } from '_redux/slices/account'
 
 import type { Account } from '_redux/slices/account'
@@ -28,13 +29,7 @@ const AccountSelect = ({
   avatar,
   onSetActiveAccount,
 }: Account & { onSetActiveAccount: (id: string) => void }) => {
-  const { address } = useAppSelector(
-    ({ account: { address, alias, avatar } }) => ({
-      address,
-      alias,
-      avatar,
-    })
-  )
+  const address = useAppSelector(activeAccountSelector)
   const idAddress = `0x${id}`
   const isCurrentAccount = address === idAddress
 
@@ -66,6 +61,7 @@ const AccountSelect = ({
       </div>
       <Link
         to={`./${address}`}
+        onClick={(e) => e.stopPropagation()}
         className="invisible transition duration-100 ease-in-out hover:scale-110 group-hover:visible"
       >
         <SettingsIcon height={19} width={18} />
