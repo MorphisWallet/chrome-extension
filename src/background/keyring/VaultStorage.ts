@@ -6,6 +6,7 @@ import Browser from 'webextension-polyfill'
 
 import { Vault } from './Vault'
 import { getRandomEntropy, toEntropy } from '_shared/utils/bip39'
+import { encrypt, decrypt } from '_shared/cryptography/keystore'
 import { ACTIVE_WALLET_VAULT_ID } from '_src/shared/constants'
 
 import type { StoredData } from './Vault'
@@ -105,7 +106,7 @@ export class VaultStorage {
     const encryptedVault = await vault.encrypt(password)
     await setToStorage(LOCAL_STORAGE, VAULT_KEY, [encryptedVault])
     await this.setActiveVaultId(encryptedVault.id)
-    this.#cachedPwd = password
+    await this.setAndEncryptCachedPwd(password)
 
     return encryptedVault
   }
@@ -126,10 +127,7 @@ export class VaultStorage {
         avatar: genRandomAvatarColor(),
       }
     )
-    const cachedPwd = this.#cachedPwd
-    if (!cachedPwd) {
-      throw new Error('Password cache failed')
-    }
+    const cachedPwd = await this.getAndDecryptCachedPwd()
 
     await this.checkPassword(cachedPwd)
 
@@ -151,14 +149,23 @@ export class VaultStorage {
 
     const activeVault = await this.getVaultById()
 
+    let _password: string
+    if (password) {
+      _password = password
+    } else {
+      _password = await this.getAndDecryptCachedPwd()
+    }
+
     this.#vault = await Vault.from(
-      password || (this.#cachedPwd as string),
+      _password,
       activeVault,
       undefined,
       undefined,
       { alias: activeVault.alias, avatar: activeVault.avatar }
     )
-    this.#cachedPwd = password || this.#cachedPwd
+    if (password) {
+      await this.setAndEncryptCachedPwd(password)
+    }
 
     await ifSessionStorage(async (sessionStorage) => {
       if (!this.#vault) {
@@ -236,7 +243,7 @@ export class VaultStorage {
         )
       )
       await setToStorage(LOCAL_STORAGE, VAULT_KEY, newlyEncryptedVault)
-      this.#cachedPwd = newPassword
+      await this.setAndEncryptCachedPwd(newPassword)
     } catch (e) {
       throw new Error('Password does not match')
     }
@@ -275,10 +282,6 @@ export class VaultStorage {
 
   public getMnemonic() {
     return this.#vault?.getMnemonic() || null
-  }
-
-  public getCachedPassword() {
-    return this.#cachedPwd
   }
 
   public async getActiveVaultId() {
@@ -331,11 +334,9 @@ export class VaultStorage {
       throw new Error(`No vault with id ${id} is found`)
     }
 
-    if (!this.#cachedPwd) {
-      throw new Error('No password is provided or cached')
-    }
+    const cachedPwd = await this.getAndDecryptCachedPwd()
 
-    this.#vault = await Vault.from(this.#cachedPwd, targetVault)
+    this.#vault = await Vault.from(cachedPwd, targetVault)
     await this.setActiveVaultId(id)
   }
 
@@ -364,6 +365,17 @@ export class VaultStorage {
     )
 
     await setToStorage(LOCAL_STORAGE, VAULT_KEY, updatedVaults)
+  }
+
+  private async setAndEncryptCachedPwd(plainTextPassword: string) {
+    this.#cachedPwd = await encrypt(PASSWORD, plainTextPassword)
+  }
+
+  private async getAndDecryptCachedPwd() {
+    if (!this.#cachedPwd) {
+      throw new Error('No password is encrypted and cached')
+    }
+    return await decrypt<string>(PASSWORD, this.#cachedPwd)
   }
 
   public get allVaults() {
