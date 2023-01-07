@@ -1,0 +1,50 @@
+.morphis-modal-enter {
+  position: absolute;
+  height: 0;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  transform: translateY(570px);
+  z-index: 1100;
+}
+
+.morphis-modal-enter-active {
+  position: absolute;
+  height: 0;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 1100;
+  transform: translateY(0);
+  transition: transform 250ms;
+}
+
+.morphis-modal-enter-done {
+  position: absolute;
+  height: 0;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 1100;
+}
+
+.morphis-modal-exit {
+  position: absolute;
+  height: 0;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 1100;
+  transform: translateY(0);
+}
+
+.morphis-modal-exit-active {
+  position: absolute;
+  height: 0;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 1100;
+  transform: translateY(570px);
+  transition: transform 250ms;
+}
