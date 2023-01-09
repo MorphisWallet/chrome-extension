@@ -1,23 +1,54 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
+
+import { Ed25519Keypair } from '@mysten/sui.js'
 import { bytesToHex, hexToBytes, randomBytes } from '@noble/hashes/utils'
 import * as bip39 from '@scure/bip39'
 import { wordlist } from '@scure/bip39/wordlists/english'
 
 /**
- * Generate mnemonics as 12 words string using the english wordlist.
  *
- * @returns a 12 words string separated by spaces.
+ * @param strength the mnemonic strength, typically 128 or 256 bits
+ * @returns mnemonic words string. there should be 12 ((128+128/32)/11) or 24 ((256+256/32)/11) words
  */
-export function generateMnemonic(): string {
-  return bip39.generateMnemonic(wordlist)
+export const generateMnemonic = (strength?: number) =>
+  bip39.generateMnemonic(wordlist, strength)
+
+/**
+ *
+ * @param strength the mnemonic strength, typically 128 or 256 bits
+ * @returns [mnemonics, keypair]
+ */
+export const generateMnemonicAndKeypair = (strength?: number) => {
+  const mnemonics = generateMnemonic(strength)
+  const keypair = getKeypairFromMnemonics(mnemonics)
+
+  return [mnemonics, keypair]
+}
+
+/**
+ *
+ * @param mnemonics
+ * @param index derivation index
+ * @returns Ed25519Keypair
+ */
+export const getKeypairFromMnemonics = (
+  mnemonics: string,
+  index = 0
+): Ed25519Keypair => {
+  const _mnemonics = normalizeMnemonics(mnemonics)
+
+  if (index > -1) {
+    const path = `m/44'/784'/${index}'/0'/0'`
+    return Ed25519Keypair.deriveKeypair(_mnemonics, path)
+  }
+
+  return Ed25519Keypair.deriveKeypair(_mnemonics)
 }
 
 /**
  * Converts mnemonic to entropy (byte array) using the english wordlist.
- *
  * @param mnemonic 12-24 words
- *
  * @return the entropy of the mnemonic (Uint8Array)
  */
 export function mnemonicToEntropy(mnemonic: string): Uint8Array {
@@ -26,9 +57,7 @@ export function mnemonicToEntropy(mnemonic: string): Uint8Array {
 
 /**
  * Converts entropy (byte array) to mnemonic using the english wordlist.
- *
  * @param entropy Uint8Array
- *
  * @return the mnemonic as string
  */
 export function entropyToMnemonic(entropy: Uint8Array): string {
@@ -44,12 +73,6 @@ export function getRandomEntropy(strength: 128 | 256 = 128) {
   return randomBytes(strength / 8)
 }
 
-/**
- * Validates entropy see https://github.com/paulmillr/scure-bip39/blob/4b4a17f13862da0b7ff3db1ef9d1bb3c2fc05e14/src/index.ts#L27
- * @param entropy
- * @returns {boolean} true
- * @throws if entropy is invalid
- */
 export function validateEntropy(entropy: Uint8Array) {
   assertBytes(entropy, 16, 20, 24, 28, 32)
   return true
@@ -68,10 +91,7 @@ export function validateMnemonics(mnemonics: string): boolean {
 
 /**
  * Sanitize the mnemonics string provided by user.
- *
- * @param mnemonics a 12-word string split by spaces that may contain mixed cases
- * and extra spaces.
- *
+ * @param mnemonics a 12-word string split by spaces that may contain mixed cases and extra spaces.
  * @returns a sanitized mnemonics string.
  */
 export function normalizeMnemonics(mnemonics: string): string {
@@ -82,11 +102,6 @@ export function normalizeMnemonics(mnemonics: string): string {
     .join(' ')
 }
 
-/**
- * Serializes entropy
- * @param entropy
- * @returns {string} the serialized value
- */
 export function entropyToSerialized(entropy: Uint8Array) {
   return bytesToHex(entropy)
 }
