@@ -12,8 +12,8 @@
     "lint": "npx eslint src --ext .js,.jsx,.ts,.tsx",
     "prettier": "prettier --write src",
     "start": "pnpm build:dev --watch",
-    "build:dev": "NODE_ENV=\"development\" TS_NODE_PROJECT=\"./configs/ts/tsconfig.webpack.json\" webpack --progress",
-    "build:prod": "NODE_ENV=\"production\" TS_NODE_PROJECT=\"./configs/ts/tsconfig.webpack.json\" webpack --progress",
+    "build:dev": "cross-env NODE_ENV=\"development\" TS_NODE_PROJECT=\"./configs/ts/tsconfig.webpack.json\" webpack --progress",
+    "build:prod": "cross-env NODE_ENV=\"production\" TS_NODE_PROJECT=\"./configs/ts/tsconfig.webpack.json\" webpack --progress",
     "check-updates": "npx npm-check-updates",
     "pack:zip": "web-ext build --source-dir ./dist --overwrite-dest"
   },
