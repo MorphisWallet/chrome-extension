@@ -4,11 +4,11 @@ import {
 } from '@metamask/browser-passworder'
 import Browser from 'webextension-polyfill'
 
-const WALLET_KEYRING_PASSWORD = process.env.WALLET_KEYRING_PASSWORD || ''
-const SALT = 'morphis'
+const PASSWORD = process.env.MAIN_PASSWORD
+const SALT = process.env.MAIN_SALT
 
 // get value by key from browser storage
-export const get = async (key: string): Promise<string | number> => {
+export const get = async <T = string | number>(key: string): Promise<T> => {
   const response = await Browser.storage.local.get(key)
   return response[key]
 }
@@ -22,7 +22,7 @@ export const set = async (
 
 // store encrypted key and value into browser storage
 export const setEncrypted = async (
-  password: string = WALLET_KEYRING_PASSWORD,
+  password: string = PASSWORD as string,
   key: string,
   value: string
 ) => {
@@ -42,7 +42,7 @@ export const setEncrypted = async (
 
 // get and decrypt encrypted value by encrypted key
 export const getEncrypted = async <T>(
-  password: string = WALLET_KEYRING_PASSWORD,
+  password: string = PASSWORD as string,
   key: string
 ): Promise<T | null> => {
   const encryptedKey = await browserPassworderEncrypt(
@@ -63,14 +63,14 @@ export const getEncrypted = async <T>(
 
 // set the value null by encrypted key
 export const deleteEncrypted = async (
-  password: string = WALLET_KEYRING_PASSWORD,
+  password: string = PASSWORD as string,
   key: string
 ) => {
   const encryptedKey = await browserPassworderEncrypt(
     password,
     key,
     undefined,
-    WALLET_KEYRING_PASSWORD
+    PASSWORD
   )
   await set({ [encryptedKey]: null })
 }
