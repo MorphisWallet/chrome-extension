@@ -10,7 +10,7 @@ import {
   mnemonicToEntropy,
   toEntropy,
   validateEntropy,
-} from '_shared/utils/bip39'
+} from '_shared/cryptography/bip39'
 
 export const LATEST_VAULT_VERSION = 1
 

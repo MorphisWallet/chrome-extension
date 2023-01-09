@@ -9,7 +9,7 @@ import { useAppDispatch, useLockedGuard, useInitializedGuard } from '_hooks'
 
 import { loadEntropyFromKeyring } from '_redux/slices/account'
 
-import { entropyToMnemonic, toEntropy } from '_shared/utils/bip39'
+import { entropyToMnemonic, toEntropy } from '_shared/cryptography/bip39'
 
 const BackupPage = () => {
   const dispatch = useAppDispatch()

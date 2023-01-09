@@ -5,7 +5,7 @@ import { randomBytes } from '@noble/hashes/utils'
 import Browser from 'webextension-polyfill'
 
 import { Vault } from './Vault'
-import { getRandomEntropy, toEntropy } from '_shared/utils/bip39'
+import { getRandomEntropy, toEntropy } from '_shared/cryptography/bip39'
 import { encrypt, decrypt } from '_shared/cryptography/keystore'
 import { ACTIVE_WALLET_VAULT_ID } from '_src/shared/constants'
 

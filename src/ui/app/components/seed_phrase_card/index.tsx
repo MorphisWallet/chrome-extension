@@ -10,7 +10,7 @@ import { useAppDispatch } from '_hooks'
 import { loadEntropyFromKeyring } from '_redux/slices/account'
 
 import { MNEMONIC_LENGTH } from '_src/shared/constants'
-import { entropyToMnemonic, toEntropy } from '_shared/utils/bip39'
+import { entropyToMnemonic, toEntropy } from '_shared/cryptography/bip39'
 
 import CopyIcon from '_assets/icons/copy.svg'
 

@@ -9,8 +9,8 @@ import Browser from 'webextension-polyfill'
 import { VaultStorage } from './VaultStorage'
 import { createMessage } from '_messages'
 import { isKeyringPayload } from '_payloads/keyring'
-import { entropyToSerialized } from '_shared/utils/bip39'
-import Alarms from '_src/background/Alarms'
+import { entropyToSerialized } from '_shared/cryptography/bip39'
+import { setLockAlarm, clearLockAlarm } from '_src/background/Alarms'
 import {
   AUTO_LOCK_TIMER_MAX_MINUTES,
   AUTO_LOCK_TIMER_MIN_MINUTES,
@@ -58,7 +58,7 @@ class Keyring {
   public async lock() {
     this.#locked = true
     await this.#vaultStorage.lock()
-    await Alarms.clearLockAlarm()
+    await clearLockAlarm()
     this.notifyLockedStatusUpdate(this.#locked)
   }
 
@@ -336,7 +336,7 @@ class Keyring {
   private postponeLock = throttle(
     async () => {
       if (!this.isLocked) {
-        await Alarms.setLockAlarm()
+        await setLockAlarm()
       }
     },
     1000,
@@ -354,7 +354,7 @@ class Keyring {
       [AUTO_LOCK_TIMER_STORAGE_KEY]: timeout,
     })
     if (!this.isLocked) {
-      await Alarms.setLockAlarm()
+      await setLockAlarm()
     }
   }
 
@@ -370,7 +370,7 @@ class Keyring {
     if (!mnemonic) {
       return
     }
-    Alarms.setLockAlarm()
+    setLockAlarm()
     this.#locked = false
     this.notifyLockedStatusUpdate(this.#locked)
   }

@@ -5,6 +5,4 @@ import Browser from 'webextension-polyfill'
 
 export const MAIN_UI_URL = Browser.runtime.getURL('ui.html')
 
-export function openInNewTab() {
-  return Browser.tabs.create({ url: MAIN_UI_URL })
-}
+export const openInNewTab = () => Browser.tabs.create({ url: MAIN_UI_URL })

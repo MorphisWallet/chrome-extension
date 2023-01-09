@@ -10,7 +10,7 @@ import { useAppDispatch } from '_hooks'
 
 import { loadEntropyFromKeyring } from '_redux/slices/account'
 
-import { toEntropy } from '_shared/utils/bip39'
+import { toEntropy } from '_shared/cryptography/bip39'
 import { buf2hex } from '_app/utils/mnemonic'
 
 import ArrowShort from '_assets/icons/arrow_short.svg'

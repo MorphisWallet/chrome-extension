@@ -10,7 +10,7 @@ import { useAppDispatch, useLockedGuard, useInitializedGuard } from '_hooks'
 import { createVault } from '_redux/slices/account'
 
 import { MAIN_UI_URL } from '_shared/utils'
-import { entropyToSerialized, mnemonicToEntropy } from '_shared/utils/bip39'
+import { entropyToSerialized, mnemonicToEntropy } from '_shared/cryptography/bip39'
 
 import Logo from '_assets/icons/logo.svg'
 

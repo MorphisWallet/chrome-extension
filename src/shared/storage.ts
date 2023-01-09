@@ -7,6 +7,10 @@ import Browser from 'webextension-polyfill'
 const PASSWORD = process.env.MAIN_PASSWORD
 const SALT = process.env.MAIN_SALT
 
+if (!PASSWORD) {
+  throw new Error('No password is from process.env')
+}
+
 // get value by key from browser storage
 export const get = async <T = string | number>(key: string): Promise<T> => {
   const response = await Browser.storage.local.get(key)
