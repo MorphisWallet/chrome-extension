@@ -87,7 +87,7 @@ export const accountStatus = new AccountStatus()
  * if there exists one or more accounts, the wallet must be initialized
  * @returns boolean
  */
-const isWalletInitialized = async () =>
+export const isWalletInitialized = async () =>
   !!(await getEncrypted(undefined, ACCOUNTS_KEY))
 
 /**
@@ -127,6 +127,8 @@ export const createAccount = async (
 
   await setEncrypted(undefined, CACHED_PWD_KEY, password)
   accountStatus.unlockFlag = true
+
+  return account
 }
 
 /**
@@ -178,6 +180,8 @@ export const addAccount = async (importedPrivateKey?: string) => {
       newAccount.address
     )
     await setEncrypted(cachedPwd, ACCOUNTS_KEY, [...accounts, newAccount])
+
+    return newAccount
   }
 }
 
@@ -338,11 +342,32 @@ export const handleUiMessage = async (
   try {
     if (isKeyringPayload(payload, 'create') && payload.args) {
       const { password, importedEntropy } = payload.args
-      await createAccount(password, importedEntropy)
-      await unlock(password)
+      const account = await createAccount(password, importedEntropy)
+
+      uiConnection.send(
+        createMessage<KeyringPayload<'create'>>(
+          {
+            type: 'keyring',
+            method: 'create',
+            return: account,
+          },
+          id
+        )
+      )
     } else if (isKeyringPayload(payload, 'add') && payload.args) {
       const { importedPrivateKey } = payload.args
-      await addAccount(importedPrivateKey)
+      const account = await addAccount(importedPrivateKey)
+
+      uiConnection.send(
+        createMessage<KeyringPayload<'create'>>(
+          {
+            type: 'keyring',
+            method: 'create',
+            return: account,
+          },
+          id
+        )
+      )
     } else if (isKeyringPayload(payload, 'unlock') && payload.args) {
       await unlock(payload.args.password)
       uiConnection.send(createMessage({ type: 'done' }, id))
@@ -353,6 +378,8 @@ export const handleUiMessage = async (
       await changePassword(oldPassword, newPassword)
     } else if (isKeyringPayload(payload, 'walletStatusUpdate')) {
       const isInitialized = await isWalletInitialized()
+      const activeAccount = await getActiveAccount()
+
       uiConnection.send(
         createMessage<KeyringPayload<'walletStatusUpdate'>>(
           {
@@ -361,6 +388,7 @@ export const handleUiMessage = async (
             return: {
               isLocked: !accountStatus.unlockFlag,
               isInitialized: isInitialized,
+              activeAccount,
             },
           },
           id
@@ -416,4 +444,36 @@ export const handleUiMessage = async (
       )
     )
   }
+}
+
+/**
+ * get active account by active account address
+ */
+const getActiveAccount = async () => {
+  const cachedPwd = await getEncrypted<string>(undefined, CACHED_PWD_KEY)
+  if (!cachedPwd) {
+    throw new Error('Cached pwd is not found')
+  }
+
+  const accounts = await getEncrypted<Account[]>(cachedPwd, ACCOUNTS_KEY)
+  if (!accounts) {
+    throw new Error('No account is created ever')
+  }
+
+  const activeAccountAddress = await getEncrypted(
+    undefined,
+    ACTIVE_ACCOUNT_ADDRESS_KEY
+  )
+  if (!activeAccountAddress) {
+    throw new Error('No active account address is found')
+  }
+
+  const activeAccount = accounts.find(
+    (_account) => _account.address === activeAccountAddress
+  )
+  if (!activeAccountAddress) {
+    throw new Error(`No account with address ${activeAccountAddress} is found`)
+  }
+
+  return activeAccount as Account
 }

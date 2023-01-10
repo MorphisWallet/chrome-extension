@@ -32,6 +32,7 @@ type MethodToPayloads = {
     return: Partial<{
       isLocked: boolean
       isInitialized: boolean
+      activeAccount: Account
     }>
   }
   allAccounts: {
