@@ -3,25 +3,21 @@
 
 import { isBasePayload } from '_payloads'
 
-import type { ExportedKeypair } from '@mysten/sui.js'
 import type { BasePayload, Payload } from '_payloads'
+import type { Account } from '_redux/slices/account'
 
 type MethodToPayloads = {
   create: {
     args: { password: string; importedEntropy?: string }
-    return: { keypair: ExportedKeypair; alias?: string; avatar?: string }
+    return: Account
   }
   add: {
-    args: { importedEntropy?: string }
-    return: { keypair: ExportedKeypair; alias?: string; avatar?: string }
-  }
-  getEntropy: {
-    args: string | undefined
-    return: string
+    args: { importedPrivateKey?: string }
+    return: Account
   }
   checkPassword: {
     args: string
-    return: boolean
+    return: never
   }
   changePassword: {
     args: { oldPassword: string; newPassword: string }
@@ -36,19 +32,11 @@ type MethodToPayloads = {
     return: Partial<{
       isLocked: boolean
       isInitialized: boolean
-      // we can replace keypair (once we stop signing from the UI) with the account address
-      activeAccount: ExportedKeypair
-      alias?: string
-      avatar?: string
     }>
   }
   allAccounts: {
     args: never
-    return: {
-      id: string
-      alias?: string
-      avatar?: string
-    }[]
+    return: Account[]
   }
   lock: {
     args: never
@@ -67,12 +55,12 @@ type MethodToPayloads = {
     return: never
   }
   setActiveAccount: {
-    args: { id: string }
-    return: { keypair: ExportedKeypair; alias?: string; avatar?: string }
+    args: { address: string }
+    return: never
   }
-  setMeta: {
+  setAccountMeta: {
     args: { address: string; alias?: string; avatar?: string }
-    return: { alias?: string; avatar?: string }
+    return: never
   }
 }
 
