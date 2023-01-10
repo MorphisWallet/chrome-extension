@@ -17,6 +17,10 @@ export default class KeypairVault {
     }
   }
 
+  public set activeIndex(index: number) {
+    this._activeIndex = index
+  }
+
   public addKeyPair(index: number): Ed25519Keypair {
     if (!this._keypairs) {
       throw new Error('Account mnemonic is not set')
@@ -65,10 +69,6 @@ export default class KeypairVault {
       address = `0x${address}`
     }
     return address
-  }
-
-  public setActiveIndex(index: number): void {
-    this._activeIndex = index
   }
 
   public clear() {

@@ -116,7 +116,7 @@ export class BackgroundClient {
     )
   }
 
-  public async createVault(password: string, importedEntropy?: string) {
+  public async createAccount(password: string, importedEntropy?: string) {
     return await lastValueFrom(
       this.sendMessage(
         createMessage<KeyringPayload<'create'>>({
@@ -128,20 +128,20 @@ export class BackgroundClient {
     )
   }
 
-  public async addVault(importedEntropy?: string) {
+  public async addAccount(importedPrivateKey?: string) {
     return await lastValueFrom(
       this.sendMessage(
         createMessage<KeyringPayload<'add'>>({
           type: 'keyring',
           method: 'add',
-          args: { importedEntropy },
+          args: { importedPrivateKey },
           return: undefined,
         })
       ).pipe(take(1))
     )
   }
 
-  public async unlockWallet(password?: string) {
+  public async unlockWallet(password: string) {
     return await lastValueFrom(
       this.sendMessage(
         createMessage<KeyringPayload<'unlock'>>({
@@ -176,26 +176,26 @@ export class BackgroundClient {
     )
   }
 
-  public async getEntropy(password?: string) {
-    return await lastValueFrom(
-      this.sendMessage(
-        createMessage<KeyringPayload<'getEntropy'>>({
-          type: 'keyring',
-          method: 'getEntropy',
-          args: password,
-          return: undefined,
-        })
-      ).pipe(
-        take(1),
-        map(({ payload }) => {
-          if (isKeyringPayload(payload, 'getEntropy') && payload.return) {
-            return payload.return
-          }
-          throw new Error('Mnemonic not found')
-        })
-      )
-    )
-  }
+  // public async getEntropy(password?: string) {
+  //   return await lastValueFrom(
+  //     this.sendMessage(
+  //       createMessage<KeyringPayload<'getEntropy'>>({
+  //         type: 'keyring',
+  //         method: 'getEntropy',
+  //         args: password,
+  //         return: undefined,
+  //       })
+  //     ).pipe(
+  //       take(1),
+  //       map(({ payload }) => {
+  //         if (isKeyringPayload(payload, 'getEntropy') && payload.return) {
+  //           return payload.return
+  //         }
+  //         throw new Error('Mnemonic not found')
+  //       })
+  //     )
+  //   )
+  // }
 
   public async checkPassword(password: string) {
     return await lastValueFrom(
@@ -205,18 +205,7 @@ export class BackgroundClient {
           method: 'checkPassword',
           args: password,
         })
-      ).pipe(
-        take(1),
-        map(({ payload }) => {
-          if (
-            isKeyringPayload(payload, 'checkPassword') &&
-            typeof payload.return === 'boolean'
-          ) {
-            return payload.return
-          }
-          throw new Error('Fail to check password')
-        })
-      )
+      ).pipe(take(1))
     )
   }
 
@@ -232,13 +221,13 @@ export class BackgroundClient {
     )
   }
 
-  public async setActiveAccount(id: string) {
+  public async setActiveAccount(address: string) {
     return await lastValueFrom(
       this.sendMessage(
         createMessage<KeyringPayload<'setActiveAccount'>>({
           type: 'keyring',
           method: 'setActiveAccount',
-          args: { id },
+          args: { address },
         })
       ).pipe(take(1))
     )
@@ -267,27 +256,19 @@ export class BackgroundClient {
     )
   }
 
-  public async setMeta(meta: {
+  public async setAccountMeta(meta: {
     address: string
     alias?: string
     avatar?: string
   }) {
     return await lastValueFrom(
       this.sendMessage(
-        createMessage<KeyringPayload<'setMeta'>>({
+        createMessage<KeyringPayload<'setAccountMeta'>>({
           type: 'keyring',
-          method: 'setMeta',
+          method: 'setAccountMeta',
           args: meta,
         })
-      ).pipe(
-        take(1),
-        map(({ payload }) => {
-          if (isKeyringPayload(payload, 'setMeta') && !!payload.return) {
-            return payload.return
-          }
-          throw new Error('Fail to set meta')
-        })
-      )
+      ).pipe(take(1))
     )
   }
 
