@@ -4,7 +4,7 @@
 // import { lte, coerce } from 'semver'
 import Browser from 'webextension-polyfill'
 
-import { lock } from './Accounts'
+import { lock, on } from './Accounts'
 import { LOCK_ALARM_NAME } from './Alarms'
 import Permissions from './Permissions'
 import { Connections } from './connections'
@@ -36,9 +36,9 @@ Permissions.permissionReply.subscribe((permission) => {
   }
 })
 
-// Keyring.on('lockedStatusUpdate', (isLocked: boolean) => {
-//   connections.notifyForLockedStatusUpdate(isLocked)
-// })
+on('lockedStatusUpdate', (isLocked: boolean) => {
+  connections.notifyForLockedStatusUpdate(isLocked)
+})
 
 Browser.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === LOCK_ALARM_NAME) {

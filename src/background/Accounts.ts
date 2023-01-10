@@ -1,3 +1,4 @@
+import mitt from 'mitt'
 import throttle from 'lodash/throttle'
 
 import {
@@ -35,7 +36,7 @@ const ACTIVE_ACCOUNT_ADDRESS_KEY = 'morphis_active_account'
 // storage key for default mnemonics, encrypted by user password
 const MNEMONICS_KEY = 'morphis_mnemonics'
 // storage key for wallet lock status; false = locked, true = unlocked, encrypted by app password
-const WALLET_UNLOCK_FLAG_KEY = 'morphis_wallets_lock_flag'
+// const WALLET_UNLOCK_FLAG_KEY = 'morphis_wallets_lock_flag'
 // storage key for cached pwd, encrypted by app password
 const CACHED_PWD_KEY = 'morphis_cached_pwd'
 
@@ -57,12 +58,36 @@ const genRandomAvatarColor = () =>
     Math.floor(Math.random() * DEFAULT_AVATAR_COLOR_POOL.length)
   ]
 
+// listen to event to push new locked status to UI
+const events = mitt<{ lockedStatusUpdate: boolean }>()
+
+export const on = events.on
+export const off = events.off
+
+const notifyLockedStatusUpdate = (isLocked: boolean) => {
+  events.emit('lockedStatusUpdate', isLocked)
+}
+
+class AccountStatus {
+  #unlockFlag = false
+
+  set unlockFlag(value: boolean) {
+    this.#unlockFlag = value
+  }
+
+  get unlockFlag() {
+    return this.#unlockFlag
+  }
+}
+
+export const accountStatus = new AccountStatus()
+
 /**
  * check if the wallet is initialized by stored accounts
  * if there exists one or more accounts, the wallet must be initialized
  * @returns boolean
  */
-export const isWalletInitialized = async () =>
+const isWalletInitialized = async () =>
   !!(await getEncrypted(undefined, ACCOUNTS_KEY))
 
 /**
@@ -100,8 +125,8 @@ export const createAccount = async (
   await setEncrypted(undefined, ACTIVE_ACCOUNT_ADDRESS_KEY, account.address)
   await setEncrypted(password, ACCOUNTS_KEY, [account])
 
-  await setEncrypted(undefined, WALLET_UNLOCK_FLAG_KEY, true)
   await setEncrypted(undefined, CACHED_PWD_KEY, password)
+  accountStatus.unlockFlag = true
 }
 
 /**
@@ -161,8 +186,10 @@ export const addAccount = async (importedPrivateKey?: string) => {
  */
 export const lock = async () => {
   await deleteEncrypted(undefined, CACHED_PWD_KEY)
-  await setEncrypted(undefined, WALLET_UNLOCK_FLAG_KEY, false)
   await clearLockAlarm()
+
+  accountStatus.unlockFlag = false
+  notifyLockedStatusUpdate(!accountStatus.unlockFlag)
 }
 
 /**
@@ -172,7 +199,9 @@ export const lock = async () => {
 export const unlock = async (password: string) => {
   await checkPassword(password)
   await setEncrypted(undefined, CACHED_PWD_KEY, password)
-  await setEncrypted(undefined, WALLET_UNLOCK_FLAG_KEY, true)
+
+  accountStatus.unlockFlag = true
+  notifyLockedStatusUpdate(!accountStatus.unlockFlag)
 }
 
 /**
@@ -323,9 +352,6 @@ export const handleUiMessage = async (
       const { oldPassword, newPassword } = payload.args
       await changePassword(oldPassword, newPassword)
     } else if (isKeyringPayload(payload, 'walletStatusUpdate')) {
-      const walletUnlockFlag =
-        (await getEncrypted<boolean>(undefined, WALLET_UNLOCK_FLAG_KEY)) ||
-        false
       const isInitialized = await isWalletInitialized()
       uiConnection.send(
         createMessage<KeyringPayload<'walletStatusUpdate'>>(
@@ -333,7 +359,7 @@ export const handleUiMessage = async (
             type: 'keyring',
             method: 'walletStatusUpdate',
             return: {
-              isLocked: !walletUnlockFlag,
+              isLocked: !accountStatus.unlockFlag,
               isInitialized: isInitialized,
             },
           },
@@ -368,12 +394,7 @@ export const handleUiMessage = async (
       if (appActiveFlag) {
         throttle(
           async () => {
-            const walletUnlockFlag =
-              (await getEncrypted<boolean>(
-                undefined,
-                WALLET_UNLOCK_FLAG_KEY
-              )) || false
-            if (walletUnlockFlag) {
+            if (accountStatus.unlockFlag) {
               await setLockAlarm()
             }
           },
