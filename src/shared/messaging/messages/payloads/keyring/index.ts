@@ -24,7 +24,7 @@ type MethodToPayloads = {
     return: never
   }
   unlock: {
-    args: { password?: string }
+    args: { password: string }
     return: never
   }
   walletStatusUpdate: {

@@ -3,6 +3,7 @@
 
 import { BehaviorSubject, filter, switchMap, takeUntil } from 'rxjs'
 
+import { isWalletInitialized, handleUiMessage } from '../Accounts'
 import { Connection } from './Connection'
 import { createMessage } from '_messages'
 import { isBasePayload } from '_payloads'
@@ -16,7 +17,6 @@ import { isTransactionRequestResponse } from '_payloads/transactions/ui/Transact
 import Permissions from '_src/background/Permissions'
 import Tabs from '_src/background/Tabs'
 import Transactions from '_src/background/Transactions'
-import Keyring from '_src/background/keyring'
 
 import type { Message } from '_messages'
 import type { PortChannelName } from '_messaging/PortChannelName'
@@ -59,9 +59,7 @@ export class UiConnection extends Connection {
         method: 'walletStatusUpdate',
         return: {
           isLocked,
-          activeAccount: Keyring.keypair?.export(),
-          isInitialized: await Keyring.isWalletInitialized(),
-          ...Keyring.meta,
+          isInitialized: await isWalletInitialized(),
         },
       })
     )
@@ -92,7 +90,7 @@ export class UiConnection extends Connection {
         await Permissions.delete(payload.origin)
         this.send(createMessage({ type: 'done' }, id))
       } else if (isBasePayload(payload) && payload.type === 'keyring') {
-        await Keyring.handleUiMessage(msg, this)
+        await handleUiMessage(msg, this)
       }
     } catch (e) {
       // just in case
