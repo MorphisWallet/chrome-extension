@@ -1,33 +1,40 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { fromExportedKeypair } from '@mysten/sui.js'
+import { Ed25519Keypair } from '@mysten/sui.js'
 
-import type { Keypair, ExportedKeypair } from '@mysten/sui.js'
+import { getKeypairFromMnemonics } from '_src/shared/cryptography/bip39'
 
 export default class KeypairVault {
-  private _keypair: Keypair | null = null
+  #mnemonic = ''
+  #activeIndex = 0
 
-  public set keypair(keypair: ExportedKeypair) {
-    this._keypair = fromExportedKeypair(keypair)
+  get mnemonic() {
+    return this.#mnemonic
   }
 
-  public getAccount(): string | null {
-    let address = this._keypair?.getPublicKey().toSuiAddress() || null
-    if (address && !address.startsWith('0x')) {
-      address = `0x${address}`
+  set mnemonic(mnemonic: string) {
+    this.#mnemonic = mnemonic
+  }
+
+  get activeIndex() {
+    return this.#activeIndex
+  }
+
+  set activeIndex(index: number) {
+    this.#activeIndex = index
+  }
+
+  public getKeyPair(index?: number): Ed25519Keypair {
+    const _index = index ?? this.activeIndex
+    if (typeof _index !== 'number') {
+      throw new Error('Active account index is not set')
     }
-    return address
-  }
 
-  public getKeypair() {
-    if (!this._keypair) {
-      throw new Error('Account keypair is not set')
+    if (!this.#mnemonic) {
+      throw new Error('Mnemonic is not set')
     }
-    return this._keypair
-  }
 
-  public clear() {
-    this._keypair = null
+    return getKeypairFromMnemonics(this.#mnemonic)
   }
 }

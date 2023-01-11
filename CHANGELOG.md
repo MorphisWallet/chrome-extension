@@ -1,3 +1,7 @@
+## 0.0.5.0 (Jan 11, 2023)
+
+- Provide ability to created derived wallet accounts
+
 ## 0.0.4.0 (Dec 26, 2022)
 
 - Provide ability to customize the wallet, e.g. alias and avatar

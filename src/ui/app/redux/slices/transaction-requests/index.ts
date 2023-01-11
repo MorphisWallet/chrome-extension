@@ -76,7 +76,7 @@ export const deserializeTxn = createAsyncThunk<
   'deserialize-transaction',
   async (data, { dispatch, extra: { api, keypairVault } }) => {
     const { id, serializedTxn } = data
-    const signer = api.getSignerInstance(keypairVault.getKeypair())
+    const signer = api.getSignerInstance(keypairVault.getKeyPair())
     const localSerializer = new LocalTxnDataSerializer(signer.provider)
     const txnBytes = new Base64DataBuffer(serializedTxn)
     const version = await api.instance.fullNode.getRpcApiVersion()
@@ -143,7 +143,7 @@ export const respondToTransactionRequest = createAsyncThunk<
     let txResult: SuiTransactionResponse | undefined = undefined
     let tsResultError: string | undefined
     if (approved) {
-      const signer = api.getSignerInstance(keypairVault.getKeypair())
+      const signer = api.getSignerInstance(keypairVault.getKeyPair())
       try {
         let response: SuiExecuteTransactionResponse
         if (txRequest.tx.type === 'v2' || txRequest.tx.type === 'move-call') {

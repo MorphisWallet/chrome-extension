@@ -3,6 +3,7 @@
 
 import { BehaviorSubject, filter, switchMap, takeUntil } from 'rxjs'
 
+import { isWalletInitialized, handleUiMessage } from '../Accounts'
 import { Connection } from './Connection'
 import { createMessage } from '_messages'
 import { isBasePayload } from '_payloads'
@@ -16,7 +17,6 @@ import { isTransactionRequestResponse } from '_payloads/transactions/ui/Transact
 import Permissions from '_src/background/Permissions'
 import Tabs from '_src/background/Tabs'
 import Transactions from '_src/background/Transactions'
-import Keyring from '_src/background/keyring'
 
 import type { Message } from '_messages'
 import type { PortChannelName } from '_messaging/PortChannelName'
@@ -26,8 +26,6 @@ import type { UpdateActiveOrigin } from '_payloads/tabs/updateActiveOrigin'
 import type { TransactionRequest } from '_payloads/transactions'
 import type { GetTransactionRequestsResponse } from '_payloads/transactions/ui/GetTransactionRequestsResponse'
 import type { Runtime } from 'webextension-polyfill'
-
-import { ALIAS_STORAGE_KEY, AVATAR_STORAGE_KEY } from '_shared/constants'
 
 export class UiConnection extends Connection {
   public static readonly CHANNEL: PortChannelName = 'morphis_ui<->background'
@@ -61,10 +59,7 @@ export class UiConnection extends Connection {
         method: 'walletStatusUpdate',
         return: {
           isLocked,
-          activeAccount: Keyring.keypair?.export(),
-          isInitialized: await Keyring.isWalletInitialized(),
-          alias: (await Keyring.alias)[ALIAS_STORAGE_KEY],
-          avatar: (await Keyring.avatar)[AVATAR_STORAGE_KEY],
+          isInitialized: await isWalletInitialized(),
         },
       })
     )
@@ -95,7 +90,7 @@ export class UiConnection extends Connection {
         await Permissions.delete(payload.origin)
         this.send(createMessage({ type: 'done' }, id))
       } else if (isBasePayload(payload) && payload.type === 'keyring') {
-        await Keyring.handleUiMessage(msg, this)
+        await handleUiMessage(msg, this)
       }
     } catch (e) {
       // just in case

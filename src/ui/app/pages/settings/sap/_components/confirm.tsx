@@ -43,13 +43,9 @@ const Confirm = ({ warnings, checkboxText, onSuccess }: ConfirmModalProps) => {
     }),
     onSubmit: async ({ password }) => {
       try {
-        const res = await dispatch(checkPassword(password)).unwrap()
+        await dispatch(checkPassword(password)).unwrap()
 
-        if (res) {
-          onSuccess()
-        } else {
-          setFieldError('password', 'Incorrect password')
-        }
+        onSuccess()
       } catch (e) {
         setFieldError('password', (e as Error).message || 'Incorrect password')
       }

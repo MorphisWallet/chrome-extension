@@ -5,14 +5,11 @@ import { Loading, toast } from '_app/components'
 import BackupStepOne from './components/step_one'
 import BackupStepTwo from './components/step_two'
 
-import { useAppDispatch, useLockedGuard, useInitializedGuard } from '_hooks'
+import { useLockedGuard, useInitializedGuard } from '_hooks'
 
-import { loadEntropyFromKeyring } from '_redux/slices/account'
-
-import { entropyToMnemonic, toEntropy } from '_shared/utils/bip39'
+import { thunkExtras } from '_src/ui/app/redux/store/thunk-extras'
 
 const BackupPage = () => {
-  const dispatch = useAppDispatch()
   const guardsLoading = useLockedGuard(false)
   const checkingInitialized = useInitializedGuard(true)
 
@@ -28,9 +25,7 @@ const BackupPage = () => {
 
     setMnemonicLoading(true)
     try {
-      const raw = await dispatch(loadEntropyFromKeyring({})).unwrap()
-      const entropy = toEntropy(raw)
-      const mnemonic = entropyToMnemonic(entropy)
+      const mnemonic = thunkExtras.keypairVault.mnemonic
       setMnemonic(mnemonic)
     } catch (e) {
       console.warn(e)

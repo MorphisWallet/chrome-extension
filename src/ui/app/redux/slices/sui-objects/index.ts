@@ -39,12 +39,12 @@ export const fetchAllOwnedAndRequiredObjects = createAsyncThunk<
 >('sui-objects/fetch-all', async (_, { getState, extra: { api } }) => {
   const state = getState()
   const {
-    account: { address },
+    account: { activeAccountAddress },
   } = state
   const allSuiObjects: SuiObject[] = []
-  if (address) {
+  if (activeAccountAddress) {
     const allObjectRefs = await api.instance.fullNode.getObjectsOwnedByAddress(
-      `${address}`
+      `${activeAccountAddress}`
     )
     const objectIDs = allObjectRefs
       .filter((anObj) => {
@@ -94,7 +94,7 @@ export const batchFetchObject = createAsyncThunk<
 export const mintDemoNFT = createAsyncThunk<void, void, AppThunkConfig>(
   'mintDemoNFT',
   async (_, { extra: { api, keypairVault }, dispatch }) => {
-    const signer = api.getSignerInstance(keypairVault.getKeypair())
+    const signer = api.getSignerInstance(keypairVault.getKeyPair())
     await ExampleNFT.mintExampleNFT(signer)
     await dispatch(fetchAllOwnedAndRequiredObjects())
   }
@@ -112,7 +112,7 @@ export const transferNFT = createAsyncThunk<
   { nftId: ObjectId; recipientAddress: SuiAddress },
   AppThunkConfig
 >('transferNFT', async (data, { extra: { api, keypairVault }, dispatch }) => {
-  const signer = api.getSignerInstance(keypairVault.getKeypair())
+  const signer = api.getSignerInstance(keypairVault.getKeyPair())
   const txn = await signer.transferObject({
     objectId: data.nftId,
     recipient: data.recipientAddress,

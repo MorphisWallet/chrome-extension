@@ -3,9 +3,8 @@
 
 import { BehaviorSubject, filter, map, take } from 'rxjs'
 
-import Keyring from '_src/background/keyring'
-import { IS_SESSION_STORAGE_SUPPORTED } from '_src/background/keyring/VaultStorage'
 import { MSG_DISABLE_AUTO_RECONNECT } from '_src/content-script/keep-bg-alive'
+import { on, off, accountStatus } from '../Accounts'
 
 import type { Runtime } from 'webextension-polyfill'
 
@@ -17,13 +16,9 @@ export class KeepAliveConnection {
   private autoDisconnectTimeout: number | null = null
 
   constructor(private port: Runtime.Port) {
-    if (IS_SESSION_STORAGE_SUPPORTED) {
-      this.forcePortDisconnect(false)
-      return
-    }
-    Keyring.on('lockedStatusUpdate', this.onKeyringLockedStatusUpdate)
+    on('lockedStatusUpdate', this.onKeyringLockedStatusUpdate)
     this.port.onDisconnect.addListener(this.onPortDisconnected)
-    this.onKeyringLockedStatusUpdate(Keyring.isLocked)
+    this.onKeyringLockedStatusUpdate(!accountStatus.unlockFlag)
   }
 
   public get onDisconnect() {
@@ -45,7 +40,7 @@ export class KeepAliveConnection {
 
   private onPortDisconnected = (aPort: Runtime.Port) => {
     this.clearAutoDisconnectTimeout()
-    Keyring.off('lockedStatusUpdate', this.onKeyringLockedStatusUpdate)
+    off('lockedStatusUpdate', this.onKeyringLockedStatusUpdate)
     this.onDisconnectSubject.next(aPort)
   }
 

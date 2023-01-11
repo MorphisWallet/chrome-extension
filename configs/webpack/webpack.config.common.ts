@@ -159,7 +159,7 @@ const commonConfig: () => Promise<Configuration> = async () => {
       new CopyPlugin({
         patterns: [
           {
-            from: resolve(SRC_ROOT, 'manifest', 'icons'),
+            from: resolve(SRC_ROOT, 'manifest', 'icons', '**', '*'),
           },
           {
             from: resolve(SRC_ROOT, 'manifest', 'manifest.json'),
