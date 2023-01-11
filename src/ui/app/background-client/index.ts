@@ -251,7 +251,7 @@ export class BackgroundClient {
           if (isKeyringPayload(payload, 'setActiveAccount') && payload.return) {
             return payload.return
           }
-          throw new Error('Failed to add account')
+          throw new Error('Failed to set active account')
         })
       )
     )

@@ -18,6 +18,7 @@ import type { AppThunkConfig } from '_store/thunk-extras'
 export type Account = {
   address: string // account address as id
   index: number // for private-key-imported account, set index -1
+  createdTime: number // created timestamp, for sorting
   privateKey?: string
   alias?: string
   avatar?: string
