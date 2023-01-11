@@ -12,7 +12,7 @@ import {
   addVault,
   getAllAccounts,
   setActiveAccount,
-  activeAccountSelector,
+  activeAccountAddressSelector,
 } from '_redux/slices/account'
 
 import type { Account } from '_redux/slices/account'
@@ -23,20 +23,19 @@ import SettingsIcon from '_assets/icons/settings.svg'
 import AddIcon from '_assets/icons/add.svg'
 
 const AccountSelect = ({
-  id,
+  address,
   alias,
   avatar,
   onSetActiveAccount,
-}: Account & { onSetActiveAccount: (id: string) => void }) => {
-  const address = useAppSelector(activeAccountSelector)
-  const idAddress = `0x${id}`
-  const isCurrentAccount = address === idAddress
+}: Account & { onSetActiveAccount: (address: string) => void }) => {
+  const activeAccountAddress = useAppSelector(activeAccountAddressSelector)
+  const isCurrentAccount = address === activeAccountAddress
 
-  const shortenAddress = useMiddleEllipsis(idAddress, 10, 7)
+  const shortenAddress = useMiddleEllipsis(address, 10, 7)
 
   return (
     <div
-      onClick={() => onSetActiveAccount(id)}
+      onClick={() => onSetActiveAccount(address)}
       className={cl([
         'flex items-center h-[60px] px-4 rounded border cursor-pointer group',
         'transition duration-100 hover:border-[#7db4ff]',
@@ -51,7 +50,7 @@ const AccountSelect = ({
         <div className="text-[#c0c0c0]">{shortenAddress}</div>
       </div>
       <Link
-        to={`./${idAddress}`}
+        to={`./${address}`}
         onClick={(e) => e.stopPropagation()}
         className="invisible transition duration-100 ease-in-out hover:scale-110 group-hover:visible"
       >
@@ -109,7 +108,7 @@ const WalletManagementPage = () => {
             <Loading loading={loading}>
               {allAccounts.map((_account) => (
                 <AccountSelect
-                  key={_account.id}
+                  key={_account.address}
                   {..._account}
                   onSetActiveAccount={onSetActiveAccount}
                 />

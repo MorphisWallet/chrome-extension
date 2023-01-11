@@ -8,10 +8,7 @@ import Network from './components/network'
 
 import { useAppSelector } from '_hooks'
 
-import {
-  activeAccountSelector,
-  getAccountSelector,
-} from '_redux/slices/account'
+import { activeAccountSelector } from '_redux/slices/account'
 
 import CloseIcon from '_assets/icons/close.svg'
 import LandingIcon from '_assets/icons/landing.svg'
@@ -54,9 +51,7 @@ const LayoutBase = ({
   // const dispatch = useAppDispatch()
   const location = useLocation()
   const network = useAppSelector(({ app }) => app.apiEnv)
-  const activeAddress = useAppSelector(activeAccountSelector)
-  const { avatar } =
-    useAppSelector(getAccountSelector(activeAddress || '')) || {}
+  const { avatar } = useAppSelector(activeAccountSelector) || {}
 
   const [modalOpen, setModalOpen] = useState(false)
 

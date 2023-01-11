@@ -15,14 +15,14 @@ import {
 
 import { useAppDispatch, useAppSelector } from '_hooks'
 
-import { setMeta, getAccountSelector } from '_redux/slices/account'
+import { setMeta, createAccountSelector } from '_redux/slices/account'
 
 import ArrowShort from '_assets/icons/arrow_short.svg'
 
 const UpdateWalletMetaPage = () => {
   const { address } = useParams()
   const dispatch = useAppDispatch()
-  const account = useAppSelector(getAccountSelector(address || ''))
+  const account = useAppSelector(createAccountSelector(address || ''))
   if (!account) return null
 
   const { alias, avatar } = account

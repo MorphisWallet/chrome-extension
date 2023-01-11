@@ -219,13 +219,13 @@ const TxApprovalPage = () => {
     }
   }, [deserializeTxnFailed, loading, txRequest])
 
-  const address = useAppSelector(({ account }) => account.address)
+  const address = useAppSelector(({ account }) => account.activeAccountAddress)
   const txGasEstimationResult = useQuery({
     queryKey: ['tx-request', 'gas-estimate', txRequest?.id, address],
     queryFn: () => {
       if (txRequest) {
         const signer = thunkExtras.api.getSignerInstance(
-          thunkExtras.keypairVault.getKeypair()
+          thunkExtras.keypairVault.getKeyPair()
         )
         let txToEstimate: Parameters<typeof signer.dryRunTransaction>['0']
         const txType = txRequest.tx.type

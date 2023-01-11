@@ -5,7 +5,6 @@ import {
   set,
   setEncrypted,
   getEncrypted,
-  deleteEncrypted,
   clearStorage,
 } from '_src/shared/storage'
 import {
@@ -83,12 +82,12 @@ class AccountStatus {
 export const accountStatus = new AccountStatus()
 
 /**
- * check if the wallet is initialized by stored accounts
- * if there exists one or more accounts, the wallet must be initialized
+ * check if the wallet is initialized by stored active account address
+ * if there exists active account address, the wallet must be initialized
  * @returns boolean
  */
 export const isWalletInitialized = async () =>
-  !!(await getEncrypted(undefined, ACCOUNTS_KEY))
+  !!(await getEncrypted(undefined, ACTIVE_ACCOUNT_ADDRESS_KEY))
 
 /**
  * initialize and create a new wallet account
@@ -117,18 +116,21 @@ export const createAccount = async (
   await setEncrypted(password, MNEMONICS_KEY, _mnemonics)
 
   const account: Account = {
-    address: getKeypairFromMnemonics(_mnemonics).getPublicKey().toSuiAddress(),
+    address: `0x${getKeypairFromMnemonics(_mnemonics)
+      .getPublicKey()
+      .toSuiAddress()}`,
     index: 0,
     alias: 'Account1',
     avatar: genRandomAvatarColor(),
   }
+
   await setEncrypted(undefined, ACTIVE_ACCOUNT_ADDRESS_KEY, account.address)
   await setEncrypted(password, ACCOUNTS_KEY, [account])
 
   await setEncrypted(undefined, CACHED_PWD_KEY, password)
   accountStatus.unlockFlag = true
 
-  return account
+  return { account, mnemonics: _mnemonics }
 }
 
 /**
@@ -156,7 +158,7 @@ export const addAccount = async (importedPrivateKey?: string) => {
   }
 
   if (!importedPrivateKey) {
-    const _mnemonics = await getEncrypted<string>(undefined, MNEMONICS_KEY)
+    const _mnemonics = await getEncrypted<string>(cachedPwd, MNEMONICS_KEY)
     if (!_mnemonics) {
       throw new Error('Cannot add account because mnemonics are not found')
     }
@@ -189,7 +191,6 @@ export const addAccount = async (importedPrivateKey?: string) => {
  * clear some of the data from storage to lock the wallet
  */
 export const lock = async () => {
-  await deleteEncrypted(undefined, CACHED_PWD_KEY)
   await clearLockAlarm()
 
   accountStatus.unlockFlag = false
@@ -209,18 +210,12 @@ export const unlock = async (password: string) => {
 }
 
 /**
- * decrypt cached pwd and compare
+ * try to decrypt encrypted accounts as checking password
+ *there must exist accounts before checking password
  * @param password
  */
 export const checkPassword = async (password: string) => {
-  const cachedPwd = await getEncrypted<string>(undefined, CACHED_PWD_KEY)
-  if (!cachedPwd) {
-    throw new Error('Cached pwd is not found')
-  }
-
-  if (cachedPwd !== password) {
-    throw new Error('Wrong password')
-  }
+  await getEncrypted(password, ACCOUNTS_KEY)
 }
 
 /**
@@ -241,18 +236,34 @@ export const changePassword = async (
   await setEncrypted(newPassword, MNEMONICS_KEY, mnemonics)
   await setEncrypted(newPassword, ACCOUNTS_KEY, accounts)
   await setEncrypted(undefined, CACHED_PWD_KEY, newPassword)
-
-  // due to hash key, delete old data to save storage
-  await deleteEncrypted(oldPassword, MNEMONICS_KEY)
-  await deleteEncrypted(oldPassword, ACCOUNTS_KEY)
 }
 
 /**
  * set active account address, usually for switching accounts
  * @param address
  */
-export const setActiveAddress = async (address: string) =>
+export const setActiveAddress = async (address: string) => {
   await setEncrypted(undefined, ACTIVE_ACCOUNT_ADDRESS_KEY, address)
+
+  const cachedPwd = await getEncrypted<string>(undefined, CACHED_PWD_KEY)
+  if (!cachedPwd) {
+    throw new Error('Cached pwd is not found')
+  }
+
+  const accounts = await getEncrypted<Account[]>(cachedPwd, ACCOUNTS_KEY)
+  if (!accounts) {
+    throw new Error('Cannot add account because no account is created ever')
+  }
+
+  const activeAccount = accounts.find(
+    (_account) => _account.address === address
+  )
+  if (!activeAccount) {
+    throw new Error(`Cannot find account with address ${address}`)
+  }
+
+  return activeAccount
+}
 
 /**
  * set account meta by address
@@ -314,6 +325,11 @@ export const setLockTimeout = async (timeout: number) => {
  * get all stored accounts
  */
 export const getAllAccounts = async () => {
+  const isInitialized = await isWalletInitialized()
+  if (!isInitialized) {
+    return []
+  }
+
   const cachedPwd = await getEncrypted<string>(undefined, CACHED_PWD_KEY)
   if (!cachedPwd) {
     throw new Error('Cached pwd is not found')
@@ -342,14 +358,17 @@ export const handleUiMessage = async (
   try {
     if (isKeyringPayload(payload, 'create') && payload.args) {
       const { password, importedEntropy } = payload.args
-      const account = await createAccount(password, importedEntropy)
+      const { account, mnemonics } = await createAccount(
+        password,
+        importedEntropy
+      )
 
       uiConnection.send(
         createMessage<KeyringPayload<'create'>>(
           {
             type: 'keyring',
             method: 'create',
-            return: account,
+            return: { account, mnemonics },
           },
           id
         )
@@ -359,10 +378,10 @@ export const handleUiMessage = async (
       const account = await addAccount(importedPrivateKey)
 
       uiConnection.send(
-        createMessage<KeyringPayload<'create'>>(
+        createMessage<KeyringPayload<'add'>>(
           {
             type: 'keyring',
-            method: 'create',
+            method: 'add',
             return: account,
           },
           id
@@ -378,7 +397,25 @@ export const handleUiMessage = async (
       await changePassword(oldPassword, newPassword)
     } else if (isKeyringPayload(payload, 'walletStatusUpdate')) {
       const isInitialized = await isWalletInitialized()
+      if (!isInitialized) {
+        uiConnection.send(
+          createMessage<KeyringPayload<'walletStatusUpdate'>>(
+            {
+              type: 'keyring',
+              method: 'walletStatusUpdate',
+              return: {
+                isLocked: !accountStatus.unlockFlag,
+                isInitialized: isInitialized,
+              },
+            },
+            id
+          )
+        )
+        return
+      }
+
       const activeAccount = await getActiveAccount()
+      const mnemonics = await getMnemonics()
 
       uiConnection.send(
         createMessage<KeyringPayload<'walletStatusUpdate'>>(
@@ -389,6 +426,7 @@ export const handleUiMessage = async (
               isLocked: !accountStatus.unlockFlag,
               isInitialized: isInitialized,
               activeAccount,
+              mnemonics,
             },
           },
           id
@@ -437,6 +475,7 @@ export const handleUiMessage = async (
       await setAccountMeta(payload.args)
     }
   } catch (err) {
+    console.log('error:', err)
     uiConnection.send(
       createMessage<ErrorPayload>(
         { code: -1, error: true, message: (err as Error).message },
@@ -476,4 +515,18 @@ const getActiveAccount = async () => {
   }
 
   return activeAccount as Account
+}
+
+const getMnemonics = async () => {
+  const cachedPwd = await getEncrypted<string>(undefined, CACHED_PWD_KEY)
+  if (!cachedPwd) {
+    throw new Error('Cached pwd is not found')
+  }
+
+  const _mnemonics = await getEncrypted<string>(cachedPwd, MNEMONICS_KEY)
+  if (!_mnemonics) {
+    throw new Error('Cannot add account because mnemonics are not found')
+  }
+
+  return _mnemonics
 }

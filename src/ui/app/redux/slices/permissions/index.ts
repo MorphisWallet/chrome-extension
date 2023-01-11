@@ -8,7 +8,7 @@ import {
   createSlice,
 } from '@reduxjs/toolkit'
 
-import { activeAccountSelector } from '../account'
+import { activeAccountAddressSelector } from '../account'
 
 import type { SuiAddress } from '@mysten/sui.js'
 import type { PayloadAction } from '@reduxjs/toolkit'
@@ -93,8 +93,8 @@ export function createDappStatusSelector(origin: string | null) {
   }
   return createSelector(
     permissionsSelectors.selectAll,
-    activeAccountSelector,
-    (permissions, activeAccount) => {
+    activeAccountAddressSelector,
+    (permissions, activeAccountAddress) => {
       const originPermission = permissions.find(
         (aPermission) => aPermission.origin === origin
       )
@@ -103,8 +103,8 @@ export function createDappStatusSelector(origin: string | null) {
       }
       return (
         originPermission.allowed &&
-        activeAccount &&
-        originPermission.accounts.includes(activeAccount)
+        activeAccountAddress &&
+        originPermission.accounts.includes(activeAccountAddress)
       )
     }
   )

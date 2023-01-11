@@ -4,10 +4,7 @@ import { toast, IconWrapper } from '_app/components'
 
 import { useAppSelector, useMiddleEllipsis } from '_hooks'
 
-import {
-  activeAccountSelector,
-  getAccountSelector,
-} from '_redux/slices/account'
+import { activeAccountSelector } from '_redux/slices/account'
 
 import CopyIcon from '_assets/icons/copy.svg'
 
@@ -17,18 +14,18 @@ type AddressProps = {
 }
 
 export const Address = ({ addressOnly = false, address }: AddressProps) => {
-  const activeAddress = useAppSelector(activeAccountSelector)
-  const { alias = '' } =
-    useAppSelector(getAccountSelector(activeAddress || '')) || {}
-  const shortenAddress = useMiddleEllipsis(address || activeAddress, 10, 7)
-  const shortenAlias = useMiddleEllipsis(alias, 10, 7)
+  const activeAccount = useAppSelector(activeAccountSelector)
+  const shortenAddress = useMiddleEllipsis(
+    address || activeAccount?.address || '',
+    10,
+    7
+  )
+  const shortenAlias = useMiddleEllipsis(activeAccount?.alias || '', 10, 7)
 
   const onCopy = () => {
-    if (!activeAddress) {
-      return
-    }
+    if (!activeAccount) return
 
-    const copyRes = copy(activeAddress)
+    const copyRes = copy(activeAccount.address)
     if (copyRes) {
       toast({
         type: 'success',
@@ -37,6 +34,8 @@ export const Address = ({ addressOnly = false, address }: AddressProps) => {
       })
     }
   }
+
+  if (!activeAccount) return null
 
   return (
     <IconWrapper onClick={onCopy} className="!scale-100">

@@ -41,13 +41,11 @@ export const setEncrypted = async <T>(
   key: string,
   value: T
 ) => {
-  if (!key) return
-  if (!value) return
+  if (!key || !value) throw new Error('Key and value must be provided')
 
-  const encryptedKey = await encrypt(password, key, undefined, SALT)
   const encryptedValue = await encrypt(password, value, undefined, SALT)
 
-  await set({ [encryptedKey]: encryptedValue })
+  await set({ [key]: encryptedValue })
 }
 
 /**
@@ -60,12 +58,12 @@ export const getEncrypted = async <T>(
   password: string = PASSWORD as string,
   key: string
 ): Promise<T | null> => {
-  const encryptedKey = await encrypt(password, key, undefined, SALT)
-  const encryptedValue = await get(encryptedKey)
-
+  const encryptedValue = await get(key)
   if (!encryptedValue) return null
 
-  return (await decrypt(encryptedValue as string, password)) as T
+  const decryptedData = (await decrypt(password, encryptedValue as string)) as T
+
+  return decryptedData
 }
 
 /**

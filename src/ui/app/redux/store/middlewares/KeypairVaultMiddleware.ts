@@ -1,48 +1,32 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { isAnyOf } from '@reduxjs/toolkit'
+// import { isAnyOf } from '@reduxjs/toolkit'
 
-import {
-  setAddress,
-  createVault,
-  setKeyringStatus,
-  setActiveAccount,
-  addVault,
-} from '_redux/slices/account'
-import { thunkExtras } from '_store/thunk-extras'
+// import {
+//   createVault,
+//   setActiveAccount,
+//   addVault,
+//   setActiveAddress,
+//   setKeyringStatus,
+// } from '_redux/slices/account'
+// import { thunkExtras } from '_store/thunk-extras'
 
 import type { Middleware } from '@reduxjs/toolkit'
 
-const keypairVault = thunkExtras.keypairVault
-const matchUpdateKeypairVault = isAnyOf(
-  createVault.fulfilled,
-  addVault.fulfilled,
-  setKeyringStatus,
-  setActiveAccount.fulfilled
-)
+// const keypairVault = thunkExtras.keypairVault
 
-export const KeypairVaultMiddleware: Middleware =
-  ({ dispatch }) =>
-  (next) =>
-  (action) => {
-    if (matchUpdateKeypairVault(action)) {
-      let exportedKeypair
-      if (action.payload) {
-        if ('activeAccount' in action.payload) {
-          exportedKeypair = action.payload.activeAccount
-        } else if ('schema' in action.payload) {
-          exportedKeypair = action.payload
-        }
-      }
-      if (exportedKeypair) {
-        keypairVault.keypair = exportedKeypair
-        dispatch(setAddress(keypairVault.getAccount()))
-      } else {
-        keypairVault.clear()
-        dispatch(setAddress(null))
-      }
-      exportedKeypair = null
-    }
-    return next(action)
-  }
+// actions that should update active account address and accounts
+// const matchUpdateKeypairVault = isAnyOf(
+//   createVault.fulfilled,
+//   addVault.fulfilled,
+//   setActiveAccount.fulfilled,
+//   setKeyringStatus
+// )
+
+/**
+ * for create account, add account and set active account thunk,
+ * additionally set active address of the newly created or added account address, or the newly-set-active account address
+ */
+export const KeypairVaultMiddleware: Middleware = () => (next) => (action) =>
+  next(action)

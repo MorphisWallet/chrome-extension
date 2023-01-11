@@ -5,12 +5,9 @@ import cl from 'classnames'
 
 import { Loading, IconWrapper, Alert, toast } from '_app/components'
 
-import { useAppDispatch } from '_hooks'
-
-import { loadEntropyFromKeyring } from '_redux/slices/account'
+import { thunkExtras } from '_redux/store/thunk-extras'
 
 import { MNEMONIC_LENGTH } from '_src/shared/constants'
-import { entropyToMnemonic, toEntropy } from '_shared/cryptography/bip39'
 
 import CopyIcon from '_assets/icons/copy.svg'
 
@@ -21,8 +18,6 @@ type SeedPhraseCardProps = {
 }
 
 export const SeedPhraseCard = ({ className }: SeedPhraseCardProps) => {
-  const dispatch = useAppDispatch()
-
   const [mnemonicLoading, setMnemonicLoading] = useState(false)
   const [mnemonic, setMnemonic] = useState<string | null>(null)
   const [tipVisible, setTipVisibility] = useState(false)
@@ -30,9 +25,7 @@ export const SeedPhraseCard = ({ className }: SeedPhraseCardProps) => {
   const onInit = async () => {
     setMnemonicLoading(true)
     try {
-      const raw = await dispatch(loadEntropyFromKeyring({})).unwrap()
-      const entropy = toEntropy(raw)
-      const mnemonic = entropyToMnemonic(entropy)
+      const mnemonic = thunkExtras.keypairVault.mnemonic
       setMnemonic(mnemonic)
     } catch (e) {
       console.warn(e)

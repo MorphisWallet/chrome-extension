@@ -9,7 +9,7 @@ import type { Account } from '_redux/slices/account'
 type MethodToPayloads = {
   create: {
     args: { password: string; importedEntropy?: string }
-    return: Account
+    return: { account: Account; mnemonics: string }
   }
   add: {
     args: { importedPrivateKey?: string }
@@ -33,6 +33,7 @@ type MethodToPayloads = {
       isLocked: boolean
       isInitialized: boolean
       activeAccount: Account
+      mnemonics: string
     }>
   }
   allAccounts: {
@@ -57,7 +58,7 @@ type MethodToPayloads = {
   }
   setActiveAccount: {
     args: { address: string }
-    return: never
+    return: Account
   }
   setAccountMeta: {
     args: { address: string; alias?: string; avatar?: string }

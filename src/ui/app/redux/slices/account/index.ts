@@ -5,29 +5,26 @@ import Browser from 'webextension-polyfill'
 import { getObjectId } from '@mysten/sui.js'
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit'
 
-import { isKeyringPayload } from '_payloads/keyring'
 import { suiObjectsAdapterSelectors } from '_redux/slices/sui-objects'
 import { Coin } from '_redux/slices/sui-objects/Coin'
+import { thunkExtras } from '_store/thunk-extras'
 
-import type {
-  ObjectId,
-  SuiAddress,
-  SuiMoveObject,
-  ExportedKeypair,
-} from '@mysten/sui.js'
+import type { ObjectId, SuiMoveObject } from '@mysten/sui.js'
 import type { PayloadAction, Reducer } from '@reduxjs/toolkit'
 import type { KeyringPayload } from '_payloads/keyring'
 import type { RootState } from '_redux/RootReducer'
 import type { AppThunkConfig } from '_store/thunk-extras'
 
 export type Account = {
-  id: string
+  address: string // account address as id
+  index: number // for private-key-imported account, set index -1
+  privateKey?: string
   alias?: string
   avatar?: string
 }
 
 export const createVault = createAsyncThunk<
-  ExportedKeypair,
+  void,
   {
     importedEntropy?: string
     password: string
@@ -39,24 +36,22 @@ export const createVault = createAsyncThunk<
     { importedEntropy, password },
     { extra: { background }, dispatch }
   ) => {
-    const { payload } = await background.createVault(password, importedEntropy)
+    const { account, mnemonics } = await background.createAccount(
+      password,
+      importedEntropy
+    )
     await background.unlockWallet(password)
-    if (!isKeyringPayload(payload, 'create')) {
-      throw new Error('Unknown payload')
-    }
-    if (!payload.return?.keypair) {
-      throw new Error('Empty keypair in payload')
-    }
 
+    dispatch(setActiveAddress(account.address))
     await dispatch(getAllAccounts()).unwrap()
 
-    return payload.return.keypair
+    thunkExtras.keypairVault.mnemonic = mnemonics
+    thunkExtras.keypairVault.activeIndex = account.index
   }
 )
 
-// To add multiple wallet vaults
 export const addVault = createAsyncThunk<
-  ExportedKeypair,
+  void,
   {
     importedEntropy?: string
   },
@@ -64,35 +59,30 @@ export const addVault = createAsyncThunk<
 >(
   'account/addVault',
   async ({ importedEntropy }, { extra: { background }, dispatch }) => {
-    const { payload } = await background.addVault(importedEntropy)
-    await background.unlockWallet()
-    if (!isKeyringPayload(payload, 'add')) {
-      throw new Error('Unknown payload')
-    }
-    if (!payload.return?.keypair) {
-      throw new Error('Empty keypair in payload')
-    }
+    const account = await background.addAccount(importedEntropy)
 
+    dispatch(setActiveAddress(account.address))
     await dispatch(getAllAccounts()).unwrap()
 
-    return payload.return.keypair
+    thunkExtras.keypairVault.activeIndex = account.index
   }
 )
 
-export const loadEntropyFromKeyring = createAsyncThunk<
-  string,
-  { password?: string }, // can be undefined when we know Keyring is unlocked
-  AppThunkConfig
->(
-  'account/loadEntropyFromKeyring',
-  async ({ password }, { extra: { background } }) =>
-    await background.getEntropy(password)
-)
+// export const loadEntropyFromKeyring = createAsyncThunk<
+//   string,
+//   { password?: string }, // can be undefined when we know Keyring is unlocked
+//   AppThunkConfig
+// >(
+//   'account/loadEntropyFromKeyring',
+//   async ({ password }, { extra: { background } }) =>
+//     await background.getEntropy(password)
+// )
 
-export const checkPassword = createAsyncThunk<boolean, string, AppThunkConfig>(
+export const checkPassword = createAsyncThunk<void, string, AppThunkConfig>(
   'account/checkPassword',
-  async (password, { extra: { background } }) =>
+  async (password, { extra: { background } }) => {
     await background.checkPassword(password)
+  }
 )
 
 export const changePassword = createAsyncThunk<
@@ -107,36 +97,28 @@ export const changePassword = createAsyncThunk<
 )
 
 export const setActiveAccount = createAsyncThunk<
-  ExportedKeypair,
+  Account,
   string,
   AppThunkConfig
->('account/setActiveAccount', async (id, { extra: { background } }) => {
-  const { payload } = await background.setActiveAccount(id)
-  if (!isKeyringPayload(payload, 'setActiveAccount')) {
-    throw new Error('Unknown payload')
+>(
+  'account/setActiveAccount',
+  async (address, { extra: { background }, dispatch }) => {
+    const activeAccount = await background.setActiveAccount(address)
+
+    dispatch(setActiveAddress(activeAccount.address))
+    thunkExtras.keypairVault.activeIndex = activeAccount.index
+
+    return activeAccount
   }
-
-  if (!payload.return) {
-    throw new Error('No response from service worker')
-  }
-
-  const { keypair } = payload.return
-
-  return keypair
-})
+)
 
 export const getAllAccounts = createAsyncThunk<Account[], void, AppThunkConfig>(
   'account/getAllAccounts',
   async (_, { extra: { background }, dispatch }) => {
-    const { payload } = await background.getAllAccounts()
-    if (!isKeyringPayload(payload, 'allAccounts')) {
-      throw new Error('Unknown payload')
-    }
+    const accounts = await background.getAllAccounts()
+    dispatch(setAllAccounts(accounts))
 
-    const allAccounts = payload.return || []
-    dispatch(setAllAccounts(allAccounts))
-
-    return allAccounts
+    return accounts
   }
 )
 
@@ -153,9 +135,9 @@ export const setMeta = createAsyncThunk<
   { address: string; alias?: string; avatar?: string },
   AppThunkConfig
 >(
-  'account/setMeta',
+  'account/setAccountMeta',
   async ({ address, alias, avatar }, { extra: { background }, dispatch }) => {
-    await background.setMeta({
+    await background.setAccountMeta({
       address,
       alias,
       avatar,
@@ -166,17 +148,17 @@ export const setMeta = createAsyncThunk<
 
 type AccountState = {
   creating: boolean
-  address: SuiAddress | null
   isLocked: boolean | null
   isInitialized: boolean | null
+  activeAccountAddress: string | null
   allAccounts: Account[]
 }
 
 const initialState: AccountState = {
   creating: false,
-  address: null,
   isLocked: null,
   isInitialized: null,
+  activeAccountAddress: null,
   allAccounts: [],
 }
 
@@ -184,8 +166,8 @@ const accountSlice = createSlice({
   name: 'account',
   initialState,
   reducers: {
-    setAddress: (state, action: PayloadAction<string | null>) => {
-      state.address = action.payload
+    setActiveAddress: (state, { payload }: PayloadAction<string>) => {
+      state.activeAccountAddress = payload
     },
     setKeyringStatus: (
       state,
@@ -196,6 +178,13 @@ const accountSlice = createSlice({
       }
       if (typeof payload?.isInitialized !== 'undefined') {
         state.isInitialized = payload.isInitialized
+      }
+      if (payload?.mnemonics) {
+        thunkExtras.keypairVault.mnemonic = payload.mnemonics
+      }
+      if (payload?.activeAccount) {
+        state.activeAccountAddress = payload.activeAccount.address
+        thunkExtras.keypairVault.activeIndex = payload.activeAccount.index
       }
     },
     setAllAccounts: (state, action: PayloadAction<Account[]>) => {
@@ -216,19 +205,26 @@ const accountSlice = createSlice({
       }),
 })
 
-export const { setAddress, setKeyringStatus, setAllAccounts } =
+export const { setActiveAddress, setKeyringStatus, setAllAccounts } =
   accountSlice.actions
 
 const reducer: Reducer<typeof initialState> = accountSlice.reducer
 export default reducer
 
-export const activeAccountSelector = ({ account }: RootState) => account.address
+export const activeAccountAddressSelector = ({ account }: RootState) =>
+  account.activeAccountAddress
+
+export const activeAccountSelector = ({ account }: RootState) =>
+  account.allAccounts.find(
+    (_account) => _account.address === account.activeAccountAddress
+  )
+
 export const allAccountsSelector = ({ account }: RootState) =>
   account.allAccounts
 
 export const ownedObjects = createSelector(
   suiObjectsAdapterSelectors.selectAll,
-  activeAccountSelector,
+  activeAccountAddressSelector,
   (objects, address) => {
     if (address) {
       return objects.filter(
@@ -299,10 +295,7 @@ export const createAccountNftByIdSelector = (nftId: ObjectId) =>
       allNfts.find((nft) => getObjectId(nft.reference) === nftId) || null
   )
 
-// get account by id(address). if no id provided, return active account
-export const getAccountSelector = (address: string) =>
-  createSelector(
-    allAccountsSelector,
-    (allAccounts: Account[]): Account | null =>
-      allAccounts.find((_account) => _account.id === address.slice(2)) || null
+export const createAccountSelector = (address: string) =>
+  createSelector(allAccountsSelector, (allAccounts) =>
+    allAccounts.find((_account) => _account.address === address)
   )

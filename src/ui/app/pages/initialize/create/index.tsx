@@ -40,10 +40,10 @@ const CreatePage = () => {
     try {
       await dispatch(createVault({ password: values.password })).unwrap()
       navigate('/initialize/backup')
-    } catch (e) {
+    } catch (err) {
       toast({
         type: 'error',
-        message: `Failed to create vault, ${e}`,
+        message: `Failed to create vault, ${(err as Error)?.message}`,
         containerId: 'initialize-toast',
       })
     }

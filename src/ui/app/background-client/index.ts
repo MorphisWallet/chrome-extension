@@ -1,7 +1,7 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { lastValueFrom, map, take } from 'rxjs'
+import { lastValueFrom, take, map } from 'rxjs'
 
 import { createMessage } from '_messages'
 import { PortStream } from '_messaging/PortStream'
@@ -124,7 +124,15 @@ export class BackgroundClient {
           method: 'create',
           args: { password, importedEntropy },
         })
-      ).pipe(take(1))
+      ).pipe(
+        take(1),
+        map(({ payload }) => {
+          if (isKeyringPayload(payload, 'create') && payload.return) {
+            return payload.return
+          }
+          throw new Error('Failed to create wallet')
+        })
+      )
     )
   }
 
@@ -137,7 +145,15 @@ export class BackgroundClient {
           args: { importedPrivateKey },
           return: undefined,
         })
-      ).pipe(take(1))
+      ).pipe(
+        take(1),
+        map(({ payload }) => {
+          if (isKeyringPayload(payload, 'add') && payload.return) {
+            return payload.return
+          }
+          throw new Error('Failed to add account')
+        })
+      )
     )
   }
 
@@ -229,7 +245,15 @@ export class BackgroundClient {
           method: 'setActiveAccount',
           args: { address },
         })
-      ).pipe(take(1))
+      ).pipe(
+        take(1),
+        map(({ payload }) => {
+          if (isKeyringPayload(payload, 'setActiveAccount') && payload.return) {
+            return payload.return
+          }
+          throw new Error('Failed to add account')
+        })
+      )
     )
   }
 
@@ -240,7 +264,15 @@ export class BackgroundClient {
           type: 'keyring',
           method: 'allAccounts',
         })
-      ).pipe(take(1))
+      ).pipe(
+        take(1),
+        map(({ payload }) => {
+          if (isKeyringPayload(payload, 'allAccounts') && payload.return) {
+            return payload.return
+          }
+          throw new Error('Failed to fetch accounts')
+        })
+      )
     )
   }
 

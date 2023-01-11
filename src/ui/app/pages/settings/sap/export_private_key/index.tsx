@@ -6,12 +6,7 @@ import Layout from '_app/layouts'
 import { Loading, IconWrapper, Alert, toast } from '_app/components'
 import Confirm from '../_components/confirm'
 
-import { useAppDispatch } from '_hooks'
-
-import { loadEntropyFromKeyring } from '_redux/slices/account'
-
-import { toEntropy } from '_shared/cryptography/bip39'
-import { buf2hex } from '_app/utils/mnemonic'
+import { thunkExtras } from '_src/ui/app/redux/store/thunk-extras'
 
 import ArrowShort from '_assets/icons/arrow_short.svg'
 import CopyIcon from '_assets/icons/copy.svg'
@@ -19,8 +14,6 @@ import CopyIcon from '_assets/icons/copy.svg'
 let copyTimeout: ReturnType<typeof setTimeout>
 
 const ExportPrivateKeyPage = () => {
-  const dispatch = useAppDispatch()
-
   const [showConfirm, setShowConfirm] = useState(true)
   const [mnemonicLoading, setMnemonicLoading] = useState(false)
   const [privateKey, setPrivateKey] = useState<string | null>(null)
@@ -29,9 +22,9 @@ const ExportPrivateKeyPage = () => {
   const onInit = async () => {
     setMnemonicLoading(true)
     try {
-      const raw = await dispatch(loadEntropyFromKeyring({})).unwrap()
-      const entropy = toEntropy(raw)
-      setPrivateKey(buf2hex(entropy))
+      const keypair = thunkExtras.keypairVault.getKeyPair()
+      const { privateKey } = keypair.export()
+      setPrivateKey(privateKey)
     } catch (e) {
       console.warn(e)
       toast({
