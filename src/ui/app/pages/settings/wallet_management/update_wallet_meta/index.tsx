@@ -52,7 +52,7 @@ const UpdateWalletMetaPage = () => {
             alias: alias === _alias ? undefined : _alias,
             avatar: avatar === avatarPath ? undefined : avatarPath || undefined,
           })
-        ).unwrap()
+        )
         toast({
           type: 'success',
           message: 'Successfully updated name and avatar',

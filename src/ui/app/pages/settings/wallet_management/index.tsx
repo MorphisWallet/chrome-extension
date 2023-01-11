@@ -1,18 +1,18 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 import cl from 'classnames'
 
 import Layout from '_app/layouts'
-import { IconWrapper, Button, Loading, Avatar } from '_app/components'
+import { IconWrapper, Button, Loading, Avatar, toast } from '_app/components'
 
 import { useAppDispatch, useAppSelector, useMiddleEllipsis } from '_hooks'
 
 import {
   addVault,
-  getAllAccounts,
   setActiveAccount,
   activeAccountAddressSelector,
+  allAccountsSelector,
 } from '_redux/slices/account'
 
 import type { Account } from '_redux/slices/account'
@@ -62,35 +62,28 @@ const AccountSelect = ({
 
 const WalletManagementPage = () => {
   const dispatch = useAppDispatch()
+  const accounts = useAppSelector(allAccountsSelector)
 
-  const [allAccounts, setAllAccounts] = useState<Account[]>([])
   const [loading, setLoading] = useState(false)
 
   const onAddWallet = async () => {
     await dispatch(addVault({}))
-    fetchAllAccounts()
   }
 
-  const fetchAllAccounts = async () => {
+  const onSetActiveAccount = async (address: string) => {
     setLoading(true)
 
-    const _allAccounts = await dispatch(getAllAccounts()).unwrap()
-
-    setAllAccounts(_allAccounts)
-    setLoading(false)
+    try {
+      await dispatch(setActiveAccount(address)).unwrap()
+    } catch (err) {
+      toast({
+        type: 'error',
+        message: (err as Error)?.message || 'Failed to switch account',
+      })
+    } finally {
+      setLoading(false)
+    }
   }
-
-  const onSetActiveAccount = async (id: string) => {
-    setLoading(true)
-
-    await dispatch(setActiveAccount(id)).unwrap()
-
-    setLoading(false)
-  }
-
-  useEffect(() => {
-    fetchAllAccounts()
-  }, [])
 
   return (
     <Layout showNav={false}>
@@ -106,7 +99,7 @@ const WalletManagementPage = () => {
         <div className="flex flex-col grow overflow-y-auto px-6 mx-[-24px]">
           <div className="flex flex-col gap-2">
             <Loading loading={loading}>
-              {allAccounts.map((_account) => (
+              {accounts.map((_account) => (
                 <AccountSelect
                   key={_account.address}
                   {..._account}
@@ -114,10 +107,9 @@ const WalletManagementPage = () => {
                 />
               ))}
             </Loading>
-
             <Button
               onClick={onAddWallet}
-              className="flex items-center h-[60px] px-4 rounded border border-[#e2e2e2] transition duration-300 ease-in-out hover:border-[#7db4ff]"
+              className="flex items-center shrink-0 h-[60px] px-4 rounded border border-[#e2e2e2] transition duration-300 ease-in-out hover:border-[#7db4ff]"
             >
               <div className="mr-2">
                 <AddIcon height={28} width={28} />

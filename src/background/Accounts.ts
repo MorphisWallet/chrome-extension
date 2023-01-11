@@ -275,7 +275,7 @@ export const setAccountMeta = async ({
   address,
   alias,
   avatar,
-}: Omit<Account, 'index' | 'privateKey'>) => {
+}: Omit<Account, 'index' | 'privateKey' | 'createdTime'>) => {
   const cachedPwd = await getEncrypted<string>(undefined, CACHED_PWD_KEY)
   if (!cachedPwd) {
     throw new Error('Cached pwd is not found')
@@ -488,6 +488,7 @@ export const handleUiMessage = async (
       uiConnection.send(createMessage({ type: 'done' }, id))
     } else if (isKeyringPayload(payload, 'setAccountMeta') && payload.args) {
       await setAccountMeta(payload.args)
+      uiConnection.send(createMessage({ type: 'done' }, id))
     }
   } catch (err) {
     uiConnection.send(
