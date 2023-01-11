@@ -85,7 +85,7 @@ const ExportPrivateKeyPage = () => {
               <p className="text-lg text-[#929294] leading-6 mb-8">
                 Do not share private key with anyone, including Morphis.
               </p>
-              <p className="text-center text-sm mb-2">{privateKey}</p>
+              <p className="text-left text-sm break-all mb-2">{privateKey}</p>
               <div className="relative">
                 <IconWrapper onClick={onCopy}>
                   <CopyIcon height={14} width={14} className="mr-2" />
