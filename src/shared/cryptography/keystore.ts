@@ -14,14 +14,17 @@ type Serializable =
 
 export async function encrypt(
   password: string,
-  secrets: Serializable
+  plainData: Serializable,
+  key?: CryptoKey,
+  salt?: string
 ): Promise<string> {
-  return browserPassworderEncrypt(password, secrets)
+  return browserPassworderEncrypt(password, plainData, key, salt)
 }
 
 export async function decrypt<T extends Serializable>(
   password: string,
-  ciphertext: string
+  cipherData: string,
+  key?: CryptoKey
 ): Promise<T> {
-  return (await browserPassworderDecrypt(password, ciphertext)) as T
+  return (await browserPassworderDecrypt(password, cipherData, key)) as T
 }

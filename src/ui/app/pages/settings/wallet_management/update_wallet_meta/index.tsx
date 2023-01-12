@@ -1,25 +1,32 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 
 import Layout from '_app/layouts'
-import { IconWrapper, Address, Input, Button, toast } from '_app/components'
+import {
+  IconWrapper,
+  Address,
+  Input,
+  Button,
+  toast,
+  Avatar,
+} from '_app/components'
 
 import { useAppDispatch, useAppSelector } from '_hooks'
 
-import { setMeta } from '_redux/slices/account'
-
-import { DEFAULT_AVATAR } from '_shared/constants'
+import { setMeta, createAccountSelector } from '_redux/slices/account'
 
 import ArrowShort from '_assets/icons/arrow_short.svg'
 
 const UpdateWalletMetaPage = () => {
+  const { address } = useParams()
   const dispatch = useAppDispatch()
-  const { alias, avatar } = useAppSelector(({ account }) => ({
-    alias: account.alias,
-    avatar: account.avatar,
-  }))
+  const account = useAppSelector(createAccountSelector(address || ''))
+  if (!account) return null
+
+  const { alias, avatar } = account
+
   const {
     values,
     errors,
@@ -36,13 +43,16 @@ const UpdateWalletMetaPage = () => {
       alias: Yup.string().min(1).max(16).required('At least one character'),
     }),
     onSubmit: async ({ alias: _alias }) => {
+      if (!address) return
+
       try {
         await dispatch(
           setMeta({
+            address,
             alias: alias === _alias ? undefined : _alias,
             avatar: avatar === avatarPath ? undefined : avatarPath || undefined,
           })
-        ).unwrap()
+        )
         toast({
           type: 'success',
           message: 'Successfully updated name and avatar',
@@ -87,7 +97,7 @@ const UpdateWalletMetaPage = () => {
     <Layout showNav={false}>
       <div className="flex flex-col grow shrink-0 font-medium px-6 pt-4 pb-6 overflow-hidden text-sm">
         <div className="mb-2 text-xl text-center font-bold relative">
-          {alias}
+          {alias || 'Account'}
           <Link
             to="/settings/wallet-management"
             className="absolute left-0 top-[7px]"
@@ -99,7 +109,7 @@ const UpdateWalletMetaPage = () => {
         </div>
         <div className="flex flex-col grow">
           <div className="mb-4">
-            <Address addressOnly />
+            <Address addressOnly address={address} />
           </div>
           <div className="mb-6 mx-auto rounded-full overflow-hidden h-[102px] w-[102px] relative">
             <label
@@ -113,11 +123,7 @@ const UpdateWalletMetaPage = () => {
               className="opacity-0 absolute z-[-1]"
               onChange={onUpload}
             />
-            <img
-              alt="avatar"
-              src={avatarPath || DEFAULT_AVATAR}
-              className="h-full w-full"
-            />
+            <Avatar avatar={avatarPath} size={102} />
           </div>
           <form onSubmit={handleSubmit} className="flex flex-col grow">
             <label htmlFor="alias">Name</label>

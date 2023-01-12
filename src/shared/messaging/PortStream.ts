@@ -72,7 +72,7 @@ export class PortStream {
       filter((msg) => msg.id === requestMsgID),
       map((msg) => {
         if (isErrorPayload(msg.payload)) {
-          throw new Error(msg.payload.message)
+          throw new Error(msg?.payload?.message)
         }
         return msg
       })

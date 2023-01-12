@@ -6,12 +6,12 @@ import { BrowserTracing } from '@sentry/tracing'
 import Browser from 'webextension-polyfill'
 
 const WALLET_VERSION = Browser.runtime.getManifest().version
-const SENTRY_DSN = ''
+const SENTRY_DSN = process.env.SENTRY_DSN
 
 const IS_PROD = process.env.NODE_ENV === 'production'
 
 export default function initSentry() {
-  if (!IS_PROD) return
+  if (!IS_PROD || !SENTRY_DSN) return
 
   Sentry.init({
     dsn: SENTRY_DSN,

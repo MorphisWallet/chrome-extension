@@ -28,10 +28,10 @@ export const requestGas = createAsyncThunk<
 >('faucet-request-gas', async (_, { getState, rejectWithValue }) => {
   const {
     app: { apiEnv },
-    account: { address },
+    account: { activeAccountAddress },
   } = getState()
   const faucetUrl = new URL('/gas', ENV_TO_API[apiEnv]?.faucet)
-  if (!address) {
+  if (!activeAccountAddress) {
     throw rejectWithValue({
       status: -1,
       statusTxt: 'Failed, wallet address not found.',
@@ -45,7 +45,7 @@ export const requestGas = createAsyncThunk<
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        FixedAmountRequest: { recipient: address },
+        FixedAmountRequest: { recipient: activeAccountAddress },
       }),
     })
   } catch (e) {

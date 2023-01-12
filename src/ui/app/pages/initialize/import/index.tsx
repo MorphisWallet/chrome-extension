@@ -10,7 +10,6 @@ import { useAppDispatch, useLockedGuard, useInitializedGuard } from '_hooks'
 import { createVault } from '_redux/slices/account'
 
 import { MAIN_UI_URL } from '_shared/utils'
-import { entropyToSerialized, mnemonicToEntropy } from '_shared/utils/bip39'
 
 import Logo from '_assets/icons/logo.svg'
 
@@ -33,17 +32,17 @@ const ImportPage = () => {
     try {
       await dispatch(
         createVault({
-          importedEntropy: entropyToSerialized(mnemonicToEntropy(mnemonic)),
           password,
+          importedEntropy: mnemonic,
         })
       ).unwrap()
 
       // refresh the page to re-initialize the store
       window.location.href = MAIN_UI_URL
-    } catch (e) {
+    } catch (err) {
       toast({
         type: 'error',
-        message: `Fail to import wallet, ${e}`,
+        message: `Fail to imported wallet, ${(err as Error).message}`,
         containerId: 'initialize-toast',
       })
     }

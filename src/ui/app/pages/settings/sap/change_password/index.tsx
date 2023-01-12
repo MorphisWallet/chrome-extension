@@ -54,19 +54,17 @@ const ChangePasswordPage = () => {
     }
 
     try {
-      const res = await dispatch(
+      await dispatch(
         changePassword({ oldPassword, newPassword: password })
       ).unwrap()
 
-      if (res) {
-        navigate('/settings/sap')
-        setTimeout(() => {
-          toast({
-            type: 'success',
-            message: 'Successfully changed password',
-          })
-        }, 0)
-      }
+      navigate('/settings/sap')
+      setTimeout(() => {
+        toast({
+          type: 'success',
+          message: 'Successfully changed password',
+        })
+      }, 0)
     } catch (e) {
       setFieldError('oldPassword', (e as Error).message || 'Incorrect password')
     }

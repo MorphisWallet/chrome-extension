@@ -3,12 +3,12 @@ import { useLocation, Link } from 'react-router-dom'
 import { ToastContainer, Slide } from 'react-toastify'
 import cl from 'classnames'
 
-import { Button, IconWrapper, Modal, Address } from '_app/components'
+import { Button, IconWrapper, Modal, Address, Avatar } from '_app/components'
 import Network from './components/network'
 
 import { useAppSelector } from '_hooks'
 
-import { DEFAULT_AVATAR } from '_shared/constants'
+import { activeAccountSelector } from '_redux/slices/account'
 
 import CloseIcon from '_assets/icons/close.svg'
 import LandingIcon from '_assets/icons/landing.svg'
@@ -51,7 +51,7 @@ const LayoutBase = ({
   // const dispatch = useAppDispatch()
   const location = useLocation()
   const network = useAppSelector(({ app }) => app.apiEnv)
-  const avatar = useAppSelector(({ account: { avatar } }) => avatar)
+  const { avatar } = useAppSelector(activeAccountSelector) || {}
 
   const [modalOpen, setModalOpen] = useState(false)
 
@@ -88,11 +88,7 @@ const LayoutBase = ({
       {showHeader && (
         <header className="h-12 px-6 bg-white border-b border-b-[#e6e6e9] flex items-center shrink-0 font-medium z-[1010]">
           <Link to="/settings/wallet-management">
-            <img
-              alt="avatar"
-              src={avatar || DEFAULT_AVATAR}
-              className="h-[24px] w-[24px] rounded-full"
-            />
+            <Avatar avatar={avatar} size={24} />
           </Link>
           <div className="grow mx-2 text-center cursor-pointer">
             <Address />

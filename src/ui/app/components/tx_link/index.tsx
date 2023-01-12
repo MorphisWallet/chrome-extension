@@ -3,7 +3,7 @@ import cl from 'classnames'
 
 import { useAppSelector } from '_hooks'
 
-import { activeAccountSelector } from '_redux/slices/account'
+import { activeAccountAddressSelector } from '_redux/slices/account'
 
 import { getAddressUrl, getObjectUrl, getTransactionUrl } from './utils'
 import { API_ENV } from '_app/ApiProvider'
@@ -18,7 +18,7 @@ function useAddress(props: TxLinkProps) {
   const { type } = props
   const isAddress = type === ExplorerLinkType.address
   const isProvidedAddress = isAddress && !props.useActiveAddress
-  const activeAddress = useAppSelector(activeAccountSelector)
+  const activeAddress = useAppSelector(activeAccountAddressSelector)
   return isProvidedAddress ? props.address : activeAddress
 }
 

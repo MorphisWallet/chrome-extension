@@ -34,16 +34,18 @@ const ConnectPage = () => {
     : null
   const isSecure = parsedOrigin?.protocol === 'https:'
 
-  const activeAccount = useAppSelector(({ account }) => account.address)
+  const activeAccountAddress = useAppSelector(
+    ({ account }) => account.activeAccountAddress
+  )
 
   const loading = !permissionsInitialized
 
   const handleOnSubmit = (allowed: boolean) => {
-    if (requestID && activeAccount) {
+    if (requestID && activeAccountAddress) {
       dispatch(
         respondToPermissionRequest({
           id: requestID,
-          accounts: allowed ? [activeAccount] : [],
+          accounts: allowed ? [activeAccountAddress] : [],
           allowed,
         })
       )

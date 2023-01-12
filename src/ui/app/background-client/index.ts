@@ -1,7 +1,7 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { lastValueFrom, map, take } from 'rxjs'
+import { lastValueFrom, take, map } from 'rxjs'
 
 import { createMessage } from '_messages'
 import { PortStream } from '_messaging/PortStream'
@@ -9,7 +9,7 @@ import { isKeyringPayload } from '_payloads/keyring'
 import { isPermissionRequests } from '_payloads/permissions'
 import { isUpdateActiveOrigin } from '_payloads/tabs/updateActiveOrigin'
 import { isGetTransactionRequestsResponse } from '_payloads/transactions/ui/GetTransactionRequestsResponse'
-import { setKeyringStatus } from '_redux/slices/account'
+import { setKeyringStatus, setAllAccounts } from '_redux/slices/account'
 import { setActiveOrigin } from '_redux/slices/app'
 import { setPermissions } from '_redux/slices/permissions'
 import { setTransactionRequests } from '_redux/slices/transaction-requests'
@@ -50,6 +50,7 @@ export class BackgroundClient {
       this.sendGetPermissionRequests(),
       this.sendGetTransactionRequests(),
       this.getWalletStatus(),
+      this.getAllAccounts(),
     ]).then(() => undefined)
   }
 
@@ -115,16 +116,44 @@ export class BackgroundClient {
     )
   }
 
-  public async createVault(password: string, importedEntropy?: string) {
+  public async createAccount(password: string, importedEntropy?: string) {
     return await lastValueFrom(
       this.sendMessage(
         createMessage<KeyringPayload<'create'>>({
           type: 'keyring',
           method: 'create',
           args: { password, importedEntropy },
+        })
+      ).pipe(
+        take(1),
+        map(({ payload }) => {
+          if (isKeyringPayload(payload, 'create') && payload.return) {
+            return payload.return
+          }
+          throw new Error('Failed to create wallet')
+        })
+      )
+    )
+  }
+
+  public async addAccount(importedPrivateKey?: string) {
+    return await lastValueFrom(
+      this.sendMessage(
+        createMessage<KeyringPayload<'add'>>({
+          type: 'keyring',
+          method: 'add',
+          args: { importedPrivateKey },
           return: undefined,
         })
-      ).pipe(take(1))
+      ).pipe(
+        take(1),
+        map(({ payload }) => {
+          if (isKeyringPayload(payload, 'add') && payload.return) {
+            return payload.return
+          }
+          throw new Error('Failed to add account')
+        })
+      )
     )
   }
 
@@ -134,7 +163,7 @@ export class BackgroundClient {
         createMessage<KeyringPayload<'unlock'>>({
           type: 'keyring',
           method: 'unlock',
-          args: { password: password },
+          args: { password },
           return: undefined,
         })
       ).pipe(take(1))
@@ -163,26 +192,26 @@ export class BackgroundClient {
     )
   }
 
-  public async getEntropy(password?: string) {
-    return await lastValueFrom(
-      this.sendMessage(
-        createMessage<KeyringPayload<'getEntropy'>>({
-          type: 'keyring',
-          method: 'getEntropy',
-          args: password,
-          return: undefined,
-        })
-      ).pipe(
-        take(1),
-        map(({ payload }) => {
-          if (isKeyringPayload(payload, 'getEntropy') && payload.return) {
-            return payload.return
-          }
-          throw new Error('Mnemonic not found')
-        })
-      )
-    )
-  }
+  // public async getEntropy(password?: string) {
+  //   return await lastValueFrom(
+  //     this.sendMessage(
+  //       createMessage<KeyringPayload<'getEntropy'>>({
+  //         type: 'keyring',
+  //         method: 'getEntropy',
+  //         args: password,
+  //         return: undefined,
+  //       })
+  //     ).pipe(
+  //       take(1),
+  //       map(({ payload }) => {
+  //         if (isKeyringPayload(payload, 'getEntropy') && payload.return) {
+  //           return payload.return
+  //         }
+  //         throw new Error('Mnemonic not found')
+  //       })
+  //     )
+  //   )
+  // }
 
   public async checkPassword(password: string) {
     return await lastValueFrom(
@@ -192,18 +221,7 @@ export class BackgroundClient {
           method: 'checkPassword',
           args: password,
         })
-      ).pipe(
-        take(1),
-        map(({ payload }) => {
-          if (
-            isKeyringPayload(payload, 'checkPassword') &&
-            typeof payload.return === 'boolean'
-          ) {
-            return payload.return
-          }
-          throw new Error('Fail to check password')
-        })
-      )
+      ).pipe(take(1))
     )
   }
 
@@ -215,16 +233,44 @@ export class BackgroundClient {
           method: 'changePassword',
           args: { oldPassword, newPassword },
         })
+      ).pipe(take(1))
+    )
+  }
+
+  public async setActiveAccount(address: string) {
+    return await lastValueFrom(
+      this.sendMessage(
+        createMessage<KeyringPayload<'setActiveAccount'>>({
+          type: 'keyring',
+          method: 'setActiveAccount',
+          args: { address },
+        })
       ).pipe(
         take(1),
         map(({ payload }) => {
-          if (
-            isKeyringPayload(payload, 'changePassword') &&
-            typeof payload.return === 'boolean'
-          ) {
+          if (isKeyringPayload(payload, 'setActiveAccount') && payload.return) {
             return payload.return
           }
-          throw new Error('Fail to change password')
+          throw new Error('Failed to set active account')
+        })
+      )
+    )
+  }
+
+  public async getAllAccounts() {
+    return await lastValueFrom(
+      this.sendMessage(
+        createMessage<KeyringPayload<'allAccounts'>>({
+          type: 'keyring',
+          method: 'allAccounts',
+        })
+      ).pipe(
+        take(1),
+        map(({ payload }) => {
+          if (isKeyringPayload(payload, 'allAccounts') && payload.return) {
+            return payload.return
+          }
+          throw new Error('Failed to fetch accounts')
         })
       )
     )
@@ -242,23 +288,19 @@ export class BackgroundClient {
     )
   }
 
-  public async setMeta(meta: { alias?: string; avatar?: string }) {
+  public async setAccountMeta(meta: {
+    address: string
+    alias?: string
+    avatar?: string
+  }) {
     return await lastValueFrom(
       this.sendMessage(
-        createMessage<KeyringPayload<'setMeta'>>({
+        createMessage<KeyringPayload<'setAccountMeta'>>({
           type: 'keyring',
-          method: 'setMeta',
+          method: 'setAccountMeta',
           args: meta,
         })
-      ).pipe(
-        take(1),
-        map(({ payload }) => {
-          if (isKeyringPayload(payload, 'setMeta') && !!payload.return) {
-            return payload.return
-          }
-          throw new Error('Fail to change password')
-        })
-      )
+      ).pipe(take(1))
     )
   }
 
@@ -309,6 +351,11 @@ export class BackgroundClient {
       payload.return
     ) {
       action = setKeyringStatus(payload.return)
+    } else if (
+      isKeyringPayload<'allAccounts'>(payload, 'allAccounts') &&
+      payload.return
+    ) {
+      action = setAllAccounts(payload.return)
     }
     if (action) {
       this._dispatch(action)
