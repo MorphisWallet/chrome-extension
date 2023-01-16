@@ -10,6 +10,8 @@ import NftPage from '_app/pages/nft'
 import NftDetailPage from '_app/pages/nft/nft_detail'
 import NftSend from '_app/pages/nft/nft_send'
 
+import DiscoveryPage from './app/pages/discovery'
+
 import HistoryPage from '_app/pages/history'
 
 import SettingsPage from '_app/pages/settings'
@@ -67,6 +69,10 @@ const router = createHashRouter([
             element: <NftSend />,
           },
         ],
+      },
+      {
+        path: 'discovery',
+        element: <DiscoveryPage />,
       },
       {
         path: 'history',
