@@ -1,3 +1,7 @@
+## 0.0.6.0 (Jan 18, 2023)
+
+- Provide ability to discover dApps and NFTs
+
 ## 0.0.5.0 (Jan 11, 2023)
 
 - Provide ability to created derived wallet accounts
