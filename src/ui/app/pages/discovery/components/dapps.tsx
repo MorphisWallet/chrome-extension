@@ -1,8 +1,11 @@
 import cl from 'classnames'
 
+import { Button } from '_src/ui/app/components'
+
 import Clutchy from '_assets/discovery/dapps/clutchy.svg'
 import Araya from '_assets/discovery/dapps/araya.svg'
 import Suins from '_assets/discovery/dapps/suins.svg'
+import ArrowIcon from '_assets/icons/arrow_short_thin.svg'
 
 type DiscoveryAppItem = {
   name: string
@@ -47,6 +50,41 @@ const LIST_DAPPS: DiscoveryAppItem[] = [
       'https://www.gitbook.com/cdn-cgi/image/width=40,height=40,fit=contain,dpr=2,format=auto/https%3A%2F%2F478234359-files.gitbook.io%2F~%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F5VP4IR9XFqi7oUxPBC5V%252Ficon%252FH0EicOxdSgMHZex4D41h%252Flogo1-3.png%3Falt%3Dmedia%26token%3D44707064-dd95-4cc7-871b-b9d58729558f',
     link: 'https://www.ballast.fi/',
   },
+  {
+    name: 'Turbos',
+    image:
+      'https://www.gitbook.com/cdn-cgi/image/width=40,height=40,fit=contain,dpr=2,format=auto/https%3A%2F%2F3572405333-files.gitbook.io%2F~%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FBW1gFbVfaPQIKFmdH5yc%252Ficon%252FxJIrNp682bPEnfmORz45%252FTurbos%2520%2520logo%25E7%25BB%2584%25E5%2590%2588-06.png%3Falt%3Dmedia%26token%3D5d2c9633-517f-4df0-b5c3-f17510418b03',
+    link: 'https://www.turbos.finance/',
+  },
+  {
+    name: 'SuiSwap',
+    image:
+      'https://pbs.twimg.com/profile_images/1597664871155261440/xvGBQkni_400x400.jpg',
+    link: 'http://suiswap.app',
+  },
+  {
+    name: 'Tocen launchpad',
+    image:
+      'https://dev.tocen.co/_next/image?url=https%3A%2F%2Fcms-dev.tocen.co%2Fuploads%2Ftocen_logo_607e526066.png&w=2048&q=75',
+    link: 'https://dev.tocen.co/',
+  },
+  {
+    name: 'Trellis',
+    image:
+      'https://www.gitbook.com/cdn-cgi/image/width=40,height=40,fit=contain,dpr=2,format=auto/https%3A%2F%2F3882943413-files.gitbook.io%2F~%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FRT7SvReCjMwrMWadUtTt%252Ficon%252FI3par3fhbnsWHDzklyQx%252FGroup%2520464%2520(6).png%3Falt%3Dmedia%26token%3Daee831e0-8b27-409b-a1d8-66867fe4b45f',
+    link: 'https://trellis.fi/',
+  },
+  {
+    name: 'Owlswap',
+    image: 'https://avatars.githubusercontent.com/u/116796432?v=4',
+    link: 'https://owlswap.finance/',
+  },
+  {
+    name: 'SuiPad',
+    image:
+      'https://suipad.xyz/wp-content/uploads/2022/10/cropped-1-1-300x300.png',
+    link: 'https://suipad.xyz/',
+  },
 ]
 
 const Card = ({ name, image, link }: DiscoveryAppItem) => (
@@ -76,7 +114,7 @@ const Dapps = () => (
       </div>
     </div>
     <div className="flex flex-col grow gap-4 mx-[-24px] mb-[-24px] px-6 py-2 overflow-y-auto">
-      {LIST_DAPPS.map(({ name, image }) => (
+      {LIST_DAPPS.map(({ name, image, link }) => (
         <div key={name} className="flex items-center gap-4">
           {typeof image === 'string' ? (
             <img
@@ -88,6 +126,11 @@ const Dapps = () => (
             image
           )}
           <span className="grow text-sm font-bold truncate">{name}</span>
+          <a href={link} target="_blank" rel="noreferrer">
+            <Button className="h-6 w-6 px-0 mb-2 bg-[#1da1f2] rounded-full flex justify-center items-center hover:bg-[#1da1f2] hover:scale-105">
+              <ArrowIcon height={10} width={10} />
+            </Button>
+          </a>
         </div>
       ))}
     </div>
