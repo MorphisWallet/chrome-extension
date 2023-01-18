@@ -1,7 +1,7 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { randomBytes } from '@noble/hashes/utils'
+// import { randomBytes } from '@noble/hashes/utils'
 import { exec } from 'child_process'
 import CopyPlugin from 'copy-webpack-plugin'
 import DotEnv from 'dotenv-webpack'

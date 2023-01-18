@@ -13,6 +13,7 @@ import { activeAccountSelector } from '_redux/slices/account'
 import CloseIcon from '_assets/icons/close.svg'
 import LandingIcon from '_assets/icons/landing.svg'
 import NftIcon from '_assets/icons/nft.svg'
+import DiscoveryIcon from '_assets/icons/discovery.svg'
 import HistoryIcon from '_assets/icons/history.svg'
 import SettingsIcon from '_assets/icons/settings.svg'
 
@@ -31,6 +32,10 @@ const ROUTES = [
   {
     name: 'nft',
     icon: NftIcon,
+  },
+  {
+    name: 'discovery',
+    icon: DiscoveryIcon,
   },
   {
     name: 'history',
