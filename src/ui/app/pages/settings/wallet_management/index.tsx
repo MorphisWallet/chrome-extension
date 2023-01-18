@@ -96,9 +96,9 @@ const WalletManagementPage = () => {
             </IconWrapper>
           </Link>
         </div>
-        <div className="flex flex-col grow overflow-y-auto px-6 mx-[-24px]">
-          <div className="flex flex-col gap-2">
-            <Loading loading={loading}>
+        <Loading loading={loading}>
+          <div className="flex flex-col grow overflow-y-auto px-6 mx-[-24px]">
+            <div className="flex flex-col gap-2">
               {accounts.map((_account) => (
                 <AccountSelect
                   key={_account.address}
@@ -106,34 +106,34 @@ const WalletManagementPage = () => {
                   onSetActiveAccount={onSetActiveAccount}
                 />
               ))}
-            </Loading>
+              <Button
+                onClick={onAddWallet}
+                className="flex items-center shrink-0 h-[60px] px-4 rounded border border-[#e2e2e2] transition duration-300 ease-in-out hover:border-[#7db4ff]"
+              >
+                <div className="mr-2">
+                  <AddIcon height={28} width={28} />
+                </div>
+                <div>Add a new account</div>
+              </Button>
+            </div>
+            <hr className="my-6 border-black" />
             <Button
-              onClick={onAddWallet}
-              className="flex items-center shrink-0 h-[60px] px-4 rounded border border-[#e2e2e2] transition duration-300 ease-in-out hover:border-[#7db4ff]"
+              data-tip="Coming soon"
+              data-for="button-tip"
+              variant="outlined"
+              className="flex justify-center items-center shrink-0 rounded-[4px] cursor-not-allowed font-bold"
             >
-              <div className="mr-2">
-                <AddIcon height={28} width={28} />
-              </div>
-              <div>Add a new account</div>
+              <ImportIcon height={13} width={9} className="mr-3" />
+              Import an existing wallet
             </Button>
+            <ReactTooltip
+              id="button-tip"
+              effect="solid"
+              className="before:hidden"
+              backgroundColor="#000000"
+            />
           </div>
-          <hr className="my-6 border-black" />
-          <Button
-            data-tip="Coming soon"
-            data-for="button-tip"
-            variant="outlined"
-            className="flex justify-center items-center shrink-0 rounded-[4px] cursor-not-allowed font-bold"
-          >
-            <ImportIcon height={13} width={9} className="mr-3" />
-            Import an existing wallet
-          </Button>
-          <ReactTooltip
-            id="button-tip"
-            effect="solid"
-            className="before:hidden"
-            backgroundColor="#000000"
-          />
-        </div>
+        </Loading>
       </div>
     </Layout>
   )
