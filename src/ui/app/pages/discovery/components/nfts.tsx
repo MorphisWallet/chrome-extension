@@ -138,7 +138,7 @@ const Card = ({ name, twitter, discord, image }: DiscoveryItem) => (
 const NFTs = () => (
   <>
     <div className="shrink-0 overflow-hidden mx-[-24px]">
-      <div className="flex mt-4 px-6 gap-2 overflow-x-auto overflow-y-hidden">
+      <div className="flex mt-4 px-6 gap-2 overflow-x-auto overflow-y-hidden hide-scrollbar">
         {TOP_NFTS.map((_nft) => (
           <Card key={_nft.name} {..._nft} />
         ))}
