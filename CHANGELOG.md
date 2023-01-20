@@ -1,3 +1,7 @@
+## 0.0.6.1 (Jan 20, 2023)
+
+- Add discovery items hover effects
+
 ## 0.0.6.0 (Jan 18, 2023)
 
 - Provide ability to discover dApps and NFTs
