@@ -113,9 +113,15 @@ const Dapps = () => (
         ))}
       </div>
     </div>
-    <div className="flex flex-col grow gap-4 mx-[-24px] mb-[-24px] px-6 py-2 overflow-y-auto">
+    <div className="flex flex-col grow gap-2 mx-[-24px] mb-[-24px] py-1 overflow-y-auto">
       {LIST_DAPPS.map(({ name, image, link }) => (
-        <div key={name} className="flex items-center gap-4">
+        <a
+          key={name}
+          href={link}
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center px-6 py-2 gap-4 transition hover:bg-[#fbf9f9] hover:shadow-[0_4px_10px_0_rgba(196,196,196,0.25)]"
+        >
           {typeof image === 'string' ? (
             <img
               alt={name}
@@ -126,12 +132,10 @@ const Dapps = () => (
             image
           )}
           <span className="grow text-sm font-bold truncate">{name}</span>
-          <a href={link} target="_blank" rel="noreferrer">
-            <Button className="h-6 w-6 px-0 mb-2 bg-[#1da1f2] rounded-full flex justify-center items-center hover:bg-[#1da1f2] hover:scale-105">
-              <ArrowIcon height={10} width={10} />
-            </Button>
-          </a>
-        </div>
+          <Button className="h-6 w-6 px-0 mb-2 bg-[#1da1f2] rounded-full flex justify-center items-center hover:bg-[#1da1f2] hover:scale-105">
+            <ArrowIcon height={10} width={10} />
+          </Button>
+        </a>
       ))}
     </div>
   </>
