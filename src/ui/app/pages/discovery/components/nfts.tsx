@@ -144,9 +144,9 @@ const NFTs = () => (
         ))}
       </div>
     </div>
-    <div className="flex flex-col grow gap-4 mx-[-24px] mb-[-24px] px-6 py-2 overflow-y-auto">
+    <div className="flex flex-col grow gap-2 mx-[-24px] mb-[-24px] py-1 overflow-y-auto">
       {LIST_NFTS.map(({ name, image, twitter, discord }) => (
-        <div key={name} className="flex items-center gap-4">
+        <div key={name} className="flex items-center px-6 py-2 gap-4 transition hover:bg-[#fbf9f9] hover:shadow-[0_4px_10px_0_rgba(196,196,196,0.25)]">
           <img
             alt={name}
             src={image}
