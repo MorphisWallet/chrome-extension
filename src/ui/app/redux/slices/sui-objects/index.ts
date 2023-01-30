@@ -16,10 +16,8 @@ import {
   createSlice,
 } from '@reduxjs/toolkit'
 
-import {
-  DEFAULT_NFT_TRANSFER_GAS_FEE,
-  SUI_SYSTEM_STATE_OBJECT_ID,
-} from './Coin'
+import { activeAccountSelector } from '../account'
+import { SUI_SYSTEM_STATE_OBJECT_ID } from './Coin'
 import { ExampleNFT } from './NFT'
 
 import type { SuiObject, SuiAddress, ObjectId } from '@mysten/sui.js'
@@ -39,12 +37,12 @@ export const fetchAllOwnedAndRequiredObjects = createAsyncThunk<
 >('sui-objects/fetch-all', async (_, { getState, extra: { api } }) => {
   const state = getState()
   const {
-    account: { activeAccountAddress },
+    account: { activeAccountAddress: address },
   } = state
   const allSuiObjects: SuiObject[] = []
-  if (activeAccountAddress) {
+  if (address) {
     const allObjectRefs = await api.instance.fullNode.getObjectsOwnedByAddress(
-      `${activeAccountAddress}`
+      `${address}`
     )
     const objectIDs = allObjectRefs
       .filter((anObj) => {
@@ -93,8 +91,12 @@ export const batchFetchObject = createAsyncThunk<
 
 export const mintDemoNFT = createAsyncThunk<void, void, AppThunkConfig>(
   'mintDemoNFT',
-  async (_, { extra: { api, keypairVault }, dispatch }) => {
-    const signer = api.getSignerInstance(keypairVault.getKeyPair())
+  async (_, { extra: { api, background }, dispatch, getState }) => {
+    const activeAddress = activeAccountSelector(getState())?.address
+    if (!activeAddress) {
+      throw new Error('Error, active address is not defined')
+    }
+    const signer = api.getSignerInstance(activeAddress, background)
     await ExampleNFT.mintExampleNFT(signer)
     await dispatch(fetchAllOwnedAndRequiredObjects())
   }
@@ -109,24 +111,27 @@ type NFTTxResponse = {
 
 export const transferNFT = createAsyncThunk<
   NFTTxResponse,
-  { nftId: ObjectId; recipientAddress: SuiAddress },
+  { objectId: ObjectId; recipient: SuiAddress; gasBudget: number },
   AppThunkConfig
->('transferNFT', async (data, { extra: { api, keypairVault }, dispatch }) => {
-  const signer = api.getSignerInstance(keypairVault.getKeyPair())
-  const txn = await signer.transferObject({
-    objectId: data.nftId,
-    recipient: data.recipientAddress,
-    gasBudget: DEFAULT_NFT_TRANSFER_GAS_FEE,
-  })
-  await dispatch(fetchAllOwnedAndRequiredObjects())
-  const txnResp = {
-    timestamp_ms: getTimestampFromTransactionResponse(txn),
-    status: getExecutionStatusType(txn),
-    gasFee: txn ? getTotalGasUsed(txn) : 0,
-    txId: getTransactionDigest(txn),
+>(
+  'transferNFT',
+  async (data, { extra: { api, background }, dispatch, getState }) => {
+    const activeAddress = activeAccountSelector(getState())?.address
+    if (!activeAddress) {
+      throw new Error('Error, active address is not defined')
+    }
+    const signer = api.getSignerInstance(activeAddress, background)
+    const txn = await signer.transferObject(data)
+    await dispatch(fetchAllOwnedAndRequiredObjects())
+    const txnResp = {
+      timestamp_ms: getTimestampFromTransactionResponse(txn),
+      status: getExecutionStatusType(txn),
+      gasFee: txn ? getTotalGasUsed(txn) : 0,
+      txId: getTransactionDigest(txn),
+    }
+    return txnResp as NFTTxResponse
   }
-  return txnResp as NFTTxResponse
-})
+)
 interface SuiObjectsManualState {
   loading: boolean
   error: false | { code?: string; message?: string; name?: string }

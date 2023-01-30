@@ -1,23 +1,23 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { isSuiMoveObject, Coin as CoinAPI, SUI_TYPE_ARG } from '@mysten/sui.js'
+import { Coin as CoinAPI, SUI_TYPE_ARG } from '@mysten/sui.js'
 
 import type {
   ObjectId,
   SuiObject,
-  SuiMoveObject,
-  RawSigner,
   SuiAddress,
+  SuiMoveObject,
   JsonRpcProvider,
   SuiExecuteTransactionResponse,
+  SignerWithProvider,
 } from '@mysten/sui.js'
 
 const COIN_TYPE = '0x2::coin::Coin'
 const COIN_TYPE_ARG_REGEX = /^0x2::coin::Coin<(.+)>$/
 
 export const DEFAULT_GAS_BUDGET_FOR_PAY = 150
-export const DEFAULT_GAS_BUDGET_FOR_STAKE = 10000
+export const DEFAULT_GAS_BUDGET_FOR_STAKE = 15000
 export const GAS_TYPE_ARG = '0x2::sui::SUI'
 export const GAS_SYMBOL = 'SUI'
 export const DEFAULT_NFT_TRANSFER_GAS_FEE = 450
@@ -27,7 +27,9 @@ export const SUI_SYSTEM_STATE_OBJECT_ID =
 // TODO use sdk
 export class Coin {
   public static isCoin(obj: SuiObject) {
-    return isSuiMoveObject(obj.data) && obj.data.type.startsWith(COIN_TYPE)
+    return (
+      obj.data.dataType === 'moveObject' && obj.data.type.startsWith(COIN_TYPE)
+    )
   }
 
   public static getCoinTypeArg(obj: SuiMoveObject) {
@@ -77,29 +79,81 @@ export class Coin {
    *
    * @param signer A signer with connection to fullnode
    * @param coins A list of Coins owned by the signer with the same generic type(e.g., 0x2::Sui::Sui)
+   * @param gasCoins A list of Sui coins owned by the signer
    * @param amount The amount to be staked
    * @param validator The sui address of the chosen validator
    */
   public static async stakeCoin(
-    signer: RawSigner,
+    signer: SignerWithProvider,
     coins: SuiMoveObject[],
+    gasCoins: SuiMoveObject[],
     amount: bigint,
     validator: SuiAddress
   ): Promise<SuiExecuteTransactionResponse> {
-    const coin = await Coin.requestSuiCoinWithExactAmount(signer, coins, amount)
+    // sort to get the smallest one for gas
+    const sortedGasCoins = CoinAPI.sortByBalance(gasCoins)
+    const gasCoin = CoinAPI.selectCoinWithBalanceGreaterThanOrEqual(
+      sortedGasCoins,
+      BigInt(DEFAULT_GAS_BUDGET_FOR_STAKE)
+    )
+    if (!gasCoin) {
+      throw new Error(
+        'Insufficient funds, not enough funds to cover for gas fee.'
+      )
+    }
+    if (!coins.length) {
+      throw new Error('Insufficient funds, no coins found.')
+    }
+    const isSui = CoinAPI.getCoinTypeArg(coins[0]) === SUI_TYPE_ARG
+    const stakeCoins =
+      CoinAPI.selectCoinSetWithCombinedBalanceGreaterThanOrEqual(
+        coins,
+        amount,
+        isSui ? [CoinAPI.getID(gasCoin)] : undefined
+      ).map(CoinAPI.getID)
+    if (!stakeCoins.length) {
+      if (stakeCoins.length === 1 && isSui) {
+        throw new Error(
+          'Not enough coin objects, at least 2 coin objects are required.'
+        )
+      } else {
+        throw new Error('Insufficient funds, try reducing the stake amount.')
+      }
+    }
     const txn = {
       packageObjectId: '0x2',
       module: 'sui_system',
-      function: 'request_add_delegation',
+      function: 'request_add_delegation_mul_coin',
       typeArguments: [],
-      arguments: [SUI_SYSTEM_STATE_OBJECT_ID, coin, validator],
+      arguments: [
+        SUI_SYSTEM_STATE_OBJECT_ID,
+        stakeCoins,
+        [String(amount)],
+        validator,
+      ],
       gasBudget: DEFAULT_GAS_BUDGET_FOR_STAKE,
     }
     return await signer.executeMoveCall(txn)
   }
 
+  public static async unStakeCoin(
+    signer: SignerWithProvider,
+    delegation: ObjectId,
+    stakedSuiId: ObjectId
+  ): Promise<SuiExecuteTransactionResponse> {
+    const txn = {
+      packageObjectId: '0x2',
+      module: 'sui_system',
+      function: 'request_withdraw_delegation',
+      typeArguments: [],
+      arguments: [SUI_SYSTEM_STATE_OBJECT_ID, delegation, stakedSuiId],
+      gasBudget: DEFAULT_GAS_BUDGET_FOR_STAKE,
+    }
+    return signer.executeMoveCall(txn)
+  }
+
   private static async requestSuiCoinWithExactAmount(
-    signer: RawSigner,
+    signer: SignerWithProvider,
     coins: SuiMoveObject[],
     amount: bigint
   ): Promise<ObjectId> {
@@ -112,13 +166,14 @@ export class Coin {
       return coinWithExactAmount
     }
     // use transferSui API to get a coin with the exact amount
-    await CoinAPI.transfer(
-      signer,
-      coins,
-      SUI_TYPE_ARG,
-      amount,
-      await signer.getAddress(),
-      Coin.computeGasBudgetForPay(coins, amount)
+    await signer.signAndExecuteTransaction(
+      await CoinAPI.newPayTransaction(
+        coins,
+        SUI_TYPE_ARG,
+        amount,
+        await signer.getAddress(),
+        Coin.computeGasBudgetForPay(coins, amount)
+      )
     )
 
     const coinWithExactAmount2 = await Coin.selectSuiCoinWithExactAmount(
@@ -134,7 +189,7 @@ export class Coin {
   }
 
   private static async selectSuiCoinWithExactAmount(
-    signer: RawSigner,
+    signer: SignerWithProvider,
     coins: SuiMoveObject[],
     amount: bigint,
     refreshData = false
