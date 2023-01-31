@@ -12,6 +12,7 @@ import {
   useMiddleEllipsis,
   useNFTBasicData,
   useObjectsState,
+  useOriginbyteNft,
 } from '_hooks'
 
 import { createAccountNftByIdSelector } from '_redux/slices/account'
@@ -24,8 +25,9 @@ const NftDetail = () => {
   const location = useLocation()
   const { objectId: nftId = '' } = useParams()
   const selectedNft = useAppSelector(createAccountNftByIdSelector(nftId))
-  const { nftFields, fileExtensionType, filePath } =
+  const { nftFields, fileExtensionType, filePath, nftObjectID } =
     useNFTBasicData(selectedNft)
+  const { data: originByteNft } = useOriginbyteNft(nftObjectID)
   const { loading, error, showError } = useObjectsState()
   const shortAddress = useMiddleEllipsis(nftId)
 
@@ -58,7 +60,8 @@ const NftDetail = () => {
       <div className="flex flex-col grow font-medium px-6 pb-6 overflow-hidden">
         <div className="flex shrink-0 px-6 pt-4 pb-3 mx-[-24px] border-b border-b-[#e6e6e9] text-xl text-center font-bold relative overflow-hidden">
           <span className="grow mx-10 text-center truncate">
-            {nftFields?.name ||
+            {originByteNft?.fields.name ||
+              nftFields?.name ||
               nftFields?.metadata?.fields?.name ||
               shortAddress}
           </span>
