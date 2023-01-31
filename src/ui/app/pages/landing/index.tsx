@@ -39,20 +39,39 @@ const LandingPage = ({ coinType }: LandingProps) => {
   // to fill the gap between airdrop success and poll query balances
   const [airdropDelay, setAirdropDelay] = useState(false)
 
+  // state of received airdrop, to call useFormatCoin
+  const [totalReceived, setTotalReceived] = useState<null | number>(null)
+  const [coinsReceivedFormatted, coinsReceivedSymbol] = useFormatCoin(
+    totalReceived,
+    GAS_TYPE_ARG
+  )
+
   const onAirdrop = async () => {
     if (!mutation.enabled) return
 
     setAirdropDelay(true)
     try {
-      await mutation.mutateAsync()
+      const totalReceived = await mutation.mutateAsync()
+      setTotalReceived(totalReceived)
     } catch (err) {
-      console.error(err)
+      // already catched by mutation
     } finally {
       setTimeout(() => {
         setAirdropDelay(false)
       }, POLL_SUI_OBJECTS_INTERVAL)
     }
   }
+
+  useEffect(() => {
+    if (totalReceived) {
+      toast({
+        type: 'success',
+        message: `${coinsReceivedFormatted} ${coinsReceivedSymbol} received`,
+        containerId: 'global-toast',
+      })
+      setTotalReceived(null)
+    }
+  }, [totalReceived])
 
   useEffect(() => {
     if (mutation.isError && mutation.error) {
