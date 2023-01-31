@@ -16,9 +16,8 @@ import {
   createSlice,
 } from '@reduxjs/toolkit'
 
-import { activeAccountSelector } from '../account'
 import { SUI_SYSTEM_STATE_OBJECT_ID } from './Coin'
-import { ExampleNFT } from './NFT'
+// import { ExampleNFT } from './NFT'
 
 import type { SuiObject, SuiAddress, ObjectId } from '@mysten/sui.js'
 import type { RootState } from '_redux/RootReducer'
@@ -89,18 +88,18 @@ export const batchFetchObject = createAsyncThunk<
   return allSuiObjects
 })
 
-export const mintDemoNFT = createAsyncThunk<void, void, AppThunkConfig>(
-  'mintDemoNFT',
-  async (_, { extra: { api, background }, dispatch, getState }) => {
-    const activeAddress = activeAccountSelector(getState())?.address
-    if (!activeAddress) {
-      throw new Error('Error, active address is not defined')
-    }
-    const signer = api.getSignerInstance(activeAddress, background)
-    await ExampleNFT.mintExampleNFT(signer)
-    await dispatch(fetchAllOwnedAndRequiredObjects())
-  }
-)
+// export const mintDemoNFT = createAsyncThunk<void, void, AppThunkConfig>(
+//   'mintDemoNFT',
+//   async (_, { extra: { api, background }, dispatch, getState }) => {
+//     const activeAddress = activeAccountSelector(getState())?.address
+//     if (!activeAddress) {
+//       throw new Error('Error, active address is not defined')
+//     }
+//     const signer = api.getSignerInstance(activeAddress, background)
+//     await ExampleNFT.mintExampleNFT(signer)
+//     await dispatch(fetchAllOwnedAndRequiredObjects())
+//   }
+// )
 
 type NFTTxResponse = {
   timestamp_ms?: number
@@ -108,6 +107,11 @@ type NFTTxResponse = {
   gasFee?: number
   txId?: string
 }
+
+const activeAccountSelector = ({ account }: RootState) =>
+  account.allAccounts.find(
+    (_account) => _account.address === account.activeAccountAddress
+  )
 
 export const transferNFT = createAsyncThunk<
   NFTTxResponse,
