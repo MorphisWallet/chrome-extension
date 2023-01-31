@@ -1,3 +1,7 @@
+## 0.0.6.2 (Jan 31, 2023)
+
+- Support OriginByte NFTs
+
 ## 0.0.6.1 (Jan 20, 2023)
 
 - Add discovery items hover effects

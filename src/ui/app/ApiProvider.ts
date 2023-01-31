@@ -1,20 +1,17 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-  RawSigner,
-  JsonRpcProvider,
-  // LocalTxnDataSerializer,
-} from '@mysten/sui.js'
+import { JsonRpcProvider } from '@mysten/sui.js'
 
-// import { queryClient } from './helpers/queryClient';
+import { BackgroundServiceSigner } from './background-client/BackgroundServiceSigner'
+import { queryClient } from './helpers/queryClient'
 
-import type { Keypair } from '@mysten/sui.js'
+import type { BackgroundClient } from './background-client'
+import type { SuiAddress, SignerWithProvider } from '@mysten/sui.js'
 
 export enum API_ENV {
   local = 'local',
   devNet = 'devNet',
-  staging = 'staging',
   testNet = 'testNet',
   customRPC = 'customRPC',
 }
@@ -25,12 +22,11 @@ type EnvInfo = {
 
 type ApiEndpoints = {
   fullNode: string
-  faucet: string
+  faucet?: string
 } | null
 export const API_ENV_TO_INFO: Record<API_ENV, EnvInfo> = {
   [API_ENV.local]: { name: 'Local' },
   [API_ENV.devNet]: { name: 'Sui Devnet' },
-  [API_ENV.staging]: { name: 'Sui Staging' },
   [API_ENV.customRPC]: { name: 'Custom RPC URL' },
   [API_ENV.testNet]: { name: 'Sui Testnet' },
 }
@@ -44,14 +40,11 @@ export const ENV_TO_API: Record<API_ENV, ApiEndpoints> = {
     fullNode: process.env.API_ENDPOINT_DEV_NET_FULLNODE || '',
     faucet: process.env.API_ENDPOINT_DEV_NET_FAUCET || '',
   },
-  [API_ENV.staging]: {
-    fullNode: process.env.API_ENDPOINT_STAGING_FULLNODE || '',
-    faucet: process.env.API_ENDPOINT_STAGING_FAUCET || '',
-  },
   [API_ENV.customRPC]: null,
   [API_ENV.testNet]: {
     fullNode: process.env.API_ENDPOINT_TEST_NET_FULLNODE || '',
-    faucet: process.env.API_ENDPOINT_TEST_NET_FAUCET || '',
+    // NOTE: Faucet is currently disabled for testnet:
+    // faucet: process.env.API_ENDPOINT_TEST_NET_FAUCET || '',
   },
 }
 
@@ -82,10 +75,6 @@ type NetworkTypes = keyof typeof API_ENV
 export const generateActiveNetworkList = (): NetworkTypes[] => {
   const excludedNetworks: NetworkTypes[] = []
 
-  if (process.env.SHOW_STAGING !== 'false') {
-    excludedNetworks.push(API_ENV.staging)
-  }
-
   return Object.values(API_ENV).filter(
     (env) => !excludedNetworks.includes(env as keyof typeof API_ENV)
   )
@@ -93,18 +82,19 @@ export const generateActiveNetworkList = (): NetworkTypes[] => {
 
 export default class ApiProvider {
   private _apiFullNodeProvider?: JsonRpcProvider
-  private _signer: RawSigner | null = null
+  private _signerByAddress: Map<SuiAddress, SignerWithProvider> = new Map()
 
   public setNewJsonRpcProvider(
     apiEnv: API_ENV = DEFAULT_API_ENV,
     customRPC?: string | null
   ) {
     // We also clear the query client whenever set set a new API provider:
-    // queryClient.clear()
+    queryClient.clear()
     this._apiFullNodeProvider = new JsonRpcProvider(
-      customRPC ?? getDefaultAPI(apiEnv).fullNode
+      customRPC ?? getDefaultAPI(apiEnv).fullNode,
+      { faucetURL: customRPC ? '' : getDefaultAPI(apiEnv).faucet }
     )
-    this._signer = null
+    this._signerByAddress.clear()
   }
 
   public get instance() {
@@ -117,13 +107,24 @@ export default class ApiProvider {
     }
   }
 
-  public getSignerInstance(keypair: Keypair): RawSigner {
+  public getSignerInstance(
+    address: SuiAddress,
+    backgroundClient: BackgroundClient
+  ): SignerWithProvider {
     if (!this._apiFullNodeProvider) {
       this.setNewJsonRpcProvider()
     }
-    if (!this._signer) {
-      this._signer = new RawSigner(keypair, this._apiFullNodeProvider)
+    if (!this._signerByAddress.has(address)) {
+      this._signerByAddress.set(
+        address,
+        new BackgroundServiceSigner(
+          address,
+          backgroundClient,
+          this._apiFullNodeProvider
+        )
+      )
     }
-    return this._signer
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this._signerByAddress.get(address)!
   }
 }

@@ -4,15 +4,15 @@ specifiers:
   '@commitlint/cli': ^17.2.0
   '@commitlint/config-conventional': ^17.2.0
   '@metamask/browser-passworder': ^4.0.2
-  '@mysten/sui.js': ^0.20.0
-  '@mysten/wallet-standard': ^0.2.3
+  '@mysten/sui.js': ^0.25.0
+  '@mysten/wallet-standard': ^0.2.11
   '@noble/hashes': ^1.1.3
   '@reduxjs/toolkit': ^1.9.0
   '@scure/bip39': ^1.1.0
   '@sentry/react': ^7.21.1
   '@sentry/tracing': ^7.21.1
   '@svgr/webpack': ^6.5.1
-  '@tanstack/react-query': ^4.16.1
+  '@tanstack/react-query': ^4.24.4
   '@types/aes-js': ^3.1.1
   '@types/dotenv-webpack': ^7.0.3
   '@types/jest': ^29.2.3
@@ -84,12 +84,12 @@ specifiers:
 
 dependencies:
   '@metamask/browser-passworder': 4.0.2
-  '@mysten/sui.js': 0.20.0
-  '@mysten/wallet-standard': 0.2.3
+  '@mysten/sui.js': 0.25.0
+  '@mysten/wallet-standard': 0.2.11
   '@noble/hashes': 1.1.3
   '@reduxjs/toolkit': 1.9.0_k4ae6lp43ej6mezo3ztvx6pykq
   '@scure/bip39': 1.1.0
-  '@tanstack/react-query': 4.16.1_biqbaboplfbrettd7655fr4n2y
+  '@tanstack/react-query': 4.24.4_biqbaboplfbrettd7655fr4n2y
   bignumber.js: 9.1.0
   buffer: 6.0.3
   classnames: 2.3.2
@@ -2226,43 +2226,22 @@ packages:
     resolution: {integrity: sha512-FjGnXZfR4dY01Q1l3xjgaU+ruIlVomXZk8vzgsQXPFOv7O4pNiOOpJyMEMUnWcyUiktk4R9MxoJJrygOtdxaUw==}
     dev: false
 
-  /@mysten/sui.js/0.17.1:
-    resolution: {integrity: sha512-9BjHZE8MNK1vFtXa5UQxZX2hvlet/ftlQzjQ9oF5nNm78ifa8BSv+fM1kwbXETgoep4Nc/kKkIeKrIffrYptvg==}
+  /@mysten/sui.js/0.25.0:
+    resolution: {integrity: sha512-q4Ue5epgjM58x/D3Sr7QYugcXWmthJktowyXMlcxipypwX629PLENN15MDuUIqtHLRWvbCu9VLxL6qvLFFExzg==}
     engines: {node: '>=16'}
     dependencies:
       '@mysten/bcs': 0.5.0
-      '@noble/hashes': 1.1.3
-      '@noble/secp256k1': 1.7.0
-      '@scure/bip32': 1.1.1
-      '@scure/bip39': 1.1.0
-      cross-fetch: 3.1.5
-      jayson: 3.7.0
-      js-sha3: 0.8.0
-      lossless-json: 1.0.5
-      rpc-websockets: 7.5.0
-      tweetnacl: 1.0.3
-    transitivePeerDependencies:
-      - bufferutil
-      - encoding
-      - utf-8-validate
-    dev: false
-
-  /@mysten/sui.js/0.20.0:
-    resolution: {integrity: sha512-U25eSGKT08XPCRKHbrvDYlylOSAIQASMKKwnreC8vT3ukvQg1NwTX+SFZPvX+xsLZGS2b3yOQ2Uzhzho5/OIWA==}
-    engines: {node: '>=16'}
-    dependencies:
-      '@mysten/bcs': 0.5.0
-      '@noble/hashes': 1.1.3
-      '@noble/secp256k1': 1.7.0
-      '@scure/bip32': 1.1.1
+      '@noble/hashes': 1.1.5
+      '@noble/secp256k1': 1.7.1
+      '@scure/bip32': 1.1.3
       '@scure/bip39': 1.1.0
       '@suchipi/femver': 1.0.0
       bs58: 5.0.0
       cross-fetch: 3.1.5
-      jayson: 3.7.0
+      jayson: 4.0.0
       js-sha3: 0.8.0
-      lossless-json: 1.0.5
       rpc-websockets: 7.5.0
+      superstruct: 1.0.3
       tweetnacl: 1.0.3
     transitivePeerDependencies:
       - bufferutil
@@ -2270,11 +2249,11 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@mysten/wallet-standard/0.2.3:
-    resolution: {integrity: sha512-PbVKdgDnXJxGawvk0Bm7hRWFRyCz2YKHGPiqgZ6s+ABEeiW1w2Dw8mBdKP5MGlLe+C4CcEFZipagHJf9d3dFRg==}
+  /@mysten/wallet-standard/0.2.11:
+    resolution: {integrity: sha512-OwP6GeanU7KQaEhsHaqbaeR9TlrMpQK7Fym1Eyjg74UwkwEajV4iA/QA91lOmY8cLNjBRQQwPqAYnHMRRyHSwg==}
     dependencies:
-      '@mysten/sui.js': 0.17.1
-      '@wallet-standard/core': 1.0.0
+      '@mysten/sui.js': 0.25.0
+      '@wallet-standard/core': 1.0.1
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -2285,8 +2264,12 @@ packages:
     resolution: {integrity: sha512-CE0FCR57H2acVI5UOzIGSSIYxZ6v/HOhDR0Ro9VLyhnzLwx0o8W1mmgaqlEUx4049qJDlIBRztv5k+MM8vbO3A==}
     dev: false
 
-  /@noble/secp256k1/1.7.0:
-    resolution: {integrity: sha512-kbacwGSsH/CTout0ZnZWxnW1B+jH/7r/WAAKLBtrRJ/+CUH7lgmQzl3GTrQua3SGKWNSDsS6lmjnDpIJ5Dxyaw==}
+  /@noble/hashes/1.1.5:
+    resolution: {integrity: sha512-LTMZiiLc+V4v1Yi16TD6aX2gmtKszNye0pQgbaLqkvhIqP7nVsSaJsWloGQjJfJ8offaoP5GtX3yY5swbcJxxQ==}
+    dev: false
+
+  /@noble/secp256k1/1.7.1:
+    resolution: {integrity: sha512-hOUk6AyBFmqVrv7k5WAw/LpszxVbj9gGN4JRkIX52fdFAj1UA61KXmZDvqVEm+pOyec3+fIeZB02LYa/pWOArw==}
     dev: false
 
   /@nodelib/fs.scandir/2.1.5:
@@ -2350,11 +2333,11 @@ packages:
     resolution: {integrity: sha512-ZxOhsSyxYwLJj3pLZCefNitxsj093tb2vq90mp2txoYeBqbcjDjqFhyM8eUjq/uFm6zJ+mUuqxlS2FkuSY1MTA==}
     dev: false
 
-  /@scure/bip32/1.1.1:
-    resolution: {integrity: sha512-UmI+liY7np2XakaW+6lMB6HZnpczWk1yXZTxvg8TM8MdOcKHCGL1YkraGj8eAjPfMwFNiAyek2hXmS/XFbab8g==}
+  /@scure/bip32/1.1.3:
+    resolution: {integrity: sha512-dSH3+LCWONlSNQuF34xZrG6Xas7tp2jSSqHb/pMfXWM0vKE4JZOtK3uJfoWouUVW5IGlls75HkXmYLldZ8ySgQ==}
     dependencies:
-      '@noble/hashes': 1.1.3
-      '@noble/secp256k1': 1.7.0
+      '@noble/hashes': 1.1.5
+      '@noble/secp256k1': 1.7.1
       '@scure/base': 1.1.1
     dev: false
 
@@ -2606,12 +2589,12 @@ packages:
       defer-to-connect: 2.0.1
     dev: true
 
-  /@tanstack/query-core/4.15.1:
-    resolution: {integrity: sha512-+UfqJsNbPIVo0a9ANW0ZxtjiMfGLaaoIaL9vZeVycvmBuWywJGtSi7fgPVMCPdZQFOzMsaXaOsDtSKQD5xLRVQ==}
+  /@tanstack/query-core/4.24.4:
+    resolution: {integrity: sha512-9dqjv9eeB6VHN7lD3cLo16ZAjfjCsdXetSAD5+VyKqLUvcKTL0CklGQRJu+bWzdrS69R6Ea4UZo8obHYZnG6aA==}
     dev: false
 
-  /@tanstack/react-query/4.16.1_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-PDE9u49wSDykPazlCoLFevUpceLjQ0Mm8i6038HgtTEKb/aoVnUZdlUP7C392ds3Cd75+EGlHU7qpEX06R7d9Q==}
+  /@tanstack/react-query/4.24.4_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-RpaS/3T/a3pHuZJbIAzAYRu+1nkp+/enr9hfRXDS/mojwx567UiMksoqW4wUFWlwIvWTXyhot2nbIipTKEg55Q==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
@@ -2622,7 +2605,7 @@ packages:
       react-native:
         optional: true
     dependencies:
-      '@tanstack/query-core': 4.15.1
+      '@tanstack/query-core': 4.24.4
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       use-sync-external-store: 1.2.0_react@18.2.0
@@ -3031,8 +3014,8 @@ packages:
     engines: {node: '>=16'}
     dev: false
 
-  /@wallet-standard/core/1.0.0:
-    resolution: {integrity: sha512-T6D/qONZF21tGpF7amwc4NlKNL9I6ioi+Lezdg8YTx+5apvzevyM1MkivYJT0WUZeUfhSjmGw9RbsaXL957V6A==}
+  /@wallet-standard/core/1.0.1:
+    resolution: {integrity: sha512-PqYTK5gtVfN3TAkSR5Gev3hj2asl7g+wV1ssKITw1LZU8VQIT4l1Y/3JJ75i/Iq7HPyMEfy0wJdqHTGvy87g2Q==}
     engines: {node: '>=16'}
     dependencies:
       '@wallet-standard/app': 1.0.1
@@ -3837,7 +3820,7 @@ packages:
     engines: {node: '>=6.14.2'}
     requiresBuild: true
     dependencies:
-      node-gyp-build: 4.5.0
+      node-gyp-build: 4.6.0
     dev: false
 
   /bunyan/1.8.15:
@@ -6547,8 +6530,8 @@ packages:
       istanbul-lib-report: 3.0.0
     dev: true
 
-  /jayson/3.7.0:
-    resolution: {integrity: sha512-tfy39KJMrrXJ+mFcMpxwBvFDetS8LAID93+rycFglIQM4kl3uNR3W4lBLE/FFhsoUCEox5Dt2adVpDm/XtebbQ==}
+  /jayson/4.0.0:
+    resolution: {integrity: sha512-v2RNpDCMu45fnLzSk47vx7I+QUaOsox6f5X0CUlabAFwxoP+8MfAY0NQRFwOEYXIxm8Ih5y6OaEa5KYiQMkyAA==}
     engines: {node: '>=8'}
     hasBin: true
     dependencies:
@@ -6562,7 +6545,6 @@ packages:
       eyes: 0.1.8
       isomorphic-ws: 4.0.1_ws@7.5.9
       json-stringify-safe: 5.0.1
-      lodash: 4.17.21
       uuid: 8.3.2
       ws: 7.5.9
     transitivePeerDependencies:
@@ -7416,10 +7398,6 @@ packages:
     dependencies:
       js-tokens: 4.0.0
 
-  /lossless-json/1.0.5:
-    resolution: {integrity: sha512-RicKUuLwZVNZ6ZdJHgIZnSeA05p8qWc5NW0uR96mpPIjN9WDLUg9+kj1esQU1GkPn9iLZVKatSQK5gyiaFHgJA==}
-    dev: false
-
   /loupe/2.3.6:
     resolution: {integrity: sha512-RaPMZKiMy8/JruncMU5Bt6na1eftNoo++R4Y+N2FrxkDVTrGvcyzFTsaGif4QTeKESheMGegbhw6iUAq+5A8zA==}
     dependencies:
@@ -7732,8 +7710,8 @@ packages:
     engines: {node: '>= 6.13.0'}
     dev: true
 
-  /node-gyp-build/4.5.0:
-    resolution: {integrity: sha512-2iGbaQBV+ITgCz76ZEjmhUKAKVf7xfY1sRl4UiKQspfZMH2h06SyhNsnSVy50cwkFQDGLyif6m/6uFXHkOZ6rg==}
+  /node-gyp-build/4.6.0:
+    resolution: {integrity: sha512-NTZVKn9IylLwUzaKjkas1e4u2DLNcV4rdYagA4PWdPwW87Bi7z+BznyKSRwS/761tV/lzCGXplWsiaMjLqP2zQ==}
     hasBin: true
     dev: false
 
@@ -9740,6 +9718,11 @@ packages:
       acorn: 8.8.1
     dev: true
 
+  /superstruct/1.0.3:
+    resolution: {integrity: sha512-8iTn3oSS8nRGn+C2pgXSKPI3jmpm6FExNazNpjvqS6ZUJQCej3PUXEKM8NjHBOs54ExM+LPW/FBRhymrdcCiSg==}
+    engines: {node: '>=14.0.0'}
+    dev: false
+
   /supports-color/5.5.0:
     resolution: {integrity: sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==}
     engines: {node: '>=4'}
@@ -10301,7 +10284,7 @@ packages:
     engines: {node: '>=6.14.2'}
     requiresBuild: true
     dependencies:
-      node-gyp-build: 4.5.0
+      node-gyp-build: 4.6.0
     dev: false
 
   /util-deprecate/1.0.2:
