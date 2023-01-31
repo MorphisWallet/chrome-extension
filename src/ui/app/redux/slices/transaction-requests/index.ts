@@ -13,6 +13,8 @@ import {
   createSlice,
 } from '@reduxjs/toolkit'
 
+import { activeAccountSelector } from '../account'
+
 import type {
   SuiMoveNormalizedFunction,
   SuiTransactionResponse,
@@ -74,19 +76,19 @@ export const deserializeTxn = createAsyncThunk<
   AppThunkConfig
 >(
   'deserialize-transaction',
-  async (data, { dispatch, extra: { api, keypairVault } }) => {
+  async (data, { dispatch, extra: { api, background }, getState }) => {
     const { id, serializedTxn } = data
-    const signer = api.getSignerInstance(keypairVault.getKeyPair())
+    const activeAddress = activeAccountSelector(getState())?.address
+    if (!activeAddress) {
+      throw new Error('Error, active address is not defined')
+    }
+    const signer = api.getSignerInstance(activeAddress, background)
     const localSerializer = new LocalTxnDataSerializer(signer.provider)
     const txnBytes = new Base64DataBuffer(serializedTxn)
-    const version = await api.instance.fullNode.getRpcApiVersion()
 
     //TODO: Error handling - either show the error or use the serialized txn
-    const useIntentSigning =
-      version != null && version.major >= 0 && version.minor > 18
     const deserializeTx =
       (await localSerializer.deserializeTransactionBytesToSignableTransaction(
-        useIntentSigning,
         txnBytes
       )) as UnserializedSignableTransaction
 
@@ -94,7 +96,6 @@ export const deserializeTxn = createAsyncThunk<
 
     const normalized = {
       ...deserializeData,
-      gasBudget: Number(deserializeData.gasBudget.toString(10)),
       gasPayment: '0x' + deserializeData.gasPayment,
       arguments: deserializeData.arguments.map((d) => '0x' + d),
     }
@@ -133,9 +134,13 @@ export const respondToTransactionRequest = createAsyncThunk<
   'respond-to-transaction-request',
   async (
     { txRequestID, approved },
-    { extra: { background, api, keypairVault }, getState }
+    { extra: { background, api }, getState }
   ) => {
     const state = getState()
+    const activeAddress = activeAccountSelector(state)?.address
+    if (!activeAddress) {
+      throw new Error('Error, active address is not defined')
+    }
     const txRequest = txRequestsSelectors.selectById(state, txRequestID)
     if (!txRequest) {
       throw new Error(`TransactionRequest ${txRequestID} not found`)
@@ -143,7 +148,7 @@ export const respondToTransactionRequest = createAsyncThunk<
     let txResult: SuiTransactionResponse | undefined = undefined
     let tsResultError: string | undefined
     if (approved) {
-      const signer = api.getSignerInstance(keypairVault.getKeyPair())
+      const signer = api.getSignerInstance(activeAddress, background)
       try {
         let response: SuiExecuteTransactionResponse
         if (txRequest.tx.type === 'v2' || txRequest.tx.type === 'move-call') {

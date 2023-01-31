@@ -1,6 +1,6 @@
 import cl from 'classnames'
 
-import { useMiddleEllipsis, useNFTBasicData } from '_hooks'
+import { useMiddleEllipsis, useNFTBasicData, useOriginbyteNft } from '_hooks'
 
 import type { SuiObject as SuiObjectType } from '@mysten/sui.js'
 
@@ -10,14 +10,16 @@ type NftCardProps = {
 }
 
 const NftCard = ({ nft, className }: NftCardProps) => {
-  const { filePath, fileExtensionType, objType } = useNFTBasicData(nft)
+  const { filePath, fileExtensionType, objType, nftObjectID } =
+    useNFTBasicData(nft)
+  const { data: originByteNft } = useOriginbyteNft(nftObjectID)
   const nftTypeShort = useMiddleEllipsis(objType, 20, 3)
 
   return (
-    <div className={cl(['flex', className])}>
-      {filePath ? (
+    <div className={cl(['flex grow', className])}>
+      {filePath || originByteNft?.fields.url ? (
         <img
-          src={filePath}
+          src={originByteNft?.fields.url || filePath || ''}
           alt={fileExtensionType.name || 'NFT'}
           title={nftTypeShort}
           className="w-full"

@@ -7,6 +7,7 @@ import { Input, Button, TxLink, toast } from '_app/components'
 import { useAppDispatch } from '_hooks'
 
 import { transferNFT } from '_redux/slices/sui-objects'
+import { DEFAULT_NFT_TRANSFER_GAS_FEE } from '_redux/slices/sui-objects/Coin'
 
 import { suiAddressValidation } from '_app/utils/validation'
 
@@ -44,8 +45,9 @@ const NftSend = () => {
       try {
         const resp = await dispatch(
           transferNFT({
-            recipientAddress: address,
-            nftId: nftId,
+            recipient: address,
+            objectId: nftId,
+            gasBudget: DEFAULT_NFT_TRANSFER_GAS_FEE,
           })
         ).unwrap()
 

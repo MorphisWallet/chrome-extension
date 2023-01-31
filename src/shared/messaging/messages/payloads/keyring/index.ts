@@ -3,6 +3,7 @@
 
 import { isBasePayload } from '_payloads'
 
+import type { SignatureScheme, SuiAddress } from '@mysten/sui.js'
 import type { BasePayload, Payload } from '_payloads'
 import type { Account } from '_redux/slices/account'
 
@@ -63,6 +64,14 @@ type MethodToPayloads = {
   setAccountMeta: {
     args: { address: string; alias?: string; avatar?: string }
     return: never
+  }
+  signData: {
+    args: { data: string; address: SuiAddress }
+    return: {
+      signatureScheme: SignatureScheme
+      signature: string
+      pubKey: string
+    }
   }
 }
 

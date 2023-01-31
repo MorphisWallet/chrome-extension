@@ -1,3 +1,4 @@
+import { Base64DataBuffer } from '@mysten/sui.js'
 import mitt from 'mitt'
 import throttle from 'lodash/throttle'
 
@@ -457,6 +458,39 @@ export const handleUiMessage = async (
             type: 'keyring',
             method: 'allAccounts',
             return: accounts,
+          },
+          id
+        )
+      )
+    } else if (isKeyringPayload(payload, 'signData')) {
+      if (!accountStatus.unlockFlag) {
+        throw new Error('Keyring is locked. Unlock it first.')
+      }
+      if (!payload.args) {
+        throw new Error('Missing parameters.')
+      }
+      const { data, address } = payload.args
+      const activeAccount = await getActiveAccount()
+      if (!activeAccount) {
+        throw new Error(`Account for address ${address} not found in keyring`)
+      }
+      const mnemonics = await getMnemonics()
+      const keypair = getKeypairFromMnemonics(
+        mnemonics,
+        activeAccount.index > 0 ? activeAccount.index : 0
+      )
+      uiConnection.send(
+        createMessage<KeyringPayload<'signData'>>(
+          {
+            type: 'keyring',
+            method: 'signData',
+            return: {
+              signatureScheme: keypair.getKeyScheme(),
+              signature: keypair
+                .signData(new Base64DataBuffer(data))
+                .toString(),
+              pubKey: keypair.getPublicKey().toBase64(),
+            },
           },
           id
         )

@@ -41,6 +41,7 @@ const SendPage = () => {
   const coinType = searchParams.get('type') || ''
 
   const allCoins = useAppSelector(accountCoinsSelector)
+
   const aggregateBalances = useAppSelector(accountAggregateBalancesSelector)
   const coinBalance = useMemo(
     () => (coinType && aggregateBalances[coinType]) || BigInt(0),
@@ -53,6 +54,10 @@ const SendPage = () => {
 
   const [step, setStep] = useState<0 | 1>(0)
 
+  const allCoinsOfTransferType = useMemo(
+    () => allCoins.filter((aCoin) => aCoin.type === coinType),
+    [allCoins, coinType]
+  )
   const allCoinsOfSelectedTypeArg = useMemo(
     () =>
       allCoins.filter(
@@ -86,11 +91,17 @@ const SendPage = () => {
           .integerValue()
           .toString()
       )
+      const gasBudgetEstimation = Coin.computeGasBudgetForPay(
+        allCoinsOfTransferType,
+        bigIntAmount
+      )
+
       const res = await dispatch(
         sendTokens({
           amount: bigIntAmount,
           recipientAddress: values.address,
           tokenTypeArg: coinType,
+          gasBudget: gasBudgetEstimation,
         })
       ).unwrap()
 
