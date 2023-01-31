@@ -14,7 +14,7 @@ const NftCard = ({ nft, className }: NftCardProps) => {
   const nftTypeShort = useMiddleEllipsis(objType, 20, 3)
 
   return (
-    <div className={cl(['flex', className])}>
+    <div className={cl(['flex grow', className])}>
       {filePath ? (
         <img
           src={filePath}
