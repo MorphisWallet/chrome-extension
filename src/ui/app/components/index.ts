@@ -1,6 +1,7 @@
 export * from './alert'
 export * from './address'
 export * from './avatar'
+export * from './banner'
 export * from './button'
 export * from './checkbox'
 export * from './icon_wrapper'
