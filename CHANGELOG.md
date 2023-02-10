@@ -1,3 +1,7 @@
+## 0.0.6.3 (Feb 10, 2023)
+
+- Add Banner in Discovery page
+
 ## 0.0.6.2 (Jan 31, 2023)
 
 - Support OriginByte NFTs
