@@ -1,3 +1,7 @@
+## 0.0.6.4 (Feb 14, 2023)
+
+- Add Banner slide
+
 ## 0.0.6.3 (Feb 10, 2023)
 
 - Add Banner in Discovery page
