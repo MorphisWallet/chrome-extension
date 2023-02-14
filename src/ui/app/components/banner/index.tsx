@@ -1,31 +1,51 @@
-import { useEffect } from 'react'
+import { Autoplay } from 'swiper'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { useQuery } from '@tanstack/react-query'
 
-const BANNER_IMAGE_COS_URL =
-  'https://morphis-1256253626.cos.accelerate.myqcloud.com/banner.png'
+import 'swiper/css'
+import 'swiper/css/autoplay'
+
+const BANNER_JSON_COS_URL =
+  'https://morphis-1256253626.cos.accelerate.myqcloud.com/banner.json'
+
+type BannerData = {
+  id: string
+  link: string
+  image: string
+}
 
 export const Banner = () => {
-  useEffect(() => {
-    const img = document.getElementById('banner')
-    if (!img) return
+  const { isLoading, error, data } = useQuery<BannerData[]>({
+    queryKey: ['bannerData'],
+    queryFn: () => fetch(BANNER_JSON_COS_URL).then((res) => res.json()),
+  })
 
-    img.onerror = function () {
-      this.style.display = 'none'
-    }
-  }, [])
+  if (isLoading || error || !data) {
+    return null
+  }
 
   return (
-    <a
-      className="block mx-[-24px]"
-      href="https://clutchy.io/launchpad/SUIDinosNFT"
-      rel="noreferrer"
-      target="_blank"
+    <Swiper
+      autoplay={{
+        delay: 2000,
+      }}
+      className="mx-[-24px] mt-[-16px] mb-2 h-[218px]"
+      loop
+      modules={[Autoplay]}
+      navigation
     >
-      <img
-        alt=""
-        className="mt-[-16px] mb-2"
-        id="banner"
-        src={BANNER_IMAGE_COS_URL}
-      />
-    </a>
+      {data?.map((banner) => (
+        <SwiperSlide key={banner.id}>
+          <a
+            className="block"
+            href={banner.link}
+            rel="noreferrer"
+            target="_blank"
+          >
+            <img alt={banner.id} id="banner" src={banner.image} />
+          </a>
+        </SwiperSlide>
+      ))}
+    </Swiper>
   )
 }
