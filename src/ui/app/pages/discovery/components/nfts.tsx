@@ -3,18 +3,25 @@ import cl from 'classnames'
 import TwitterIcon from '_assets/icons/twitter.svg'
 import DiscordIcon from '_assets/icons/discord.svg'
 
-import Wizardland from '_assets/discovery/Wizardland.jpeg'
-import BabyApe from '_assets/discovery/BabyApe.jpeg'
-import SuiNerdClub from '_assets/discovery/Sui Nerd club.jpeg'
-import Funnybuns from '_assets/discovery/Funnybuns.jpeg'
-import Depthos from '_assets/discovery/Depthos.jpeg'
-import SupLizards from '_assets/discovery/SupLizards.jpeg'
-import SuiDinos from '_assets/discovery/SuiDinos.jpeg'
-import Occult from '_assets/discovery/Occult.jpeg'
-import Cleo from '_assets/discovery/Cleo.jpeg'
-import LavaKongz from '_assets/discovery/Lava Kongz.jpeg'
-import Chibikiverse from '_assets/discovery/chibikiverse.jpeg'
-import Thuggiez from '_assets/discovery/Thuggiez.jpeg'
+import Wizardland from '_assets/discovery/wizardland1.jpeg'
+import BabyApe from '_assets/discovery/baby_ape.jpeg'
+import SuiNerdClub from '_assets/discovery/sui_nerd_club.jpeg'
+import Funnybuns from '_assets/discovery/funny_buns.jpeg'
+import Depthos from '_assets/discovery/depthos1.jpeg'
+import SupLizards from '_assets/discovery/sup_lizards.jpeg'
+import SuiDinos from '_assets/discovery/sui_dinos.jpeg'
+import Occult from '_assets/discovery/occult1.jpeg'
+import Cleo from '_assets/discovery/cleo1.jpeg'
+import LavaKongz from '_assets/discovery/lava_kongz.jpeg'
+import Chibikiverse from '_assets/discovery/chibiki_verse.jpeg'
+import Thuggiez from '_assets/discovery/thuggiez1.jpeg'
+import SuiMo from '_assets/discovery/sui_mo.jpeg'
+import ScoreMilk from '_assets/discovery/score_milk.jpeg'
+import SuiBunnies from '_assets/discovery/sui_bunnies.jpeg'
+import AlphaBears from '_assets/discovery/alpha_bears.jpeg'
+import XranilecCars from '_assets/discovery/xranilec_cars.jpeg'
+import Gamio from '_assets/discovery/gamio.jpeg'
+import Outcasts from '_assets/discovery/outcasts.jpeg'
 
 type DiscoveryItem = {
   name: string
@@ -95,6 +102,41 @@ const LIST_NFTS: DiscoveryItem[] = [
     discord: 'https://discord.gg/RRHfu8ErwP',
     image: Thuggiez,
   },
+  {
+    name: 'SuiMO',
+    twitter: 'https://twitter.com/SuiMo_NFT',
+    image: SuiMo,
+  },
+  {
+    name: 'Score Milk',
+    twitter: 'https://twitter.com/ScoreMilk',
+    image: ScoreMilk,
+  },
+  {
+    name: 'Sui Bunnies',
+    twitter: 'https://twitter.com/BunniesSui',
+    image: SuiBunnies,
+  },
+  {
+    name: 'Alpha Bears',
+    twitter: 'https://twitter.com/SuiAlphaBears',
+    image: AlphaBears,
+  },
+  {
+    name: 'Xranilec Cars',
+    twitter: 'https://twitter.com/Xranilec_Cars',
+    image: XranilecCars,
+  },
+  {
+    name: 'Gamio',
+    twitter: 'https://twitter.com/GamioNFT',
+    image: Gamio,
+  },
+  {
+    name: 'Out Casts',
+    twitter: 'https://twitter.com/Outcasts_NFT',
+    image: Outcasts,
+  },
 ]
 
 const Card = ({ name, twitter, discord, image }: DiscoveryItem) => (
@@ -146,7 +188,10 @@ const NFTs = () => (
     </div>
     <div className="flex flex-col grow gap-2 mx-[-24px] mb-[-24px] py-1 overflow-y-auto">
       {LIST_NFTS.map(({ name, image, twitter, discord }) => (
-        <div key={name} className="flex items-center px-6 py-2 gap-4 transition hover:bg-[#fbf9f9] hover:shadow-[0_4px_10px_0_rgba(196,196,196,0.25)]">
+        <div
+          key={name}
+          className="flex items-center px-6 py-2 gap-4 transition hover:bg-[#fbf9f9] hover:shadow-[0_4px_10px_0_rgba(196,196,196,0.25)]"
+        >
           <img
             alt={name}
             src={image}
