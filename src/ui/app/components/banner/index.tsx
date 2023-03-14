@@ -20,7 +20,7 @@ export const Banner = () => {
     queryFn: () => fetch(BANNER_JSON_COS_URL).then((res) => res.json()),
   })
 
-  if (isLoading || error || !data) {
+  if (isLoading || error || !data || !data?.length) {
     return null
   }
 
