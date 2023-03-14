@@ -1,3 +1,8 @@
+## 0.0.6.5 (Mar 14, 2023)
+
+- Fix issue that banner show 'undefined' in case of empty data
+- Add cooperated NFTs and DApps
+
 ## 0.0.6.4 (Feb 14, 2023)
 
 - Add Banner slide
