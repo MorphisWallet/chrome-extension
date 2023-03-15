@@ -1,6 +1,6 @@
 {
   "name": "@morphis/chrome-extension",
-  "version": "0.0.6.6",
+  "version": "0.0.6.5",
   "description": "Morphis - the most friendly wallet on Sui",
   "engines": {
     "node": ">=16.0.0",

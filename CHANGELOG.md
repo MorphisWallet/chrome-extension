@@ -1,7 +1,3 @@
-## 0.0.6.6 (Mar 15, 2023)
-
-- Adjust discovery scroll height
-
 ## 0.0.6.5 (Mar 14, 2023)
 
 - Fix issue that banner show 'undefined' in case of empty data

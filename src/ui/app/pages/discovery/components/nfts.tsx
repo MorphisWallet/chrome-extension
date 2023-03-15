@@ -178,15 +178,15 @@ const Card = ({ name, twitter, discord, image }: DiscoveryItem) => (
 )
 
 const NFTs = () => (
-  <div className="-mx-[24px] overflow-y-auto">
-    <div className="shrink-0  overflow-hidden">
+  <>
+    <div className="shrink-0 overflow-hidden mx-[-24px]">
       <div className="flex mt-4 px-6 gap-2 overflow-x-auto overflow-y-hidden hide-scrollbar">
         {TOP_NFTS.map((_nft) => (
           <Card key={_nft.name} {..._nft} />
         ))}
       </div>
     </div>
-    <div className="flex flex-col grow gap-2 py-1">
+    <div className="flex flex-col grow gap-2 mx-[-24px] mb-[-24px] py-1 overflow-y-auto">
       {LIST_NFTS.map(({ name, image, twitter, discord }) => (
         <div
           key={name}
@@ -219,7 +219,7 @@ const NFTs = () => (
         </div>
       ))}
     </div>
-  </div>
+  </>
 )
 
 export default NFTs
