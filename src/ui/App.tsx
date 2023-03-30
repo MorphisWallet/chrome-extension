@@ -10,7 +10,7 @@ import LandingPage from '_app/pages/landing'
 // import NftDetailPage from '_app/pages/nft/nft_detail'
 // import NftSend from '_app/pages/nft/nft_send'
 
-// import DiscoveryPage from './app/pages/discovery'
+import DiscoveryPage from './app/pages/discovery'
 
 // import HistoryPage from '_app/pages/history'
 
@@ -70,10 +70,10 @@ const router = createHashRouter([
       //     },
       //   ],
       // },
-      // {
-      //   path: 'discovery',
-      //   element: <DiscoveryPage />,
-      // },
+      {
+        path: 'discovery',
+        element: <DiscoveryPage />,
+      },
       // {
       //   path: 'history',
       //   element: <HistoryPage />,

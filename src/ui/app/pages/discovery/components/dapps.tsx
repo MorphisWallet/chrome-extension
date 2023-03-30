@@ -40,14 +40,14 @@ const TOP_DAPPS: DiscoveryAppItem[] = [
     image: SuiNS,
     link: 'https://SuiNS.io/',
   },
-]
-
-const LIST_DAPPS: DiscoveryAppItem[] = [
   {
     name: 'BlueMove',
     image: BlueMove,
     link: 'https://bluemove.net/',
   },
+]
+
+const LIST_DAPPS: DiscoveryAppItem[] = [
   {
     name: 'Cetus',
     image: Cetus,
@@ -140,7 +140,7 @@ const Dapps = () => (
             image
           )}
           <span className="grow text-sm font-bold truncate">{name}</span>
-          <Button className="h-6 w-6 px-0 mb-2 bg-[#1da1f2] rounded-full flex justify-center items-center hover:bg-[#1da1f2] hover:scale-105">
+          <Button className="!h-6 !w-6 !px-0 mb-2 bg-[#1da1f2] rounded-full flex justify-center items-center hover:bg-[#1da1f2] hover:scale-105">
             <ArrowIcon height={10} width={10} />
           </Button>
         </a>
