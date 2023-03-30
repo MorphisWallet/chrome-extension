@@ -21,7 +21,7 @@ import { ToS_LINK } from '_shared/constants'
 import {
   passwordValidation,
   getConfirmPasswordValidation,
-} from '_app/utils/validation'
+} from '_src/ui/utils/validation'
 
 type Fields = {
   password: string
