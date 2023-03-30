@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-  encrypt as browserPassworderEncrypt,
-  decrypt as browserPassworderDecrypt,
+  encrypt as metamaskEncrypt,
+  decrypt as metamaskDecrypt,
 } from '@metamask/browser-passworder'
 
 type Serializable =
@@ -11,20 +11,18 @@ type Serializable =
   | number
   | boolean
   | { [index: string]: Serializable }
+  | Serializable[]
 
 export async function encrypt(
   password: string,
-  plainData: Serializable,
-  key?: CryptoKey,
-  salt?: string
+  secrets: Serializable
 ): Promise<string> {
-  return browserPassworderEncrypt(password, plainData, key, salt)
+  return metamaskEncrypt(password, secrets)
 }
 
 export async function decrypt<T extends Serializable>(
   password: string,
-  cipherData: string,
-  key?: CryptoKey
+  ciphertext: string
 ): Promise<T> {
-  return (await browserPassworderDecrypt(password, cipherData, key)) as T
+  return (await metamaskDecrypt(password, ciphertext)) as T
 }

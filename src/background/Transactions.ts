@@ -26,7 +26,7 @@ const TX_STORE_KEY = 'transactions'
 function openTxWindow(requestID: string) {
   return new Window(
     Browser.runtime.getURL('ui.html') +
-      `#/dapp/tx-approval/${encodeURIComponent(requestID)}`
+      `#/dapp/approve/${encodeURIComponent(requestID)}`
   )
 }
 
@@ -69,7 +69,7 @@ class Transactions {
       }
       return txResult
     }
-    return txSigned as SignedTransaction
+    return txSigned!
   }
 
   public async signMessage(

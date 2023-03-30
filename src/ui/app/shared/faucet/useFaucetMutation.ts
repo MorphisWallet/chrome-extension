@@ -3,13 +3,12 @@
 
 import { useIsMutating, useMutation } from '@tanstack/react-query'
 
-import { useAppSelector, useRpc } from '_hooks'
+import { useRpcClient } from '_src/ui/core'
+import { useActiveAddress } from '../../hooks/useActiveAddress'
 
 export function useFaucetMutation() {
-  const api = useRpc()
-  const address = useAppSelector(
-    ({ account: { activeAccountAddress } }) => activeAccountAddress
-  )
+  const api = useRpcClient()
+  const address = useActiveAddress()
   const mutationKey = ['faucet-request-tokens', address]
   const mutation = useMutation({
     mutationKey,
@@ -17,13 +16,13 @@ export function useFaucetMutation() {
       if (!address) {
         throw new Error('Failed, wallet address not found.')
       }
-      const { error, transferred_gas_objects } = await api.requestSuiFromFaucet(
+      const { error, transferredGasObjects } = await api.requestSuiFromFaucet(
         address
       )
       if (error) {
         throw new Error(error)
       }
-      return transferred_gas_objects.reduce(
+      return transferredGasObjects.reduce(
         (total, { amount }) => total + amount,
         0
       )
@@ -32,7 +31,7 @@ export function useFaucetMutation() {
   return {
     ...mutation,
     /** If the currently-configured endpoint supports faucet: */
-    enabled: !!api.endpoints.faucet,
+    enabled: !!api.connection.faucet,
     /**
      * is any faucet request in progress across different instances of the mutation
      */

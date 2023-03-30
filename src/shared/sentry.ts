@@ -7,13 +7,11 @@ import Browser from 'webextension-polyfill'
 
 const WALLET_VERSION = Browser.runtime.getManifest().version
 const SENTRY_DSN = process.env.SENTRY_DSN
-
 const IS_PROD = process.env.NODE_ENV === 'production'
 
 export default function initSentry() {
-  if (!IS_PROD || !SENTRY_DSN) return
-
   Sentry.init({
+    enabled: IS_PROD,
     dsn: SENTRY_DSN,
     integrations: [new BrowserTracing()],
     release: WALLET_VERSION,
@@ -29,11 +27,9 @@ type Breadcrumbs = {
 }
 
 export function addSentryBreadcrumb(breadcrumbs: Breadcrumbs) {
-  if (!IS_PROD) return
   Sentry.addBreadcrumb(breadcrumbs)
 }
 
 export function reportSentryError(error: Error) {
-  if (!IS_PROD) return
   Sentry.captureException(error)
 }
