@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { type MouseEventHandler, useCallback } from 'react'
-import { toast } from 'react-hot-toast'
+
+import { toast } from '_app/components'
 
 export type CopyOptions = {
   copySuccessMessage?: string
@@ -18,7 +19,10 @@ export function useCopyToClipboard(
       e.preventDefault()
       try {
         await navigator.clipboard.writeText(textToCopy)
-        toast.success(copySuccessMessage)
+        toast({
+          type: 'success',
+          message: copySuccessMessage,
+        })
       } catch (e) {
         // silence clipboard errors
       }

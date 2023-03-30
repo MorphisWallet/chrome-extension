@@ -3,7 +3,7 @@
 
 import { Ed25519Keypair, fromB64 } from '@mysten/sui.js'
 import mitt from 'mitt'
-import { throttle } from 'throttle-debounce'
+import throttle from 'lodash/throttle'
 
 import { getFromLocalStorage, setToLocalStorage } from '../storage-utils'
 import { type Account, isImportedOrDerivedAccount } from './Account'
@@ -29,8 +29,6 @@ import type { KeyringPayload } from '_payloads/keyring'
 /** The key for the extension's storage, that holds the index of the last derived account (zero based) */
 const STORAGE_LAST_ACCOUNT_INDEX_KEY = 'last_account_index'
 const STORAGE_ACTIVE_ACCOUNT = 'active_account'
-
-const STORAGE_IMPORTED_LEDGER_ACCOUNTS = 'imported_ledger_accounts'
 
 type KeyringEvents = {
   lockedStatusUpdate: boolean
@@ -359,13 +357,13 @@ export class Keyring {
   }
 
   private postponeLock = throttle(
-    1000,
     async () => {
       if (!this.isLocked) {
         await Alarms.setLockAlarm()
       }
     },
-    { noLeading: false }
+    1000,
+    { leading: true }
   )
 
   private async setLockTimeout(timeout: number) {

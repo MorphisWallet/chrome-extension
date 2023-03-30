@@ -1,9 +1,10 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useRpcClient } from '@mysten/core'
 import { type SuiObjectResponse, normalizeSuiAddress } from '@mysten/sui.js'
 import { useQuery, type UseQueryResult } from '@tanstack/react-query'
+
+import { useRpcClient } from '_src/ui/core'
 
 export function useGetObject(
   objectId?: string | null
@@ -14,7 +15,7 @@ export function useGetObject(
     ['object', normalizedObjId],
     async () => {
       return rpc.getObject({
-        id: normalizedObjId!,
+        id: normalizedObjId as string,
         options: {
           showType: true,
           showContent: true,

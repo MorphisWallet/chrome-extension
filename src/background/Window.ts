@@ -4,7 +4,7 @@
 import { filter, fromEventPattern, share, take, takeWhile } from 'rxjs'
 import Browser from 'webextension-polyfill'
 
-import { POPUP_HEIGHT, POPUP_WIDTH } from '_src/ui/app/wallet/constants'
+import { POPUP_HEIGHT, POPUP_WIDTH } from '_src/shared/constants'
 
 const windowRemovedStream = fromEventPattern<number>(
   (handler) => Browser.windows.onRemoved.addListener(handler),

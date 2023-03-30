@@ -1,9 +1,10 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useRpcClient } from '@mysten/core'
 import { type SuiAddress } from '@mysten/sui.js'
 import { useQuery } from '@tanstack/react-query'
+
+import { useRpcClient } from '_src/ui/core'
 
 export function useGetCoinBalance(
   coinType: string,
@@ -12,7 +13,7 @@ export function useGetCoinBalance(
   const rpc = useRpcClient()
   return useQuery(
     ['coin-balance', address, coinType],
-    () => rpc.getBalance({ owner: address!, coinType }),
+    () => rpc.getBalance({ owner: address as string, coinType }),
     {
       enabled: !!address && !!coinType,
       refetchInterval: 4000,

@@ -13,8 +13,8 @@ import {
   getAddressUrl,
   getTransactionUrl,
   getValidatorUrl,
-} from '../components/explorer-link//Explorer'
-import { ExplorerLinkType } from '../components/explorer-link/ExplorerLinkType'
+  ExplorerLinkType,
+} from '_src/ui/utils/explorer'
 import { useActiveAddress } from './useActiveAddress'
 import useAppSelector from './useAppSelector'
 

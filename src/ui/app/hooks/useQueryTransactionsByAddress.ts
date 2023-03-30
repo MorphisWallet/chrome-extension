@@ -1,9 +1,10 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useRpcClient } from '@mysten/core'
 import { type SuiAddress } from '@mysten/sui.js'
 import { useQuery } from '@tanstack/react-query'
+
+import { useRpcClient } from '_src/ui/core'
 
 const dedupe = (arr: string[]) => Array.from(new Set(arr))
 
@@ -17,12 +18,12 @@ export function useQueryTransactionsByAddress(address: SuiAddress | null) {
       const [txnIds, fromTxnIds] = await Promise.all([
         rpc.queryTransactionBlocks({
           filter: {
-            ToAddress: address!,
+            ToAddress: address as string,
           },
         }),
         rpc.queryTransactionBlocks({
           filter: {
-            FromAddress: address!,
+            FromAddress: address as string,
           },
         }),
       ])

@@ -55,11 +55,7 @@ export const logout = createAsyncThunk<void, void, AppThunkConfig>(
   }
 )
 
-const sortOrderByAccountType = [
-  AccountType.DERIVED,
-  AccountType.IMPORTED,
-  AccountType.LEDGER,
-]
+const sortOrderByAccountType = [AccountType.DERIVED, AccountType.IMPORTED]
 
 const accountsAdapter = createEntityAdapter<SerializedAccount>({
   selectId: ({ address }) => address,

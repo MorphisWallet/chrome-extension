@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useMutation } from '@tanstack/react-query'
-import { toast } from 'react-hot-toast'
 
 import { useBackgroundClient } from './useBackgroundClient'
+
+import { toast } from '_app/components'
 
 export function useDeriveNextAccountMutation() {
   const backgroundClient = useBackgroundClient()
@@ -13,10 +14,16 @@ export function useDeriveNextAccountMutation() {
       return backgroundClient.deriveNextAccount()
     },
     onSuccess: () => {
-      toast.success('New account created')
+      toast({
+        type: 'success',
+        message: 'New account created',
+      })
     },
     onError: (e) => {
-      toast.error((e as Error).message || 'Failed to create new account')
+      toast({
+        type: 'error',
+        message: (e as Error).message || 'Failed to create new account',
+      })
     },
   })
 }

@@ -1,10 +1,11 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useFormatCoin, useRpcClient } from '@mysten/core'
 import { type SuiAddress, SUI_TYPE_ARG, TransactionBlock } from '@mysten/sui.js'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
+
+import { useRpcClient, useFormatCoin } from '_src/ui/core'
 
 export function useTransactionData(
   sender?: SuiAddress | null,
@@ -25,8 +26,8 @@ export function useTransactionData(
     ['transaction-data', clonedTransaction?.serialize()],
     async () => {
       // Build the transaction to bytes, which will ensure that the transaction data is fully populated:
-      await clonedTransaction!.build({ provider: rpc })
-      return clonedTransaction!.blockData
+      await clonedTransaction?.build({ provider: rpc })
+      return clonedTransaction?.blockData
     },
     {
       enabled: !!clonedTransaction,

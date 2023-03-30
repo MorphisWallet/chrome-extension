@@ -6,7 +6,13 @@ import { useMemo } from 'react'
 
 import { getAmount } from '_helpers'
 
-import type { SuiTransactionBlockResponse, SuiAddress } from '@mysten/sui.js'
+import type {
+  SuiTransactionBlockKind,
+  TransactionEffects,
+  TransactionEvents,
+  SuiTransactionBlockResponse,
+  SuiAddress,
+} from '@mysten/sui.js'
 
 export function useGetTransferAmount({
   txn,
@@ -19,16 +25,18 @@ export function useGetTransferAmount({
   // const { coins } = getEventsSummary(events!, activeAddress);
 
   const suiTransfer = useMemo(() => {
-    const txdetails = getTransactionKind(txn)!
-    return getAmount(txdetails, effects!, events!)?.map(
-      ({ amount, coinType, recipientAddress }) => {
-        return {
-          amount: amount || 0,
-          coinType: coinType || SUI_TYPE_ARG,
-          receiverAddress: recipientAddress,
-        }
+    const txdetails = getTransactionKind(txn)
+    return getAmount(
+      txdetails as SuiTransactionBlockKind,
+      effects as TransactionEffects,
+      events as TransactionEvents
+    )?.map(({ amount, coinType, recipientAddress }) => {
+      return {
+        amount: amount || 0,
+        coinType: coinType || SUI_TYPE_ARG,
+        receiverAddress: recipientAddress,
       }
-    )
+    })
   }, [txn, effects, events])
 
   // MUSTFIX(chris)

@@ -15,7 +15,6 @@ import {
 export enum AccountType {
   IMPORTED = 'IMPORTED',
   DERIVED = 'DERIVED',
-  LEDGER = 'LEDGER',
 }
 
 export type SerializedAccount =
