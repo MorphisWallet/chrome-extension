@@ -60,7 +60,6 @@ export class BackgroundClient {
       this.sendGetPermissionRequests(),
       this.sendGetTransactionRequests(),
       this.getWalletStatus(),
-      this.loadFeatures(),
       this.getNetwork(),
     ]).then(() => undefined)
   }
@@ -354,16 +353,6 @@ export class BackgroundClient {
         createMessage<KeyringPayload<'walletStatusUpdate'>>({
           type: 'keyring',
           method: 'walletStatusUpdate',
-        })
-      ).pipe(take(1))
-    )
-  }
-
-  private loadFeatures() {
-    return lastValueFrom(
-      this.sendMessage(
-        createMessage<BasePayload>({
-          type: 'get-features',
         })
       ).pipe(take(1))
     )

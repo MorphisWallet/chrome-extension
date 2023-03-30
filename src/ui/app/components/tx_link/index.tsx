@@ -1,12 +1,10 @@
 import { useMemo } from 'react'
 import cl from 'classnames'
 
-import { useAppSelector } from '_hooks'
+import { useAppSelector, useActiveAddress } from '_hooks'
 
-import { activeAccountAddressSelector } from '_redux/slices/account'
-
+import { API_ENV } from '_src/shared/api-env'
 import { getAddressUrl, getObjectUrl, getTransactionUrl } from './utils'
-import { API_ENV } from '_app/ApiProvider'
 import { ExplorerLinkType, TxObjectTypes } from './types'
 
 type TxLinkProps = TxObjectTypes &
@@ -18,7 +16,7 @@ function useAddress(props: TxLinkProps) {
   const { type } = props
   const isAddress = type === ExplorerLinkType.address
   const isProvidedAddress = isAddress && !props.useActiveAddress
-  const activeAddress = useAppSelector(activeAccountAddressSelector)
+  const activeAddress = useActiveAddress()
   return isProvidedAddress ? props.address : activeAddress
 }
 

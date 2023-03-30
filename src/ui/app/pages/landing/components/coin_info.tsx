@@ -1,8 +1,6 @@
 import { CoinIcon } from '_app/components'
 
-import { useFormatCoin } from '_hooks'
-
-import { coinMap, CoinInfo as CoinInfoType } from '_app/utils/coin'
+import { useFormatCoin } from '_src/ui/core'
 
 type CoinInfoProps = {
   balance: bigint | number
@@ -10,9 +8,7 @@ type CoinInfoProps = {
 } & React.DOMAttributes<HTMLDivElement>
 
 const CoinInfo = ({ balance, type, ...rest }: CoinInfoProps) => {
-  const [formatted, symbol] = useFormatCoin(balance, type, true)
-
-  const coinInfo: CoinInfoType | undefined = coinMap[type]
+  const [formatted, symbol] = useFormatCoin(balance, type)
 
   return (
     <div
@@ -21,7 +17,7 @@ const CoinInfo = ({ balance, type, ...rest }: CoinInfoProps) => {
     >
       <CoinIcon type={type} className="h-[34px] w-[34px] mr-3" />
       <div className="flex flex-col grow">
-        <span className="font-bold">{coinInfo?.name || symbol}</span>
+        <span className="font-bold">{type}</span>
         <span className="font-normal text-[#818181]">{symbol}</span>
       </div>
       <div>{formatted}</div>

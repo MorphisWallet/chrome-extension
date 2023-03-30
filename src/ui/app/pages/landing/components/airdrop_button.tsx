@@ -16,10 +16,12 @@ const AirdropButton = () => {
   const allowAirdrop = API_ENV.customRPC !== network
 
   useEffect(() => {
-    toast({
-      type: 'error',
-      message: (mutation.error as Error)?.message || 'Failed to faucet',
-    })
+    if (mutation.isError) {
+      toast({
+        type: 'error',
+        message: (mutation.error as Error)?.message || 'Failed to faucet',
+      })
+    }
   }, [mutation.isError])
 
   return (
@@ -28,7 +30,7 @@ const AirdropButton = () => {
         onClick={() => mutation.mutate()}
         loading={mutation.isLoading}
         disabled={!allowAirdrop || mutation.isLoading || mutation.isMutating}
-        className="h-[40px] w-[40px] px-0 mb-2 rounded-full flex justify-center items-center"
+        className="!h-[40px] !w-[40px] !px-0 mb-2 rounded-full flex justify-center items-center"
       >
         <ArrowIcon className="rotate-180" />
       </Button>
