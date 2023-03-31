@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { SUI_TYPE_ARG } from '@mysten/sui.js'
+import cl from 'classnames'
 
 import Layout from '_app/layouts'
 import { Button, Loading, toast } from '_app/components'
@@ -9,8 +10,6 @@ import AirdropButton from './components/airdrop_button'
 
 import { useActiveAddress, useGetAllBalances } from '_hooks'
 import { useFormatCoin } from '_src/ui/core'
-
-import { GAS_TYPE_ARG } from '_redux/slices/sui-objects/Coin'
 
 import ArrowIcon from '_assets/icons/arrow_short_thin.svg'
 
@@ -50,8 +49,12 @@ const LandingPage = () => {
           <div className="flex gap-8 text-sm">
             <AirdropButton />
             <Link
-              to={`/send?type=${GAS_TYPE_ARG}`}
-              className="flex flex-col items-center"
+              to={`/send?type=${SUI_TYPE_ARG}`}
+              className={cl([
+                'flex flex-col items-center',
+                (isLoading || !suiTypeBalance?.totalBalance) &&
+                  'pointer-events-none',
+              ])}
             >
               <Button
                 disabled={isLoading}

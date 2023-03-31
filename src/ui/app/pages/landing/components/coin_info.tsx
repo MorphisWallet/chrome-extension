@@ -1,3 +1,5 @@
+import { Coin } from '@mysten/sui.js'
+
 import { CoinIcon } from '_app/components'
 
 import { useFormatCoin } from '_src/ui/core'
@@ -21,10 +23,14 @@ const CoinInfo = ({ balance, ...rest }: CoinInfoProps) => {
     >
       <CoinIcon type={balance.coinType} className="h-[34px] w-[34px] mr-3" />
       <div className="flex flex-col grow">
-        <span className="font-bold">{balance.coinType}</span>
-        <span className="font-normal text-[#818181]">{symbol}</span>
+        <span className="font-bold">{symbol}</span>
+        <span className="font-normal text-[#818181]">
+          {Coin.getCoinSymbol(balance.coinType)}
+        </span>
       </div>
-      <div>{formatted}</div>
+      <div>
+        {formatted} <span className="font-normal text-[#818181]">{symbol}</span>
+      </div>
     </div>
   )
 }

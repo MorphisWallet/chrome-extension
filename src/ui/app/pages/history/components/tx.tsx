@@ -1,20 +1,21 @@
 import { useMemo } from 'react'
 import {
-  getExecutionStatusError,
-  getExecutionStatusType,
+  // getExecutionStatusError,
+  // getExecutionStatusType,
   getTransactionDigest,
-  getTransactionKind,
+  // getTransactionKind,
   getTransactionSender,
   SUI_TYPE_ARG,
+  formatAddress,
 } from '@mysten/sui.js'
 
 import { useGetTransferAmount, useGetTxnRecipientAddress } from '_hooks'
 
-import { TxLink, toast } from '_app/components'
+import { TxLink } from '_app/components'
 
-import { useFormatCoin } from '_src/ui/core'
+// import { useFormatCoin } from '_src/ui/core'
 
-import { GAS_TYPE_ARG } from '_redux/slices/sui-objects/Coin'
+// import { GAS_TYPE_ARG } from '_redux/slices/sui-objects/Coin'
 
 import SendIcon from '_assets/icons/send.svg'
 import ReceivedIcon from '_assets/icons/arrow_short.svg'
@@ -23,7 +24,7 @@ import { ExplorerLinkType } from '_src/ui/app/components/tx_link/types'
 import type {
   SuiAddress,
   SuiTransactionBlockResponse,
-  SuiTransactionBlockKind,
+  // SuiTransactionBlockKind,
 } from '@mysten/sui.js'
 
 type TxProps = {
@@ -32,8 +33,8 @@ type TxProps = {
 }
 
 const Tx = ({ txn, address }: TxProps) => {
-  const transaction = getTransactionKind(txn) as SuiTransactionBlockKind
-  const executionStatus = getExecutionStatusType(txn)
+  // const transaction = getTransactionKind(txn) as SuiTransactionBlockKind
+  // const executionStatus = getExecutionStatusType(txn)
 
   const transfer = useGetTransferAmount({
     txn,
@@ -64,7 +65,7 @@ const Tx = ({ txn, address }: TxProps) => {
 
   const isSender = address === getTransactionSender(txn)
 
-  const error = getExecutionStatusError(txn)
+  // const error = getExecutionStatusError(txn)
 
   return (
     <TxLink
@@ -82,14 +83,17 @@ const Tx = ({ txn, address }: TxProps) => {
       <div className="flex flex-col grow">
         <span className="text-[13px]">
           <span className="text-[#6bb7e9]">
-            ({transferAmount.amount} {transferAmount.coinType})
+            {`${isSender ? 'Sent' : 'Received'} (${
+              transferAmount.amount || ''
+            } ${transferAmount.coinType || ''})`}
           </span>
         </span>
         <div className="flex justify-between">
           <span title={address || ''} className="text-[11px] text-[#c4c4c4]">
-            {`${isSender ? 'To' : 'From'} ${
-              recipientAddress || '- View on explorer'
-            }`}
+            {`${isSender ? 'To' : 'From'} ${formatAddress(
+              recipientAddress || ''
+            )} - View on explorer
+            `}
           </span>
           <span className="text-[10px] text-[#c4c4c4]">
             {txn.timestampMs

@@ -1,6 +1,7 @@
 import cl from 'classnames'
 
 import { Coin } from '_redux/slices/sui-objects/Coin'
+import { coinMap } from '_src/ui/utils/coinMap'
 
 type CoinIconProps = {
   type: string
@@ -19,7 +20,7 @@ export const CoinIcon = ({ type, className, ...rest }: CoinIconProps) => {
       ])}
       {...rest}
     >
-      {symbol[0]}
+      {coinMap[type]?.icon({ height: 34, width: 34 }) || symbol[0]}
     </div>
   )
 }

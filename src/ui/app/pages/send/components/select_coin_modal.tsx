@@ -3,11 +3,11 @@ import { useSearchParams } from 'react-router-dom'
 import { Modal, IconWrapper } from '_app/components'
 import CoinInfo from '_pages/landing/components/coin_info'
 
-import { useAppSelector } from '_hooks'
-
-import { accountAggregateBalancesSelector } from '_redux/slices/account'
+import { useActiveAddress, useGetAllBalances } from '_hooks'
 
 import BackArrow from '_assets/icons/arrow_short.svg'
+
+import type { CoinBalance } from '@mysten/sui.js'
 
 type SelectCoinModalProps = {
   open: boolean
@@ -17,9 +17,9 @@ type SelectCoinModalProps = {
 export const SelectCoinModal = ({ open, setOpen }: SelectCoinModalProps) => {
   const [searchParams, setSearchParams] = useSearchParams()
   const coinType = searchParams.get('type') || ''
-  const balances = useAppSelector(accountAggregateBalancesSelector)
 
-  const allCoinTypes = Object.keys(balances)
+  const accountAddress = useActiveAddress()
+  const { data: balances } = useGetAllBalances(accountAddress)
 
   const handleCoinChange = (
     e: React.SyntheticEvent,
@@ -52,13 +52,13 @@ export const SelectCoinModal = ({ open, setOpen }: SelectCoinModalProps) => {
         <span className="text-xl font-bold">Select coin</span>
       </div>
       <div className="flex flex-col grow">
-        {allCoinTypes.map((_coinType: string) => (
+        {balances?.map((_coinBalance: CoinBalance) => (
           <div
-            key={_coinType}
+            key={_coinBalance.coinType}
             className="cursor-pointer"
-            onClick={(e) => handleCoinChange(e, _coinType)}
+            onClick={(e) => handleCoinChange(e, _coinBalance.coinType)}
           >
-            <CoinInfo balance={balances[_coinType]} type={_coinType} />
+            <CoinInfo balance={_coinBalance} />
           </div>
         ))}
       </div>

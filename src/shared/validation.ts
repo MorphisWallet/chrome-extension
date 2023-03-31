@@ -18,8 +18,8 @@ export function createTokenValidation(
     .test('required', `\${path} is a required field`, (value) => {
       return !!value
     })
-    .test('valid', 'The value provided is not valid.', (value?: BigNumber) => {
-      if (!value || value.isNaN() || !value.isFinite()) {
+    .test('valid', 'The value provided is not valid.', (value: BigNumber) => {
+      if (!value || value?.isNaN() || !value?.isFinite()) {
         return false
       }
       return true

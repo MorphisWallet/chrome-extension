@@ -3,9 +3,7 @@ import copy from 'copy-to-clipboard'
 
 import { toast, IconWrapper } from '_app/components'
 
-import { useAppSelector } from '_hooks'
-
-import { activeAccountSelector } from '_redux/slices/account'
+import { useActiveAddress } from '_hooks'
 
 import CopyIcon from '_assets/icons/copy.svg'
 
@@ -15,12 +13,12 @@ type AddressProps = {
 }
 
 export const Address = ({ addressOnly = false, address }: AddressProps) => {
-  const activeAccount = useAppSelector(activeAccountSelector)
+  const activeAddress = useActiveAddress()
 
   const onCopy = () => {
-    if (!activeAccount) return
+    if (!activeAddress) return
 
-    const copyRes = copy(activeAccount.address)
+    const copyRes = copy(activeAddress)
     if (copyRes) {
       toast({
         type: 'success',
@@ -30,9 +28,9 @@ export const Address = ({ addressOnly = false, address }: AddressProps) => {
     }
   }
 
-  if (!activeAccount) return null
+  if (!activeAddress) return null
 
-  const formatedAddress = formatAddress(address || activeAccount.address)
+  const formatedAddress = formatAddress(address || activeAddress)
 
   return (
     <IconWrapper onClick={onCopy} className="!scale-100">

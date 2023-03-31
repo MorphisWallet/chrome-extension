@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Navigate, Link, useSearchParams } from 'react-router-dom'
+import cl from 'classnames'
 
 import Layout from '_app/layouts'
 import { Loading, IconWrapper, Button, CoinIcon, toast } from '_app/components/'
@@ -7,7 +8,7 @@ import { Loading, IconWrapper, Button, CoinIcon, toast } from '_app/components/'
 import { useActiveAddress, useGetCoinBalance } from '_hooks'
 import { useFormatCoin } from '_src/ui/core'
 
-// import { coinMap } from '_app/utils/coin'
+import { coinMap } from '_src/ui/utils/coinMap'
 
 import ArrowShort from '_assets/icons/arrow_short.svg'
 
@@ -59,7 +60,14 @@ const CoinDetailPage = () => {
               <span className="text-[#c0c0c0]">{symbol}</span>
             </Loading>
           </div>
-          <Link to={`/send?type=${coinType}`} className="w-full">
+          <Link
+            to={`/send?type=${coinType}`}
+            className={cl([
+              'w-full',
+              (isLoading || !coinBalance?.totalBalance) &&
+                'pointer-events-none',
+            ])}
+          >
             <Button disabled={isLoading}>Send</Button>
           </Link>
         </div>
