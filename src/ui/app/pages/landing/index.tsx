@@ -4,7 +4,7 @@ import { SUI_TYPE_ARG } from '@mysten/sui.js'
 
 import Layout from '_app/layouts'
 import { Button, Loading, toast } from '_app/components'
-// import CoinList from './components/coin_list'
+import CoinList from './components/coin_list'
 import AirdropButton from './components/airdrop_button'
 
 import { useActiveAddress, useGetAllBalances } from '_hooks'
@@ -16,10 +16,10 @@ import ArrowIcon from '_assets/icons/arrow_short_thin.svg'
 
 const LandingPage = () => {
   const accountAddress = useActiveAddress()
-  const { data: balance, isLoading, error } = useGetAllBalances(accountAddress)
+  const { data: balances, isLoading, error } = useGetAllBalances(accountAddress)
 
-  const suiTypeBalance = balance?.find(
-    (balance) => balance.coinType === SUI_TYPE_ARG
+  const suiTypeBalance = balances?.find(
+    (_balance) => _balance.coinType === SUI_TYPE_ARG
   )
   const [formatted, symbol] = useFormatCoin(
     suiTypeBalance?.totalBalance,
@@ -64,17 +64,9 @@ const LandingPage = () => {
             </Link>
           </div>
         </div>
-        {/* <div className="flex grow max-h-[286px] overflow-y-auto">
-          <CoinList
-            airdropLoading={mutation.isLoading || airdropDelay}
-            airdropDisabled={
-              !allowAirdrop || mutation.isLoading || loading || airdropDelay
-            }
-            balanceLoading={loading}
-            balances={balances}
-            onAirdrop={onAirdrop}
-          />
-        </div> */}
+        <div className="flex grow max-h-[286px] overflow-y-auto">
+          <CoinList balancesLoading={isLoading} balances={balances} />
+        </div>
       </div>
     </Layout>
   )

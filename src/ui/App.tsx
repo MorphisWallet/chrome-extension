@@ -3,7 +3,7 @@ import { createHashRouter, RouterProvider, Navigate } from 'react-router-dom'
 import ProtectedRouter from '_app/ProtectedRouter'
 
 import LandingPage from '_app/pages/landing'
-// import CoinDetailPage from '_app/pages/landing/coin_detail'
+import CoinDetailPage from '_app/pages/landing/coin_detail'
 // import SendPage from '_app/pages/send'
 
 // import NftPage from '_app/pages/nft'
@@ -48,10 +48,10 @@ const router = createHashRouter([
         path: 'landing/',
         element: <LandingPage />,
       },
-      // {
-      //   path: 'landing/:coin',
-      //   element: <CoinDetailPage />,
-      // },
+      {
+        path: 'landing/:coin',
+        element: <CoinDetailPage />,
+      },
       // {
       //   path: 'send',
       //   element: <SendPage />,
