@@ -8,7 +8,6 @@ import {
   SUI_TYPE_ARG,
 } from '@mysten/sui.js'
 
-import { CoinBalance } from '_app/shared/coin-balance'
 import { useGetTransferAmount, useGetTxnRecipientAddress } from '_hooks'
 
 import { TxLink, toast } from '_app/components'
