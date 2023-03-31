@@ -7,15 +7,7 @@ import Layout from '_app/layouts'
 import { Loading, IconWrapper, Button, TxLink, toast } from '_app/components'
 import NftCard from '../components/nft_card'
 
-import {
-  useAppSelector,
-  useMiddleEllipsis,
-  useNFTBasicData,
-  useObjectsState,
-  useOriginbyteNft,
-} from '_hooks'
-
-import { createAccountNftByIdSelector } from '_redux/slices/account'
+import { useActiveAddress, useOwnedNFT, useNFTBasicData } from '_hooks'
 
 import { ExplorerLinkType } from '_src/ui/app/components/tx_link/types'
 
@@ -24,26 +16,29 @@ import ArrowShort from '_assets/icons/arrow_short.svg'
 const NftDetail = () => {
   const location = useLocation()
   const { objectId: nftId = '' } = useParams()
-  const selectedNft = useAppSelector(createAccountNftByIdSelector(nftId))
-  const { nftFields, fileExtensionType, filePath, nftObjectID } =
-    useNFTBasicData(selectedNft)
-  const { data: originByteNft } = useOriginbyteNft(nftObjectID)
-  const { loading, error, showError } = useObjectsState()
-  const shortAddress = useMiddleEllipsis(nftId)
+
+  const accountAddress = useActiveAddress()
+  const {
+    data: objectData,
+    isLoading,
+    isError,
+    error,
+  } = useOwnedNFT(nftId || '', accountAddress)
+  const { nftFields, fileExtensionType, filePath } = useNFTBasicData(objectData)
+
+  const isTransferable = !!objectData && hasPublicTransfer(objectData)
 
   useEffect(() => {
-    if (showError && error) {
+    if (isError) {
       toast({
         type: 'error',
-        message: error.message,
+        message: (error as Error)?.message || 'Failed to load NFT information',
       })
     }
-  }, [error, showError])
-
-  const isTransferable = !!selectedNft && hasPublicTransfer(selectedNft)
+  }, [isError])
 
   const renderNft = () => {
-    if (!selectedNft) {
+    if (!objectData) {
       return (
         <div className="flex flex-col grow justify-center items-center text-[#c4c4c4] text-lg">
           <p className="mb-4">NFT Not Found</p>
@@ -60,10 +55,7 @@ const NftDetail = () => {
       <div className="flex flex-col grow font-medium px-6 pb-6 overflow-hidden">
         <div className="flex shrink-0 px-6 pt-4 pb-3 mx-[-24px] border-b border-b-[#e6e6e9] text-xl text-center font-bold relative overflow-hidden">
           <span className="grow mx-10 text-center truncate">
-            {originByteNft?.fields.name ||
-              nftFields?.name ||
-              nftFields?.metadata?.fields?.name ||
-              shortAddress}
+            {nftFields?.name || nftFields?.metadata?.fields?.name || '-'}
           </span>
           <Link to="/nft" className="absolute left-6 top-[22px]">
             <IconWrapper>
@@ -73,7 +65,7 @@ const NftDetail = () => {
         </div>
         <div className="flex flex-col grow px-6 pt-4 mx-[-24px] overflow-y-auto">
           <NftCard
-            nft={selectedNft}
+            nft={objectData}
             className="h-[308px] shrink-0 mb-2 rounded bg-[#f0f0f0] overflow-hidden"
           />
           {sendFlag ? (
@@ -95,7 +87,7 @@ const NftDetail = () => {
                     objectID={nftId}
                     className="flex shrink text-[#6bb7e9] truncate"
                   >
-                    {shortAddress}
+                    {objectData.objectId}
                   </TxLink>
                 </div>
                 <div className="flex justify-between w-full text-sm">
@@ -139,7 +131,7 @@ const NftDetail = () => {
 
   return (
     <Layout showNav={false}>
-      <Loading loading={loading}>{renderNft()}</Loading>
+      <Loading loading={isLoading}>{renderNft()}</Loading>
     </Layout>
   )
 }

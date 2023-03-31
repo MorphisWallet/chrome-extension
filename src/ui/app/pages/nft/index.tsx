@@ -5,21 +5,32 @@ import Layout from '_app/layouts'
 import { Loading, toast } from '_app/components'
 import NftCard from './components/nft_card'
 
-import { useAppSelector, useObjectsState } from '_hooks'
-import { accountNftsSelector } from '_redux/slices/account'
+import { useActiveAddress, useObjectsOwnedByAddress } from '_hooks'
+
+import type { SuiObjectData } from '@mysten/sui.js'
 
 const NftPage = () => {
-  const nfts = useAppSelector(accountNftsSelector)
-  const { error, loading, showError } = useObjectsState()
+  const accountAddress = useActiveAddress()
+  const { data, isLoading, error, isError } = useObjectsOwnedByAddress(
+    accountAddress,
+    { options: { showType: true, showDisplay: true } }
+  )
+  const nfts: SuiObjectData[] =
+    data?.data
+      ?.filter(
+        ({ data }) =>
+          typeof data === 'object' && 'display' in data && data.display
+      )
+      .map(({ data }) => data as SuiObjectData) || []
 
   useEffect(() => {
-    if (showError && error) {
+    if (isError) {
       toast({
         type: 'error',
-        message: error.message,
+        message: (error as Error)?.message || 'Failed to load NFTs',
       })
     }
-  }, [error, showError])
+  }, [isError])
 
   const renderNfts = () => {
     if (!nfts?.length) {
@@ -34,8 +45,8 @@ const NftPage = () => {
       <div className="grid grid-cols-2 gap-x-2.5 gap-y-4 mx-[-24px] mb-[-24px] px-6 pt-2.5 pb-6 overflow-y-auto">
         {nfts.map((nft) => (
           <Link
-            to={`./${nft.reference.objectId}`}
-            key={nft.reference.objectId}
+            to={`./${nft.objectId}`}
+            key={nft.objectId}
             className="flex h-[152px] rounded bg-[#f0f0f0] overflow-hidden transition-transform duration-100 ease-in-out hover:scale-105"
           >
             <NftCard nft={nft} />
@@ -49,7 +60,7 @@ const NftPage = () => {
     <Layout>
       <div className="flex flex-col grow font-medium px-6 pt-4 pb-6 overflow-hidden">
         <p className="shrink-0 mb-2 text-xl font-bold">Collectibles</p>
-        <Loading loading={loading}>{renderNfts()}</Loading>
+        <Loading loading={isLoading}>{renderNfts()}</Loading>
       </div>
     </Layout>
   )

@@ -6,9 +6,9 @@ import LandingPage from '_app/pages/landing'
 import CoinDetailPage from '_app/pages/landing/coin_detail'
 import SendPage from '_app/pages/send'
 
-// import NftPage from '_app/pages/nft'
-// import NftDetailPage from '_app/pages/nft/nft_detail'
-// import NftSend from '_app/pages/nft/nft_send'
+import NftPage from '_app/pages/nft'
+import NftDetailPage from '_app/pages/nft/nft_detail'
+import NftSend from '_app/pages/nft/nft_send'
 
 import DiscoveryPage from './app/pages/discovery'
 
@@ -56,20 +56,20 @@ const router = createHashRouter([
         path: 'send',
         element: <SendPage />,
       },
-      // {
-      //   path: 'nft',
-      //   element: <NftPage />,
-      // },
-      // {
-      //   path: 'nft/:objectId',
-      //   element: <NftDetailPage />,
-      //   children: [
-      //     {
-      //       path: 'send',
-      //       element: <NftSend />,
-      //     },
-      //   ],
-      // },
+      {
+        path: 'nft',
+        element: <NftPage />,
+      },
+      {
+        path: 'nft/:objectId',
+        element: <NftDetailPage />,
+        children: [
+          {
+            path: 'send',
+            element: <NftSend />,
+          },
+        ],
+      },
       {
         path: 'discovery',
         element: <DiscoveryPage />,

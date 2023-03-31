@@ -8,8 +8,6 @@ import { Loading, IconWrapper, Button, CoinIcon, toast } from '_app/components/'
 import { useActiveAddress, useGetCoinBalance } from '_hooks'
 import { useFormatCoin } from '_src/ui/core'
 
-import { coinMap } from '_src/ui/utils/coinMap'
-
 import ArrowShort from '_assets/icons/arrow_short.svg'
 
 const CoinDetailPage = () => {

@@ -8,8 +8,6 @@ import Network from './components/network'
 
 import { useAppSelector } from '_hooks'
 
-import { activeAccountSelector } from '_redux/slices/account'
-
 import CloseIcon from '_assets/icons/close.svg'
 import LandingIcon from '_assets/icons/landing.svg'
 import NftIcon from '_assets/icons/nft.svg'

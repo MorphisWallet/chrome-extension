@@ -9,7 +9,7 @@ import { ExplorerLinkType, TxObjectTypes } from './types'
 
 type TxLinkProps = TxObjectTypes &
   React.DOMAttributes<HTMLAnchorElement> & {
-    className: string
+    className?: string
   }
 
 function useAddress(props: TxLinkProps) {

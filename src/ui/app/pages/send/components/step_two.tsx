@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { FormikProps } from 'formik'
 import cl from 'classnames'
 
-import { Button, toast } from '_app/components'
+import { Button, TxLink, toast } from '_app/components'
 
 import { useFormatCoin, useCoinDecimals } from '_src/ui/core'
 import {
@@ -18,8 +18,8 @@ import {
 import { createTokenTransferTransaction } from '../utils'
 import { coinMap } from '_src/ui/utils/coinMap'
 import { GAS_SYMBOL } from '_redux/slices/sui-objects/Coin'
-import { parseAmount } from '_src/ui/app/helpers'
 import { getSignerOperationErrorMessage } from '_src/ui/app/helpers/errorMessages'
+import { ExplorerLinkType } from '_src/ui/app/components/tx_link/types'
 
 import type { CoinBalance } from '@mysten/sui.js'
 import type { ConfirmFields } from '../utils'
@@ -87,10 +87,25 @@ const SendStepTwo = ({ coinBalance, formikProps }: ConfirmStepTwoProps) => {
     onSuccess: (response) => {
       queryClient.invalidateQueries(['get-coins'])
       queryClient.invalidateQueries(['coin-balance'])
-      const receiptUrl = `/receipt?txdigest=${encodeURIComponent(
-        getTransactionDigest(response)
-      )}&from=transactions`
-      return navigate(receiptUrl)
+
+      const digest = getTransactionDigest(response)
+      navigate(`/send?type=${coinBalance?.coinType}`)
+      setTimeout(() => {
+        toast({
+          type: 'success',
+          message: (
+            <p>
+              Successfully transferred {values.amount} to {values.address}
+              <TxLink
+                transactionID={digest}
+                type={ExplorerLinkType.transaction}
+              >
+                View on explorer
+              </TxLink>
+            </p>
+          ),
+        })
+      }, 0)
     },
     onError: (error) => {
       toast({
