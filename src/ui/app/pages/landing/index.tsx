@@ -8,6 +8,7 @@ import { Button, Loading, toast } from '_app/components'
 import AirdropButton from './components/airdrop_button'
 
 import { useActiveAddress, useGetAllBalances } from '_hooks'
+import { useFormatCoin } from '_src/ui/core'
 
 import { GAS_TYPE_ARG } from '_redux/slices/sui-objects/Coin'
 
@@ -17,9 +18,13 @@ const LandingPage = () => {
   const accountAddress = useActiveAddress()
   const { data: balance, isLoading, error } = useGetAllBalances(accountAddress)
 
-  const suiTypeBalance =
-    balance?.find((balance) => balance.coinType === SUI_TYPE_ARG)
-      ?.totalBalance || 0
+  const suiTypeBalance = balance?.find(
+    (balance) => balance.coinType === SUI_TYPE_ARG
+  )
+  const [formatted, symbol] = useFormatCoin(
+    suiTypeBalance?.totalBalance,
+    suiTypeBalance?.coinType
+  )
 
   useEffect(() => {
     if (error) {
@@ -36,9 +41,9 @@ const LandingPage = () => {
         <div className="flex flex-col h-[180px] justify-center items-center py-6 border-b border-b-[#e7e7e9]">
           <div className="text-3xl h-6 mb-6">
             <Loading loading={isLoading}>
-              <span>{suiTypeBalance}</span>
+              <span>{formatted || 0}</span>
               <span className="text-xl text-[#c0c0c0] ml-2">
-                {SUI_TYPE_ARG}
+                {symbol || 'SUI'}
               </span>
             </Loading>
           </div>
@@ -51,7 +56,7 @@ const LandingPage = () => {
               <Button
                 disabled={isLoading}
                 variant="outlined"
-                className="h-[40px] w-[40px] px-0 mb-2 rounded-full flex justify-center items-center"
+                className="!h-[40px] !w-[40px] !px-0 mb-2 rounded-full flex justify-center items-center"
               >
                 <ArrowIcon />
               </Button>

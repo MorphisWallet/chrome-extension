@@ -12,7 +12,7 @@ import LandingPage from '_app/pages/landing'
 
 import DiscoveryPage from './app/pages/discovery'
 
-// import HistoryPage from '_app/pages/history'
+import HistoryPage from '_app/pages/history'
 
 // import SettingsPage from '_app/pages/settings'
 // import SapPage from '_app/pages/settings/sap'
@@ -74,10 +74,10 @@ const router = createHashRouter([
         path: 'discovery',
         element: <DiscoveryPage />,
       },
-      // {
-      //   path: 'history',
-      //   element: <HistoryPage />,
-      // },
+      {
+        path: 'history',
+        element: <HistoryPage />,
+      },
       // {
       //   path: 'settings',
       //   element: <SettingsPage />,
