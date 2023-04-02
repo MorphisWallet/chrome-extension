@@ -14,7 +14,7 @@ import DiscoveryPage from './app/pages/discovery'
 
 import HistoryPage from '_app/pages/history'
 
-// import SettingsPage from '_app/pages/settings'
+import SettingsPage from '_app/pages/settings'
 // import SapPage from '_app/pages/settings/sap'
 // import WalletManagementPage from '_app/pages/settings/wallet_management'
 // import UpdateWalletMetaPage from '_app/pages/settings/wallet_management/update_wallet_meta'
@@ -78,10 +78,10 @@ const router = createHashRouter([
         path: 'history',
         element: <HistoryPage />,
       },
-      // {
-      //   path: 'settings',
-      //   element: <SettingsPage />,
-      // },
+      {
+        path: 'settings',
+        element: <SettingsPage />,
+      },
       // {
       //   path: 'settings/sap',
       //   element: <SapPage />,
