@@ -10,6 +10,7 @@ import { useAppDispatch, useLockedGuard, useInitializedGuard } from '_hooks'
 import { createVault } from '_redux/slices/account'
 
 import { MAIN_UI_URL } from '_shared/utils'
+import { entropyToSerialized, mnemonicToEntropy } from '_shared/utils/bip39'
 
 import Logo from '_assets/icons/logo.svg'
 
@@ -33,7 +34,9 @@ const ImportPage = () => {
       await dispatch(
         createVault({
           password,
-          importedEntropy: mnemonic,
+          importedEntropy: entropyToSerialized(
+            mnemonicToEntropy(mnemonic.trim())
+          ),
         })
       ).unwrap()
 

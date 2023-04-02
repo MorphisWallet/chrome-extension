@@ -36,14 +36,19 @@ const SettingsPage = () => {
             <ArrowLong />
           </div>
         </Button>
-        <Link to="./sap">
-          <Button variant="outlined" className="rounded-[4px] mb-2 text-[13px]">
-            <div className="flex items-center justify-between">
-              <span>Security and Privacy</span>
-              <ArrowLong />
-            </div>
-          </Button>
-        </Link>
+        {/* <Link to="./sap"> */}
+        <Button
+          variant="outlined"
+          disabled
+          className="rounded-[4px] mb-2 text-[13px]"
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-black">Security and Privacy</span>
+            <span className="ml-4 text-[#c4c4c4]">Coming soon</span>
+            <ArrowLong />
+          </div>
+        </Button>
+        {/* </Link> */}
         <Button
           variant="outlined"
           disabled

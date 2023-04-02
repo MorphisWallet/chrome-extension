@@ -1,3 +1,9 @@
+## 0.0.7.0 (Mar 31, 2023)
+
+- Update @mysten/sui.js 0.30.0 and @mysten/wallet-standard 0.5.0
+- Update pages related to Sui address
+- Change storage structure of vault
+
 ## 0.0.6.6 (Mar 15, 2023)
 
 - Adjust discovery scroll height

@@ -13,3 +13,6 @@ export const MNEMONIC_LENGTH = 12
 export const MNEMONIC_FIELD_CHECK_LENGTH = 3
 
 export const POLL_SUI_OBJECTS_INTERVAL = 4000
+
+export const POPUP_HEIGHT = 570
+export const POPUP_WIDTH = 360

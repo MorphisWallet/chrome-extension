@@ -5,7 +5,10 @@ import cl from 'classnames'
 
 import { Loading, IconWrapper, Alert, toast } from '_app/components'
 
-import { thunkExtras } from '_redux/store/thunk-extras'
+import { useAppDispatch } from '_hooks'
+
+import { loadEntropyFromKeyring } from '_redux/slices/account'
+import { entropyToMnemonic, toEntropy } from '_shared/utils/bip39'
 
 import { MNEMONIC_LENGTH } from '_src/shared/constants'
 
@@ -18,25 +21,11 @@ type SeedPhraseCardProps = {
 }
 
 export const SeedPhraseCard = ({ className }: SeedPhraseCardProps) => {
-  const [mnemonicLoading, setMnemonicLoading] = useState(false)
+  const dispatch = useAppDispatch()
+
+  const [loading, setLoading] = useState(true)
   const [mnemonic, setMnemonic] = useState<string | null>(null)
   const [tipVisible, setTipVisibility] = useState(false)
-
-  const onInit = async () => {
-    setMnemonicLoading(true)
-    try {
-      const mnemonic = thunkExtras.keypairVault.mnemonic
-      setMnemonic(mnemonic)
-    } catch (e) {
-      console.warn(e)
-      toast({
-        type: 'error',
-        message: `Fail to load mnemonics, ${e}`,
-      })
-    } finally {
-      setMnemonicLoading(false)
-    }
-  }
 
   const onCopy = () => {
     if (!mnemonic) {
@@ -61,13 +50,33 @@ export const SeedPhraseCard = ({ className }: SeedPhraseCardProps) => {
   }
 
   useEffect(() => {
-    onInit()
-  }, [])
+    ;(async () => {
+      setLoading(true)
 
-  const mnemonicArray = mnemonic?.split(' ')
+      try {
+        setMnemonic(
+          entropyToMnemonic(
+            toEntropy(await dispatch(loadEntropyFromKeyring({})).unwrap())
+          )
+        )
+      } catch (e) {
+        toast({
+          type: 'error',
+          message:
+            (e as Error).message ||
+            'Something is wrong, Recovery Phrase is empty.',
+          containerId: 'initialize-toast',
+        })
+      } finally {
+        setLoading(false)
+      }
+    })()
+  }, [dispatch])
+
+  const mnemonicArray = mnemonic?.split(' ') || []
 
   return (
-    <Loading loading={mnemonicLoading}>
+    <Loading loading={loading}>
       {!!mnemonicArray?.length && (
         <div className={cl(['flex flex-col grow justify-center', className])}>
           <div className="grid grid-cols-3 grid-rows-4 px-3.5 py-3 mb-2.5 gap-x-1 gap-y-4 border border-[#7e7e7e] rounded-[10px]">

@@ -1,17 +1,19 @@
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
+import {
+  hasPublicTransfer,
+  getTransactionDigest,
+  TransactionBlock,
+} from '@mysten/sui.js'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { Input, Button, TxLink, toast } from '_app/components'
 
-import { useAppDispatch } from '_hooks'
+import { useActiveAddress, useOwnedNFT, useSigner } from '_hooks'
 
-import { transferNFT } from '_redux/slices/sui-objects'
-import { DEFAULT_NFT_TRANSFER_GAS_FEE } from '_redux/slices/sui-objects/Coin'
-
-import { suiAddressValidation } from '_app/utils/validation'
-
-import type { SerializedError } from '@reduxjs/toolkit'
+import { suiAddressValidation } from '_src/ui/utils/validation'
+import { getSignerOperationErrorMessage } from '_src/ui/app/helpers/errorMessages'
 import { ExplorerLinkType } from '_src/ui/app/components/tx_link/types'
 
 type Fields = {
@@ -20,8 +22,11 @@ type Fields = {
 
 const NftSend = () => {
   const navigate = useNavigate()
-  const { objectId: nftId = '' } = useParams()
-  const dispatch = useAppDispatch()
+  const { objectId = '' } = useParams()
+  const signer = useSigner()
+  const queryClient = useQueryClient()
+  const address = useActiveAddress()
+  const { data: ownedNFT, isLoading } = useOwnedNFT(objectId || '', address)
   const {
     values,
     errors,
@@ -38,49 +43,64 @@ const NftSend = () => {
       address: suiAddressValidation,
     }),
     onSubmit: async ({ address }) => {
-      if (!nftId) {
+      if (!objectId || !address) {
         return
       }
 
-      try {
-        const resp = await dispatch(
-          transferNFT({
-            recipient: address,
-            objectId: nftId,
-            gasBudget: DEFAULT_NFT_TRANSFER_GAS_FEE,
-          })
-        ).unwrap()
-
-        if (resp?.txId) {
-          navigate('/nft')
-
-          setTimeout(() => {
-            toast({
-              type: 'success',
-              message: (
-                <p>
-                  Successfully sent NFT
-                  {'. '}
-                  <TxLink
-                    type={ExplorerLinkType.object}
-                    objectID={nftId}
-                    className="flex shrink text-[#6bb7e9] truncate"
-                  >
-                    View on explorer
-                  </TxLink>
-                </p>
-              ),
-            })
-          }, 0)
-        }
-      } catch (e) {
-        toast({
-          type: 'error',
-          message: (e as SerializedError).message || null,
-        })
-      }
+      await transferNFT.mutateAsync(address)
     },
   })
+
+  const transferNFT = useMutation({
+    mutationFn: async (to: string) => {
+      if (!to || !signer) {
+        throw new Error('Missing data')
+      }
+      const tx = new TransactionBlock()
+      tx.transferObjects([tx.object(objectId)], tx.pure(to))
+
+      return signer.signAndExecuteTransactionBlock({
+        transactionBlock: tx,
+        options: {
+          showInput: true,
+          showEffects: true,
+          showEvents: true,
+        },
+      })
+    },
+    onSuccess: (response) => {
+      queryClient.invalidateQueries(['object', objectId])
+      queryClient.invalidateQueries(['objects-owned'])
+      const digest = getTransactionDigest(response)
+      navigate('/nft')
+      setTimeout(() => {
+        toast({
+          type: 'success',
+          message: (
+            <p>
+              Successfully transferred NFT {objectId} to {address}
+              <TxLink
+                transactionID={digest}
+                type={ExplorerLinkType.transaction}
+              >
+                View on explorer
+              </TxLink>
+            </p>
+          ),
+        })
+      }, 0)
+    },
+    onError: (error) => {
+      toast({
+        type: 'error',
+        message: getSignerOperationErrorMessage(error),
+      })
+    },
+  })
+
+  if (ownedNFT && objectId && hasPublicTransfer(ownedNFT)) {
+    return <Navigate to="/" replace />
+  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -98,7 +118,7 @@ const NftSend = () => {
         onBlur={handleBlur}
       />
       <div className="flex gap-2">
-        <Button type="submit" loading={isSubmitting}>
+        <Button type="submit" loading={isSubmitting} disabled={isLoading}>
           Send
         </Button>
         <Link to="../" className="w-full">

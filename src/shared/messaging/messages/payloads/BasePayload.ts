@@ -15,6 +15,8 @@ export type PayloadType =
   | 'acquire-permissions-response'
   | 'execute-transaction-request'
   | 'execute-transaction-response'
+  | 'sign-transaction-request'
+  | 'sign-transaction-response'
   | 'get-transaction-requests'
   | 'get-transaction-requests-response'
   | 'transaction-request-response'
@@ -22,6 +24,13 @@ export type PayloadType =
   | 'disconnect-app'
   | 'done'
   | 'keyring'
+  | 'stake-request'
+  | 'wallet-status-changed'
+  | 'get-features'
+  | 'features-response'
+  | 'get-network'
+  | 'set-network'
+  | 'sign-message-request'
 
 export interface BasePayload {
   type: PayloadType

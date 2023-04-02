@@ -10,7 +10,7 @@ import { useAppDispatch, useInitializedGuard, useLockedGuard } from '_hooks'
 
 import { unlockWallet } from '_redux/slices/wallet'
 
-import { passwordValidation } from '_app/utils/validation'
+import { passwordValidation } from '_src/ui/utils/validation'
 
 import Logo from '_assets/icons/logo.svg'
 

@@ -8,7 +8,7 @@ import {
   createSlice,
 } from '@reduxjs/toolkit'
 
-import { activeAccountAddressSelector } from '../account'
+import { activeAddressSelector } from '../account'
 
 import type { SuiAddress } from '@mysten/sui.js'
 import type { PayloadAction } from '@reduxjs/toolkit'
@@ -41,16 +41,6 @@ export const respondToPermissionRequest = createAsyncThunk<
     return { id, accounts, allowed, responseDate }
   }
 )
-
-export const revokeAppPermissionByOrigin = createAsyncThunk<
-  void,
-  { origin: string },
-  AppThunkConfig
->('revoke-app-permission', async ({ origin }, { extra: { background } }) => {
-  await background.disconnectApp(origin)
-  await background.sendGetPermissionRequests()
-  return
-})
 
 const slice = createSlice({
   name: 'permissions',
@@ -93,8 +83,8 @@ export function createDappStatusSelector(origin: string | null) {
   }
   return createSelector(
     permissionsSelectors.selectAll,
-    activeAccountAddressSelector,
-    (permissions, activeAccountAddress) => {
+    activeAddressSelector,
+    (permissions, activeAddress) => {
       const originPermission = permissions.find(
         (aPermission) => aPermission.origin === origin
       )
@@ -103,8 +93,8 @@ export function createDappStatusSelector(origin: string | null) {
       }
       return (
         originPermission.allowed &&
-        activeAccountAddress &&
-        originPermission.accounts.includes(activeAccountAddress)
+        activeAddress &&
+        originPermission.accounts.includes(activeAddress)
       )
     }
   )

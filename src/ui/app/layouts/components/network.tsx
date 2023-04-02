@@ -1,17 +1,16 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 
 import { IconWrapper } from '_components/icon_wrapper'
 
 import { useAppDispatch, useAppSelector } from '_src/ui/app/hooks'
 
-import { changeRPCNetwork } from '_redux/slices/app'
-import {
-  API_ENV_TO_INFO,
-  API_ENV,
-  generateActiveNetworkList,
-} from '_app/ApiProvider'
+import { changeActiveNetwork } from '_redux/slices/app'
+import { API_ENV } from '_src/shared/api-env'
+import { API_ENV_TO_INFO, generateActiveNetworkList } from '_app/ApiProvider'
 
 import BackArrow from '_assets/icons/arrow_short.svg'
+
+type API_ENV_WITHOUT_CUSTOM_RPC = Exclude<API_ENV, API_ENV.customRPC>
 
 type NetworkProps = {
   setModalOpen: (open: boolean) => void
@@ -19,10 +18,7 @@ type NetworkProps = {
 
 const Network = ({ setModalOpen }: NetworkProps) => {
   const dispatch = useAppDispatch()
-  const selectedApiEnv = useAppSelector(({ app }) => app.apiEnv)
-
-  const [selectedNetworkName, setSelectedNetworkName] =
-    useState<API_ENV>(selectedApiEnv)
+  const activeApiEnv = useAppSelector(({ app }) => app.apiEnv)
 
   const netWorks = useMemo(() => {
     return generateActiveNetworkList()
@@ -33,13 +29,22 @@ const Network = ({ setModalOpen }: NetworkProps) => {
       .filter((nw) => nw.networkName !== 'customRPC') // currently do not support custom RPC
   }, [])
 
-  useEffect(() => {
-    setSelectedNetworkName(selectedApiEnv)
-  }, [selectedApiEnv])
-
-  const onSelectNetwork = (networkName: API_ENV) => {
-    const apiEnv = API_ENV[networkName as keyof typeof API_ENV]
-    dispatch(changeRPCNetwork(apiEnv))
+  const onSelectNetwork = (networkName: API_ENV_WITHOUT_CUSTOM_RPC) => {
+    if (activeApiEnv === networkName) {
+      return
+    }
+    const apiEnv = API_ENV[
+      networkName as keyof typeof API_ENV
+    ] as API_ENV_WITHOUT_CUSTOM_RPC
+    dispatch(
+      changeActiveNetwork({
+        network: {
+          env: apiEnv,
+          customRpcUrl: null,
+        },
+        store: true,
+      })
+    )
   }
 
   return (
@@ -58,12 +63,14 @@ const Network = ({ setModalOpen }: NetworkProps) => {
           <li
             key={nw.name}
             className="px-3.5 py-3 border border-solid border-[#c4c4c4] rounded cursor-pointer hover:bg-[#f5f5f5] active:bg-[#c4c4c4] flex flex-row items-center justify-between"
-            onClick={() => onSelectNetwork(nw.networkName as API_ENV)}
+            onClick={() =>
+              onSelectNetwork(nw.networkName as API_ENV_WITHOUT_CUSTOM_RPC)
+            }
           >
             <div className="flex flex-row items-center font-medium">
               {nw.name}
             </div>
-            {selectedNetworkName === nw.networkName && (
+            {activeApiEnv === nw.networkName && (
               <div className="w-3 h-3 bg-[#82ffac] rounded-full" />
             )}
           </li>

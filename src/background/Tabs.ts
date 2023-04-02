@@ -74,7 +74,7 @@ class Tabs {
       }
     })
     onCreatedStream
-      .pipe(mergeWith(onUpdatedStream.pipe(map(([, , aTab]) => aTab))))
+      .pipe(mergeWith(onUpdatedStream.pipe(map(([_1, _2, aTab]) => aTab))))
       .subscribe((aTab) => {
         const { id, url } = aTab
         if (id && url) {
@@ -114,7 +114,7 @@ class Tabs {
             Browser.tabs.get(info.tabId),
             onUpdatedStream.pipe(
               filter(([tabID]) => info.tabId === tabID),
-              map(([, , tab]) => tab)
+              map(([_1, _2, tab]) => tab)
             )
           )
         )

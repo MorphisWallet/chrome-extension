@@ -1,24 +1,29 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
-import { Base64DataBuffer, publicKeyFromSerialized } from '@mysten/sui.js'
-import { lastValueFrom, take, map } from 'rxjs'
+
+import {
+  type SerializedSignature,
+  toB64,
+  type SignedTransaction,
+  type ExportedKeypair,
+  type SignedMessage,
+} from '@mysten/sui.js'
+import { lastValueFrom, map, take } from 'rxjs'
 
 import { createMessage } from '_messages'
 import { PortStream } from '_messaging/PortStream'
+import { type BasePayload } from '_payloads'
 import { isKeyringPayload } from '_payloads/keyring'
+import { isSetNetworkPayload, type SetNetworkPayload } from '_payloads/network'
 import { isPermissionRequests } from '_payloads/permissions'
 import { isUpdateActiveOrigin } from '_payloads/tabs/updateActiveOrigin'
 import { isGetTransactionRequestsResponse } from '_payloads/transactions/ui/GetTransactionRequestsResponse'
-import { setKeyringStatus, setAllAccounts } from '_redux/slices/account'
-import { setActiveOrigin } from '_redux/slices/app'
+import { setKeyringStatus } from '_redux/slices/account'
+import { setActiveOrigin, changeActiveNetwork } from '_redux/slices/app'
 import { setPermissions } from '_redux/slices/permissions'
 import { setTransactionRequests } from '_redux/slices/transaction-requests'
 
-import type {
-  SignaturePubkeyPair,
-  SuiAddress,
-  SuiTransactionResponse,
-} from '@mysten/sui.js'
+import type { SuiAddress, SuiTransactionBlockResponse } from '@mysten/sui.js'
 import type { Message } from '_messages'
 import type { KeyringPayload } from '_payloads/keyring'
 import type {
@@ -28,6 +33,7 @@ import type {
 import type { DisconnectApp } from '_payloads/permissions/DisconnectApp'
 import type { GetTransactionRequests } from '_payloads/transactions/ui/GetTransactionRequests'
 import type { TransactionRequestResponse } from '_payloads/transactions/ui/TransactionRequestResponse'
+import type { NetworkEnvType } from '_src/background/NetworkEnv'
 import type { AppDispatch } from '_store'
 
 /**
@@ -41,7 +47,7 @@ export class BackgroundClient {
   private _dispatch: AppDispatch | null = null
   private _initialized = false
 
-  public async init(dispatch: AppDispatch) {
+  public init(dispatch: AppDispatch) {
     if (this._initialized) {
       throw new Error('[BackgroundClient] already initialized')
     }
@@ -54,7 +60,7 @@ export class BackgroundClient {
       this.sendGetPermissionRequests(),
       this.sendGetTransactionRequests(),
       this.getWalletStatus(),
-      this.getAllAccounts(),
+      this.getNetwork(),
     ]).then(() => undefined)
   }
 
@@ -75,7 +81,7 @@ export class BackgroundClient {
     )
   }
 
-  public async sendGetPermissionRequests() {
+  public sendGetPermissionRequests() {
     return lastValueFrom(
       this.sendMessage(
         createMessage<GetPermissionRequests>({
@@ -85,11 +91,12 @@ export class BackgroundClient {
     )
   }
 
-  public async sendTransactionRequestResponse(
+  public sendTransactionRequestResponse(
     txID: string,
     approved: boolean,
-    txResult: SuiTransactionResponse | undefined,
-    tsResultError: string | undefined
+    txResult?: SuiTransactionBlockResponse | SignedMessage,
+    txResultError?: string,
+    txSigned?: SignedTransaction
   ) {
     this.sendMessage(
       createMessage<TransactionRequestResponse>({
@@ -97,12 +104,13 @@ export class BackgroundClient {
         approved,
         txID,
         txResult,
-        tsResultError,
+        txResultError,
+        txSigned,
       })
     )
   }
 
-  public async sendGetTransactionRequests() {
+  public sendGetTransactionRequests() {
     return lastValueFrom(
       this.sendMessage(
         createMessage<GetTransactionRequests>({
@@ -112,57 +120,38 @@ export class BackgroundClient {
     )
   }
 
-  public async disconnectApp(origin: string) {
+  /**
+   * Disconnect a dapp, if specificAccounts contains accounts then only those accounts will be disconnected.
+   * @param origin The origin of the dapp
+   * @param specificAccounts Accounts to disconnect. If not provided or it's an empty array all accounts will be disconnected
+   */
+  public async disconnectApp(origin: string, specificAccounts?: SuiAddress[]) {
     await lastValueFrom(
       this.sendMessage(
-        createMessage<DisconnectApp>({ type: 'disconnect-app', origin })
+        createMessage<DisconnectApp>({
+          type: 'disconnect-app',
+          origin,
+          specificAccounts,
+        })
       ).pipe(take(1))
     )
   }
 
-  public async createAccount(password: string, importedEntropy?: string) {
-    return await lastValueFrom(
+  public createVault(password: string, importedEntropy?: string) {
+    return lastValueFrom(
       this.sendMessage(
         createMessage<KeyringPayload<'create'>>({
           type: 'keyring',
           method: 'create',
           args: { password, importedEntropy },
-        })
-      ).pipe(
-        take(1),
-        map(({ payload }) => {
-          if (isKeyringPayload(payload, 'create') && payload.return) {
-            return payload.return
-          }
-          throw new Error('Failed to create wallet')
-        })
-      )
-    )
-  }
-
-  public async addAccount(importedPrivateKey?: string) {
-    return await lastValueFrom(
-      this.sendMessage(
-        createMessage<KeyringPayload<'add'>>({
-          type: 'keyring',
-          method: 'add',
-          args: { importedPrivateKey },
           return: undefined,
         })
-      ).pipe(
-        take(1),
-        map(({ payload }) => {
-          if (isKeyringPayload(payload, 'add') && payload.return) {
-            return payload.return
-          }
-          throw new Error('Failed to add account')
-        })
-      )
+      ).pipe(take(1))
     )
   }
 
-  public async unlockWallet(password: string) {
-    return await lastValueFrom(
+  public unlockWallet(password: string) {
+    return lastValueFrom(
       this.sendMessage(
         createMessage<KeyringPayload<'unlock'>>({
           type: 'keyring',
@@ -174,8 +163,8 @@ export class BackgroundClient {
     )
   }
 
-  public async lockWallet() {
-    return await lastValueFrom(
+  public lockWallet() {
+    return lastValueFrom(
       this.sendMessage(
         createMessage<KeyringPayload<'lock'>>({
           type: 'keyring',
@@ -185,8 +174,8 @@ export class BackgroundClient {
     )
   }
 
-  public async clearWallet() {
-    return await lastValueFrom(
+  public clearWallet() {
+    return lastValueFrom(
       this.sendMessage(
         createMessage<KeyringPayload<'clear'>>({
           type: 'keyring',
@@ -196,92 +185,29 @@ export class BackgroundClient {
     )
   }
 
-  // public async getEntropy(password?: string) {
-  //   return await lastValueFrom(
-  //     this.sendMessage(
-  //       createMessage<KeyringPayload<'getEntropy'>>({
-  //         type: 'keyring',
-  //         method: 'getEntropy',
-  //         args: password,
-  //         return: undefined,
-  //       })
-  //     ).pipe(
-  //       take(1),
-  //       map(({ payload }) => {
-  //         if (isKeyringPayload(payload, 'getEntropy') && payload.return) {
-  //           return payload.return
-  //         }
-  //         throw new Error('Mnemonic not found')
-  //       })
-  //     )
-  //   )
-  // }
-
-  public async checkPassword(password: string) {
-    return await lastValueFrom(
+  public getEntropy(password?: string) {
+    return lastValueFrom(
       this.sendMessage(
-        createMessage<KeyringPayload<'checkPassword'>>({
+        createMessage<KeyringPayload<'getEntropy'>>({
           type: 'keyring',
-          method: 'checkPassword',
+          method: 'getEntropy',
           args: password,
-        })
-      ).pipe(take(1))
-    )
-  }
-
-  public async changePassword(oldPassword: string, newPassword: string) {
-    return await lastValueFrom(
-      this.sendMessage(
-        createMessage<KeyringPayload<'changePassword'>>({
-          type: 'keyring',
-          method: 'changePassword',
-          args: { oldPassword, newPassword },
-        })
-      ).pipe(take(1))
-    )
-  }
-
-  public async setActiveAccount(address: string) {
-    return await lastValueFrom(
-      this.sendMessage(
-        createMessage<KeyringPayload<'setActiveAccount'>>({
-          type: 'keyring',
-          method: 'setActiveAccount',
-          args: { address },
+          return: undefined,
         })
       ).pipe(
         take(1),
         map(({ payload }) => {
-          if (isKeyringPayload(payload, 'setActiveAccount') && payload.return) {
+          if (isKeyringPayload(payload, 'getEntropy') && payload.return) {
             return payload.return
           }
-          throw new Error('Failed to set active account')
+          throw new Error('Mnemonic not found')
         })
       )
     )
   }
 
-  public async getAllAccounts() {
-    return await lastValueFrom(
-      this.sendMessage(
-        createMessage<KeyringPayload<'allAccounts'>>({
-          type: 'keyring',
-          method: 'allAccounts',
-        })
-      ).pipe(
-        take(1),
-        map(({ payload }) => {
-          if (isKeyringPayload(payload, 'allAccounts') && payload.return) {
-            return payload.return
-          }
-          throw new Error('Failed to fetch accounts')
-        })
-      )
-    )
-  }
-
-  public async setKeyringLockTimeout(timeout: number) {
-    return await lastValueFrom(
+  public setKeyringLockTimeout(timeout: number) {
+    return lastValueFrom(
       this.sendMessage(
         createMessage<KeyringPayload<'setLockTimeout'>>({
           type: 'keyring',
@@ -292,27 +218,22 @@ export class BackgroundClient {
     )
   }
 
-  public async signData(
+  public signData(
     address: SuiAddress,
-    data: Base64DataBuffer
-  ): Promise<SignaturePubkeyPair> {
-    return await lastValueFrom(
+    data: Uint8Array
+  ): Promise<SerializedSignature> {
+    return lastValueFrom(
       this.sendMessage(
         createMessage<KeyringPayload<'signData'>>({
           type: 'keyring',
           method: 'signData',
-          args: { data: data.toString(), address },
+          args: { data: toB64(data), address },
         })
       ).pipe(
         take(1),
         map(({ payload }) => {
           if (isKeyringPayload(payload, 'signData') && payload.return) {
-            const { signatureScheme, signature, pubKey } = payload.return
-            return {
-              signatureScheme,
-              signature: new Base64DataBuffer(signature),
-              pubKey: publicKeyFromSerialized(signatureScheme, pubKey),
-            }
+            return payload.return
           }
           throw new Error('Error unknown response for signData message')
         })
@@ -320,17 +241,90 @@ export class BackgroundClient {
     )
   }
 
-  public async setAccountMeta(meta: {
-    address: string
-    alias?: string
-    avatar?: string
-  }) {
-    return await lastValueFrom(
+  public setActiveNetworkEnv(network: NetworkEnvType) {
+    return lastValueFrom(
       this.sendMessage(
-        createMessage<KeyringPayload<'setAccountMeta'>>({
+        createMessage<SetNetworkPayload>({
+          type: 'set-network',
+          network,
+        })
+      ).pipe(take(1))
+    )
+  }
+
+  public selectAccount(address: SuiAddress) {
+    return lastValueFrom(
+      this.sendMessage(
+        createMessage<KeyringPayload<'switchAccount'>>({
           type: 'keyring',
-          method: 'setAccountMeta',
-          args: meta,
+          method: 'switchAccount',
+          args: { address },
+        })
+      ).pipe(take(1))
+    )
+  }
+
+  public deriveNextAccount() {
+    return lastValueFrom(
+      this.sendMessage(
+        createMessage<KeyringPayload<'deriveNextAccount'>>({
+          type: 'keyring',
+          method: 'deriveNextAccount',
+        })
+      ).pipe(
+        take(1),
+        map(({ payload }) => {
+          if (
+            isKeyringPayload(payload, 'deriveNextAccount') &&
+            payload.return
+          ) {
+            return payload.return.accountAddress
+          }
+          throw new Error('Error unknown response for derive account message')
+        })
+      )
+    )
+  }
+
+  public verifyPassword(password: string) {
+    return lastValueFrom(
+      this.sendMessage(
+        createMessage<KeyringPayload<'verifyPassword'>>({
+          type: 'keyring',
+          method: 'verifyPassword',
+          args: { password },
+        })
+      ).pipe(take(1))
+    )
+  }
+
+  public exportAccount(password: string, accountAddress: SuiAddress) {
+    return lastValueFrom(
+      this.sendMessage(
+        createMessage<KeyringPayload<'exportAccount'>>({
+          type: 'keyring',
+          method: 'exportAccount',
+          args: { password, accountAddress },
+        })
+      ).pipe(
+        take(1),
+        map(({ payload }) => {
+          if (isKeyringPayload(payload, 'exportAccount') && payload.return) {
+            return payload.return.keyPair
+          }
+          throw new Error('Error unknown response for export account message')
+        })
+      )
+    )
+  }
+
+  public importPrivateKey(password: string, keyPair: ExportedKeypair) {
+    return lastValueFrom(
+      this.sendMessage(
+        createMessage<KeyringPayload<'importPrivateKey'>>({
+          type: 'keyring',
+          method: 'importPrivateKey',
+          args: { password, keyPair },
         })
       ).pipe(take(1))
     )
@@ -353,12 +347,22 @@ export class BackgroundClient {
     )
   }
 
-  private async getWalletStatus() {
-    return await lastValueFrom(
+  private getWalletStatus() {
+    return lastValueFrom(
       this.sendMessage(
         createMessage<KeyringPayload<'walletStatusUpdate'>>({
           type: 'keyring',
           method: 'walletStatusUpdate',
+        })
+      ).pipe(take(1))
+    )
+  }
+
+  private getNetwork() {
+    return lastValueFrom(
+      this.sendMessage(
+        createMessage<BasePayload>({
+          type: 'get-network',
         })
       ).pipe(take(1))
     )
@@ -383,11 +387,10 @@ export class BackgroundClient {
       payload.return
     ) {
       action = setKeyringStatus(payload.return)
-    } else if (
-      isKeyringPayload<'allAccounts'>(payload, 'allAccounts') &&
-      payload.return
-    ) {
-      action = setAllAccounts(payload.return)
+    } else if (isSetNetworkPayload(payload)) {
+      action = changeActiveNetwork({
+        network: payload.network,
+      })
     }
     if (action) {
       this._dispatch(action)

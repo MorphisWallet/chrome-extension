@@ -1,16 +1,10 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { SignerWithProvider } from '@mysten/sui.js'
+import { type SerializedSignature, SignerWithProvider } from '@mysten/sui.js'
 
 import type { BackgroundClient } from '.'
-import type {
-  Base64DataBuffer,
-  Provider,
-  SignaturePubkeyPair,
-  SuiAddress,
-  TxnDataSerializer,
-} from '@mysten/sui.js'
+import type { JsonRpcProvider, SuiAddress } from '@mysten/sui.js'
 
 export class BackgroundServiceSigner extends SignerWithProvider {
   readonly #address: SuiAddress
@@ -19,10 +13,9 @@ export class BackgroundServiceSigner extends SignerWithProvider {
   constructor(
     address: SuiAddress,
     backgroundClient: BackgroundClient,
-    provider?: Provider,
-    serializer?: TxnDataSerializer
+    provider: JsonRpcProvider
   ) {
-    super(provider, serializer)
+    super(provider)
     this.#address = address
     this.#backgroundClient = backgroundClient
   }
@@ -31,11 +24,11 @@ export class BackgroundServiceSigner extends SignerWithProvider {
     return this.#address
   }
 
-  signData(data: Base64DataBuffer): Promise<SignaturePubkeyPair> {
+  signData(data: Uint8Array): Promise<SerializedSignature> {
     return this.#backgroundClient.signData(this.#address, data)
   }
 
-  connect(provider: Provider): SignerWithProvider {
+  connect(provider: JsonRpcProvider): SignerWithProvider {
     return new BackgroundServiceSigner(
       this.#address,
       this.#backgroundClient,

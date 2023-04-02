@@ -1,10 +1,9 @@
+import { formatAddress } from '@mysten/sui.js'
 import copy from 'copy-to-clipboard'
 
 import { toast, IconWrapper } from '_app/components'
 
-import { useAppSelector, useMiddleEllipsis } from '_hooks'
-
-import { activeAccountSelector } from '_redux/slices/account'
+import { useActiveAddress } from '_hooks'
 
 import CopyIcon from '_assets/icons/copy.svg'
 
@@ -14,18 +13,12 @@ type AddressProps = {
 }
 
 export const Address = ({ addressOnly = false, address }: AddressProps) => {
-  const activeAccount = useAppSelector(activeAccountSelector)
-  const shortenAddress = useMiddleEllipsis(
-    address || activeAccount?.address || '',
-    10,
-    7
-  )
-  const shortenAlias = useMiddleEllipsis(activeAccount?.alias || '', 10, 7)
+  const activeAddress = useActiveAddress()
 
   const onCopy = () => {
-    if (!activeAccount) return
+    if (!activeAddress) return
 
-    const copyRes = copy(activeAccount.address)
+    const copyRes = copy(activeAddress)
     if (copyRes) {
       toast({
         type: 'success',
@@ -35,13 +28,14 @@ export const Address = ({ addressOnly = false, address }: AddressProps) => {
     }
   }
 
-  if (!activeAccount) return null
+  if (!activeAddress) return null
+
+  const formatedAddress = formatAddress(address || activeAddress)
 
   return (
     <IconWrapper onClick={onCopy} className="!scale-100">
-      {!addressOnly && <span>{shortenAlias}</span>}
       <span className="text-[#c0c0c0]">
-        {addressOnly ? shortenAddress : `(${shortenAddress})`}
+        {addressOnly ? formatedAddress : `${formatedAddress}`}
       </span>
       <CopyIcon height={14} width={14} className="ml-2" />
     </IconWrapper>

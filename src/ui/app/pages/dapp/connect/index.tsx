@@ -2,9 +2,10 @@ import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
 import Layout from '_app/layouts'
-import { Loading, UserApproveContainer } from '_app/components'
+import { Loading } from '_app/components'
+import { UserApproveContainer } from '../components/user_approval_container'
 
-import { useAppDispatch, useAppSelector } from '_hooks'
+import { useAppDispatch, useAppSelector, useActiveAddress } from '_hooks'
 
 import {
   permissionsSelectors,
@@ -22,6 +23,7 @@ const permissionTypeToTxt: Record<PermissionType, string> = {
 
 const ConnectPage = () => {
   const { requestID } = useParams()
+  const activeAddress = useActiveAddress()
   const dispatch = useAppDispatch()
   const permissionsInitialized = useAppSelector(
     ({ permissions }) => permissions.initialized
@@ -34,18 +36,14 @@ const ConnectPage = () => {
     : null
   const isSecure = parsedOrigin?.protocol === 'https:'
 
-  const activeAccountAddress = useAppSelector(
-    ({ account }) => account.activeAccountAddress
-  )
-
   const loading = !permissionsInitialized
 
   const handleOnSubmit = (allowed: boolean) => {
-    if (requestID && activeAccountAddress) {
+    if (requestID && activeAddress) {
       dispatch(
         respondToPermissionRequest({
           id: requestID,
-          accounts: allowed ? [activeAccountAddress] : [],
+          accounts: allowed ? [activeAddress] : [],
           allowed,
         })
       )
@@ -59,14 +57,13 @@ const ConnectPage = () => {
 
     return (
       <UserApproveContainer
+        title="Approve Request"
         origin={permissionRequest.origin}
         originFavIcon={permissionRequest.favIcon}
         approveTitle="Connect"
         rejectTitle="Cancel"
         onSubmit={handleOnSubmit}
-        isConnect
         isWarning={!isSecure}
-        requestType="Connect"
       >
         <div className="flex flex-col text-sm py-4">
           <span className="mb-4">Allow this site to:</span>

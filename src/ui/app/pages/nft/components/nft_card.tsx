@@ -1,34 +1,42 @@
+import { formatAddress } from '@mysten/sui.js'
 import cl from 'classnames'
 
-import { useMiddleEllipsis, useNFTBasicData, useOriginbyteNft } from '_hooks'
+import { Loading } from '_app/components'
 
-import type { SuiObject as SuiObjectType } from '@mysten/sui.js'
+import { useGetNFTMeta, useFileExtensionType } from '_hooks'
+
+import type { SuiObjectData } from '@mysten/sui.js'
 
 type NftCardProps = {
-  nft: SuiObjectType
+  nft: SuiObjectData
   className?: string
 }
 
 const NftCard = ({ nft, className }: NftCardProps) => {
-  const { filePath, fileExtensionType, objType, nftObjectID } =
-    useNFTBasicData(nft)
-  const { data: originByteNft } = useOriginbyteNft(nftObjectID)
-  const nftTypeShort = useMiddleEllipsis(objType, 20, 3)
+  const { data: nftMeta, isLoading } = useGetNFTMeta(nft.objectId)
+
+  const nftName = nftMeta?.name || formatAddress(nft.objectId)
+  const nftImageUrl = nftMeta?.imageUrl || ''
+  const fileExtensionType = useFileExtensionType(nftImageUrl)
 
   return (
     <div className={cl(['flex grow', className])}>
-      {filePath || originByteNft?.fields.url ? (
-        <img
-          src={originByteNft?.fields.url || filePath || ''}
-          alt={fileExtensionType.name || 'NFT'}
-          title={nftTypeShort}
-          className="w-full"
-        />
-      ) : (
-        <div className="w-full flex justify-center items-center bg-[#eeeeee] text-white text-2xl rounded">
-          No media
-        </div>
-      )}
+      <Loading loading={isLoading}>
+        {nftImageUrl ? (
+          <img
+            src={
+              nftImageUrl?.replace(/^ipfs:\/\//, 'https://ipfs.io/ipfs/') || ''
+            }
+            alt={nftName || ''}
+            title={nftName}
+            className="w-full"
+          />
+        ) : (
+          <div className="w-full flex justify-center items-center bg-[#eeeeee] text-white text-2xl rounded">
+            {`${fileExtensionType.name} ${fileExtensionType.type}`}
+          </div>
+        )}
+      </Loading>
     </div>
   )
 }

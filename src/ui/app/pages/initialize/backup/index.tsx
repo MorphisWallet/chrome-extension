@@ -5,50 +5,53 @@ import { Loading, toast } from '_app/components'
 import BackupStepOne from './components/step_one'
 import BackupStepTwo from './components/step_two'
 
-import { useLockedGuard, useInitializedGuard } from '_hooks'
+import { useLockedGuard, useInitializedGuard, useAppDispatch } from '_hooks'
 
-import { thunkExtras } from '_src/ui/app/redux/store/thunk-extras'
+import { loadEntropyFromKeyring } from '_redux/slices/account'
+import { entropyToMnemonic, toEntropy } from '_shared/utils/bip39'
 
 const BackupPage = () => {
   const guardsLoading = useLockedGuard(false)
   const checkingInitialized = useInitializedGuard(true)
+  const dispatch = useAppDispatch()
 
-  const [mnemonicLoading, setMnemonicLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [mnemonic, setMnemonic] = useState<string | null>(null)
 
   const [step, setStep] = useState<0 | 1>(0)
 
-  const onInit = async () => {
-    if (guardsLoading) {
-      return
-    }
-
-    setMnemonicLoading(true)
-    try {
-      const mnemonic = thunkExtras.keypairVault.mnemonic
-      setMnemonic(mnemonic)
-    } catch (e) {
-      console.warn(e)
-      toast({
-        type: 'error',
-        message: `Fail to load mnemonics, ${e}`,
-        containerId: 'initialize-toast',
-      })
-    } finally {
-      setMnemonicLoading(false)
-    }
-  }
-
   useEffect(() => {
-    onInit()
-  }, [])
+    ;(async () => {
+      if (guardsLoading) {
+        return
+      }
+      setLoading(true)
+      try {
+        setMnemonic(
+          entropyToMnemonic(
+            toEntropy(await dispatch(loadEntropyFromKeyring({})).unwrap())
+          )
+        )
+      } catch (e) {
+        toast({
+          type: 'error',
+          message:
+            (e as Error).message ||
+            'Something is wrong, Recovery Phrase is empty.',
+          containerId: 'initialize-toast',
+        })
+      } finally {
+        setLoading(false)
+      }
+    })()
+  }, [dispatch, guardsLoading])
 
   const renderContent = () => {
     if (step === 0) {
       return (
         <BackupStepOne
           mnemonic={mnemonic}
-          mnemonicLoading={mnemonicLoading}
+          mnemonicLoading={loading}
           setStep={setStep}
         />
       )
@@ -57,7 +60,7 @@ const BackupPage = () => {
     return <BackupStepTwo mnemonic={mnemonic} setStep={setStep} />
   }
   return (
-    <Loading loading={guardsLoading || checkingInitialized}>
+    <Loading loading={guardsLoading || checkingInitialized || loading}>
       <Layout showHeader={false} showNav={false}>
         {renderContent()}
       </Layout>

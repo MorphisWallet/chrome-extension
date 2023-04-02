@@ -6,7 +6,7 @@ import { Input, Button } from '_app/components'
 import {
   passwordValidation,
   getConfirmPasswordValidation,
-} from '_app/utils/validation'
+} from '_src/ui/utils/validation'
 
 import { PasswordField } from '../types'
 

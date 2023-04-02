@@ -15,15 +15,15 @@ import DiscoveryPage from './app/pages/discovery'
 import HistoryPage from '_app/pages/history'
 
 import SettingsPage from '_app/pages/settings'
-import SapPage from '_app/pages/settings/sap'
-import WalletManagementPage from '_app/pages/settings/wallet_management'
-import UpdateWalletMetaPage from '_app/pages/settings/wallet_management/update_wallet_meta'
-import SeedPhrasePage from '_app/pages/settings/sap/seed_phrase'
-import ExportPrivateKeyPage from '_app/pages/settings/sap/export_private_key'
-import ChangePasswordPage from '_app/pages/settings/sap/change_password'
+// import SapPage from '_app/pages/settings/sap'
+// import WalletManagementPage from '_app/pages/settings/wallet_management'
+// import UpdateWalletMetaPage from '_app/pages/settings/wallet_management/update_wallet_meta'
+// import SeedPhrasePage from '_app/pages/settings/sap/seed_phrase'
+// import ExportPrivateKeyPage from '_app/pages/settings/sap/export_private_key'
+// import ChangePasswordPage from '_app/pages/settings/sap/change_password'
 
 import ConnectPage from '_app/pages/dapp/connect'
-import TxApprovalPage from '_app/pages/dapp/tx_approval'
+import { ApprovalRequestPage } from '_app/pages/dapp/tx_approval'
 
 import InitializePage from '_app/pages/initialize'
 import CreatePage from '_app/pages/initialize/create'
@@ -82,30 +82,30 @@ const router = createHashRouter([
         path: 'settings',
         element: <SettingsPage />,
       },
-      {
-        path: 'settings/sap',
-        element: <SapPage />,
-      },
-      {
-        path: 'settings/wallet-management',
-        element: <WalletManagementPage />,
-      },
-      {
-        path: 'settings/wallet-management/:address',
-        element: <UpdateWalletMetaPage />,
-      },
-      {
-        path: 'settings/sap/seed-phrase',
-        element: <SeedPhrasePage />,
-      },
-      {
-        path: 'settings/sap/private-key',
-        element: <ExportPrivateKeyPage />,
-      },
-      {
-        path: 'settings/sap/change-password',
-        element: <ChangePasswordPage />,
-      },
+      // {
+      //   path: 'settings/sap',
+      //   element: <SapPage />,
+      // },
+      // {
+      //   path: 'settings/wallet-management',
+      //   element: <WalletManagementPage />,
+      // },
+      // {
+      //   path: 'settings/wallet-management/:address',
+      //   element: <UpdateWalletMetaPage />,
+      // },
+      // {
+      //   path: 'settings/sap/seed-phrase',
+      //   element: <SeedPhrasePage />,
+      // },
+      // {
+      //   path: 'settings/sap/private-key',
+      //   element: <ExportPrivateKeyPage />,
+      // },
+      // {
+      //   path: 'settings/sap/change-password',
+      //   element: <ChangePasswordPage />,
+      // },
       {
         path: '*',
         element: <NotFound />,
@@ -155,8 +155,8 @@ const router = createHashRouter([
         element: <ConnectPage />,
       },
       {
-        path: 'tx-approval/:txID',
-        element: <TxApprovalPage />,
+        path: 'approve/:requestID',
+        element: <ApprovalRequestPage />,
       },
     ],
   },

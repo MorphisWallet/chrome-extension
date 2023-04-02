@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import ApiProvider from '_app/ApiProvider'
-import KeypairVault from '_app/KeypairVault'
 import { BackgroundClient } from '_app/background-client'
 
 import type { RootState } from '_redux/RootReducer'
@@ -12,7 +11,6 @@ export const api = new ApiProvider()
 
 export const thunkExtras = {
   api,
-  keypairVault: new KeypairVault(),
   background: new BackgroundClient(),
 }
 
