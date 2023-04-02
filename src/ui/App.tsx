@@ -22,7 +22,7 @@ import HistoryPage from '_app/pages/history'
 // import ExportPrivateKeyPage from '_app/pages/settings/sap/export_private_key'
 // import ChangePasswordPage from '_app/pages/settings/sap/change_password'
 
-// import ConnectPage from '_app/pages/dapp/connect'
+import ConnectPage from '_app/pages/dapp/connect'
 // import TxApprovalPage from '_app/pages/dapp/tx_approval'
 
 import InitializePage from '_app/pages/initialize'
@@ -146,20 +146,20 @@ const router = createHashRouter([
       },
     ],
   },
-  // {
-  //   path: '/dapp/*',
-  //   element: <ProtectedRouter />,
-  //   children: [
-  //     {
-  //       path: 'connect/:requestID',
-  //       element: <ConnectPage />,
-  //     },
-  //     {
-  //       path: 'tx-approval/:txID',
-  //       element: <TxApprovalPage />,
-  //     },
-  //   ],
-  // },
+  {
+    path: '/dapp/*',
+    element: <ProtectedRouter />,
+    children: [
+      {
+        path: 'connect/:requestID',
+        element: <ConnectPage />,
+      },
+      // {
+      //   path: 'tx-approval/:txID',
+      //   element: <TxApprovalPage />,
+      // },
+    ],
+  },
 ])
 
 const App = () => {
