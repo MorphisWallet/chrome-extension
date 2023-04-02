@@ -1,7 +1,7 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { lte, coerce } from 'semver'
+// import { lte, coerce } from 'semver'
 import Browser from 'webextension-polyfill'
 
 import { LOCK_ALARM_NAME } from './Alarms'
@@ -21,7 +21,8 @@ Browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 
   // TODO: Our versions don't use semver, and instead are date-based. Instead of using the semver
   // library, we can use some combination of parsing into a date + inspecting patch.
-  const previousVersionSemver = coerce(previousVersion)?.version
+  // const previousVersionSemver = coerce(previousVersion)?.version
+  const previousMinorVer = Number(previousVersion?.split('.')?.[2])
   if (reason === 'install') {
     await Browser.storage.local.set({
       v: -1,
@@ -29,8 +30,8 @@ Browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
     openInNewTab()
   } else if (
     reason === 'update' &&
-    previousVersionSemver &&
-    lte(previousVersionSemver, '0.1.1')
+    !isNaN(previousMinorVer) &&
+    previousMinorVer < 7
   ) {
     // clear everything in the storage
     // mainly done to clear the mnemonic that was stored
