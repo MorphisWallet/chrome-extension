@@ -23,7 +23,7 @@ import HistoryPage from '_app/pages/history'
 // import ChangePasswordPage from '_app/pages/settings/sap/change_password'
 
 import ConnectPage from '_app/pages/dapp/connect'
-// import TxApprovalPage from '_app/pages/dapp/tx_approval'
+import { ApprovalRequestPage } from '_app/pages/dapp/tx_approval'
 
 import InitializePage from '_app/pages/initialize'
 import CreatePage from '_app/pages/initialize/create'
@@ -154,10 +154,10 @@ const router = createHashRouter([
         path: 'connect/:requestID',
         element: <ConnectPage />,
       },
-      // {
-      //   path: 'tx-approval/:txID',
-      //   element: <TxApprovalPage />,
-      // },
+      {
+        path: 'approve/:requestID',
+        element: <ApprovalRequestPage />,
+      },
     ],
   },
 ])

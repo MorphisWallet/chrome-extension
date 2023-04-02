@@ -57,6 +57,7 @@ const ConnectPage = () => {
 
     return (
       <UserApproveContainer
+        title="Approve Request"
         origin={permissionRequest.origin}
         originFavIcon={permissionRequest.favIcon}
         approveTitle="Connect"

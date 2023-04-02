@@ -35,7 +35,7 @@ export const Address = ({ addressOnly = false, address }: AddressProps) => {
   return (
     <IconWrapper onClick={onCopy} className="!scale-100">
       <span className="text-[#c0c0c0]">
-        {addressOnly ? formatedAddress : `(${formatedAddress})`}
+        {addressOnly ? formatedAddress : `${formatedAddress}`}
       </span>
       <CopyIcon height={14} width={14} className="ml-2" />
     </IconWrapper>

@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom'
 
 import { Loading } from '_src/ui/app/components'
 import { SignMessageRequest } from './components/sign_message_request'
-// import { TransactionRequest } from './transaction-request'
+import { TransactionRequest } from './components/transaction_request'
 
 import { useAppSelector } from '_src/ui/app/hooks'
 import {
@@ -44,8 +44,7 @@ export function ApprovalRequestPage() {
         isSignMessageApprovalRequest(request) ? (
           <SignMessageRequest request={request} />
         ) : isTransactionApprovalRequest(request) ? (
-          // <TransactionRequest txRequest={request} />
-          <></>
+          <TransactionRequest txRequest={request} />
         ) : null
       ) : null}
     </Loading>
