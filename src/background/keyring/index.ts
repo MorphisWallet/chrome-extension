@@ -19,13 +19,13 @@ import {
   AUTO_LOCK_TIMER_MIN_MINUTES,
   AUTO_LOCK_TIMER_STORAGE_KEY,
 } from '_src/shared/constants'
+import { Meta } from './Meta'
 
 import type { UiConnection } from '../connections/UiConnection'
 import type { SuiAddress, ExportedKeypair } from '@mysten/sui.js'
 import type { Message } from '_messages'
 import type { ErrorPayload } from '_payloads'
 import type { KeyringPayload } from '_payloads/keyring'
-import type { AccountMeta } from './utils'
 
 /** The key for the extension's storage, that holds the index of the last derived account (zero based) */
 const STORAGE_LAST_ACCOUNT_INDEX_KEY = 'last_account_index'
@@ -43,7 +43,6 @@ export class Keyring {
   #locked = true
   #mainDerivedAccount: SuiAddress | null = null
   #accountsMap: Map<SuiAddress, Account> = new Map()
-  #accountMetaMap: Map<SuiAddress, AccountMeta> = new Map()
   public readonly reviveDone: Promise<void>
 
   constructor() {
@@ -60,6 +59,7 @@ export class Keyring {
    * @throws If the wallet exists or any other error during encrypting/saving to storage or if importedEntropy is invalid
    */
   public async createVault(password: string, importedEntropy?: string) {
+    await Meta.init()
     await VaultStorage.create(password, importedEntropy)
   }
 
@@ -122,6 +122,7 @@ export class Keyring {
     await this.storeLastDerivedIndex(nextIndex)
     const account = this.deriveAccount(nextIndex, mnemonic)
     this.#accountsMap.set(account.address, account)
+    await Meta.addDefaultMeta(account.address)
     this.notifyAccountsChanged()
     return account
   }
@@ -196,6 +197,7 @@ export class Keyring {
         keypair: added,
       })
       this.#accountsMap.set(importedAccount.address, importedAccount)
+      await Meta.addDefaultMeta(importedAccount.address)
       this.notifyAccountsChanged()
     }
     return added
@@ -406,6 +408,12 @@ export class Keyring {
       this.#accountsMap.set(account.address, account)
       if (i === 0) {
         this.#mainDerivedAccount = account.address
+        // if mainDerivedAccount address is not found in meta storage, it means wallet is just created.
+        // set main derived account default meta
+        const _mainDerivedAccountMeta = Meta.getMetaByAddress(account.address)
+        if (!_mainDerivedAccountMeta) {
+          Meta.addDefaultMeta(account.address)
+        }
       }
     }
 
