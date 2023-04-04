@@ -21,12 +21,11 @@ import type { ExportedKeypair } from '@mysten/sui.js'
 
 // we use this password + a random one for each time we store the encrypted
 // vault to session storage
-const PASSWORD =
-  process.env.WALLET_KEYRING_PASSWORD ||
-  '344c6f7d04a65c24f35f5c710b0e91e2f2e2f88c038562622d5602019b937bc2c2aa2821e65cc94775fe5acf2fee240d38f1abbbe00b0e6682646a4ce10e908e'
+const PASSWORD = process.env.WALLET_KEYRING_PASSWORD as string
 const VAULT_KEY = 'vault'
-export const EPHEMERAL_PASSWORD_KEY = '244e4b24e667ebf'
-export const EPHEMERAL_VAULT_KEY = 'a8e451b8ae8a1b4'
+export const EPHEMERAL_PASSWORD_KEY = process.env
+  .EPHEMERAL_PASSWORD_KEY as string
+export const EPHEMERAL_VAULT_KEY = process.env.EPHEMERAL_VAULT_KEY as string
 
 function getRandomPassword() {
   return Buffer.from(randomBytes(64)).toString('hex')
@@ -40,7 +39,7 @@ class VaultStorageClass {
   #vault: Vault | null = null
 
   /**
-   * See {@link Keyring.createVault}
+  //  * See {@link Keyring.createVault}
    * @param password
    * @param importedEntropy
    */
@@ -118,6 +117,17 @@ class VaultStorageClass {
     } catch (e) {
       return false
     }
+  }
+
+  public async changePassword(oldPassword: string, newPassword: string) {
+    const res = await this.verifyPassword(oldPassword)
+    if (!res) {
+      throw new Error('Wrong password')
+    }
+    await setToLocalStorage(
+      VAULT_KEY,
+      await (this.#vault as Vault).encrypt(newPassword)
+    )
   }
 
   /**
