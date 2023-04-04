@@ -25,6 +25,7 @@ import type { SuiAddress, ExportedKeypair } from '@mysten/sui.js'
 import type { Message } from '_messages'
 import type { ErrorPayload } from '_payloads'
 import type { KeyringPayload } from '_payloads/keyring'
+import type { AccountMeta } from './utils'
 
 /** The key for the extension's storage, that holds the index of the last derived account (zero based) */
 const STORAGE_LAST_ACCOUNT_INDEX_KEY = 'last_account_index'
@@ -42,10 +43,11 @@ export class Keyring {
   #locked = true
   #mainDerivedAccount: SuiAddress | null = null
   #accountsMap: Map<SuiAddress, Account> = new Map()
+  #accountMetaMap: Map<SuiAddress, AccountMeta> = new Map()
   public readonly reviveDone: Promise<void>
 
   constructor() {
-    this.reviveDone = this.revive().catch((e) => {
+    this.reviveDone = this.revive().catch(() => {
       // if for some reason decrypting the vault fails or anything else catch
       // the error to allow the user to login using the password
     })
