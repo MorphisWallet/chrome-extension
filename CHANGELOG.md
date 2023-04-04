@@ -1,3 +1,7 @@
+## 0.0.7.1 (Apr 4, 2023)
+
+- Release security and privacy settings
+
 ## 0.0.7.0 (Mar 31, 2023)
 
 - Update @mysten/sui.js 0.30.0 and @mysten/wallet-standard 0.5.0
