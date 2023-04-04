@@ -15,7 +15,13 @@ import ArrowIcon from '_assets/icons/arrow_short_thin.svg'
 
 const LandingPage = () => {
   const accountAddress = useActiveAddress()
-  const { data: balances, isLoading, error } = useGetAllBalances(accountAddress)
+  const {
+    data: balances,
+    isLoading,
+    isError,
+    error,
+    failureCount,
+  } = useGetAllBalances(accountAddress)
 
   const suiTypeBalance = balances?.find(
     (_balance) => _balance.coinType === SUI_TYPE_ARG
@@ -26,13 +32,13 @@ const LandingPage = () => {
   )
 
   useEffect(() => {
-    if (error) {
+    if (isError && failureCount < 2) {
       toast({
         type: 'error',
         message: (error as Error)?.message || 'Failed to load balance',
       })
     }
-  }, [error])
+  }, [isError, error, failureCount])
 
   return (
     <Layout>
