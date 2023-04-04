@@ -65,6 +65,10 @@ type MethodToPayloads = {
     args: { password: string }
     return: void
   }
+  changePassword: {
+    args: { oldPassword: string; newPassword: string }
+    return: void
+  }
   exportAccount: {
     args: { password: string; accountAddress: SuiAddress }
     return: { keyPair: ExportedKeypair }

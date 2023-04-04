@@ -310,6 +310,12 @@ export class Keyring {
           throw new Error('Wrong password')
         }
         uiConnection.send(createMessage({ type: 'done' }, id))
+      } else if (isKeyringPayload(payload, 'changePassword') && payload.args) {
+        await VaultStorage.changePassword(
+          payload.args.oldPassword,
+          payload.args.newPassword
+        )
+        uiConnection.send(createMessage({ type: 'done' }, id))
       } else if (isKeyringPayload(payload, 'exportAccount') && payload.args) {
         const keyPair = await this.exportAccountKeypair(
           payload.args.accountAddress,

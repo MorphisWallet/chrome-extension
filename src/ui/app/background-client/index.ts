@@ -298,6 +298,18 @@ export class BackgroundClient {
     )
   }
 
+  public changePassword(oldPassword: string, newPassword: string) {
+    return lastValueFrom(
+      this.sendMessage(
+        createMessage<KeyringPayload<'changePassword'>>({
+          type: 'keyring',
+          method: 'changePassword',
+          args: { oldPassword, newPassword },
+        })
+      ).pipe(take(1))
+    )
+  }
+
   public exportAccount(password: string, accountAddress: SuiAddress) {
     return lastValueFrom(
       this.sendMessage(

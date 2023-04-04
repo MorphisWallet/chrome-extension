@@ -20,7 +20,7 @@ import SapPage from '_app/pages/settings/sap'
 // import UpdateWalletMetaPage from '_app/pages/settings/wallet_management/update_wallet_meta'
 import SeedPhrasePage from '_app/pages/settings/sap/seed_phrase'
 import ExportPrivateKeyPage from '_app/pages/settings/sap/export_private_key'
-// import ChangePasswordPage from '_app/pages/settings/sap/change_password'
+import ChangePasswordPage from '_app/pages/settings/sap/change_password'
 
 import ConnectPage from '_app/pages/dapp/connect'
 import { ApprovalRequestPage } from '_app/pages/dapp/tx_approval'
@@ -94,10 +94,10 @@ const router = createHashRouter([
         path: 'settings/sap/private-key/',
         element: <ExportPrivateKeyPage />,
       },
-      // {
-      //   path: 'settings/sap/change-password',
-      //   element: <ChangePasswordPage />,
-      // },
+      {
+        path: 'settings/sap/change-password',
+        element: <ChangePasswordPage />,
+      },
       // {
       //   path: 'settings/wallet-management',
       //   element: <WalletManagementPage />,
