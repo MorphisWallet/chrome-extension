@@ -18,6 +18,7 @@ import type { PayloadAction, Reducer } from '@reduxjs/toolkit'
 import type { KeyringPayload } from '_payloads/keyring'
 import type { RootState } from '_redux/RootReducer'
 import type { AppThunkConfig } from '_store/thunk-extras'
+import type { AccountsMeta } from '_src/background/keyring/Meta'
 
 export const createVault = createAsyncThunk<
   void,
@@ -85,6 +86,7 @@ type AccountState = {
   address: SuiAddress | null
   isLocked: boolean | null
   isInitialized: boolean | null
+  accountsMeta: AccountsMeta
 }
 
 const initialState = accountsAdapter.getInitialState<AccountState>({
@@ -92,6 +94,7 @@ const initialState = accountsAdapter.getInitialState<AccountState>({
   address: null,
   isLocked: null,
   isInitialized: null,
+  accountsMeta: {},
 })
 
 const accountSlice = createSlice({
@@ -107,6 +110,7 @@ const accountSlice = createSlice({
       state.isLocked = payload.isLocked
       state.isInitialized = payload.isInitialized
       state.address = payload.activeAddress // is already normalized
+      state.accountsMeta = payload.accountsMeta
       accountsAdapter.setAll(state, payload.accounts)
     },
   },
@@ -145,3 +149,6 @@ export const activeAccountSelector = (state: RootState) => {
 }
 
 export const activeAddressSelector = ({ account }: RootState) => account.address
+
+export const accountsMetaSelector = ({ account }: RootState) =>
+  account.accountsMeta
