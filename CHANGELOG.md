@@ -1,3 +1,8 @@
+## 0.0.7.2 (Apr 6, 2023)
+
+- Release wallet management
+- Refactor wallet meta storage
+
 ## 0.0.7.1 (Apr 4, 2023)
 
 - Release security and privacy settings
