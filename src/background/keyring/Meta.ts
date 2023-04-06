@@ -32,67 +32,48 @@ type AccountMeta = {
   avatar: Avatar
 }
 
-type AccountMetaMap = Map<SuiAddress, AccountMeta>
+export type AccountsMeta = Record<SuiAddress, AccountMeta>
 
 const genRandomAvatarColor = () =>
   DEFAULT_AVATAR_COLOR_POOL[
     Math.floor(Math.random() * DEFAULT_AVATAR_COLOR_POOL.length)
   ] as HexColor
 
-export class Meta {
-  public static async init() {
-    await setToLocalStorage<AccountMetaMap>(META_KEY, new Map())
+export const initMeta = async () => {
+  await setToLocalStorage<AccountsMeta>(META_KEY, {})
+}
+
+export const getAllMeta = async () => {
+  const allMeta = await getFromLocalStorage<AccountsMeta>(META_KEY)
+  if (!allMeta) {
+    await initMeta()
   }
+  return allMeta as AccountsMeta
+}
 
-  public static async getAllMeta() {
-    const allMeta = await getFromLocalStorage<AccountMetaMap>(META_KEY)
-    if (!allMeta) {
-      await this.init()
-    }
-    return allMeta as AccountMetaMap
+export const getMetaByAddress = async (address: SuiAddress) => {
+  const allMeta = await getAllMeta()
+  return allMeta[address]
+}
+
+export const setMetaByAddress = async (
+  address: SuiAddress,
+  meta?: Partial<AccountMeta>
+) => {
+  const allMeta = await getAllMeta()
+  // localStorage is read-only and immutable, clone a new map to overwrite previous allMeta
+  const clonedAllMeta = { ...allMeta }
+  const addressMeta = clonedAllMeta[address]
+  clonedAllMeta[address] = {
+    alias:
+      meta?.alias ||
+      addressMeta?.alias ||
+      `Account ${Object.keys(clonedAllMeta).length + 1}`,
+    avatar: meta?.avatar || addressMeta?.avatar || genRandomAvatarColor(),
   }
+  await setToLocalStorage<AccountsMeta>(META_KEY, clonedAllMeta)
+}
 
-  public static async getMetaByAddress(address: string) {
-    const allMeta = await this.getAllMeta()
-    if (!allMeta) {
-      throw new Error('Failed to load account meta')
-    }
-    return allMeta?.get(address)
-  }
-
-  public static async addDefaultMeta(address: SuiAddress) {
-    const allMeta = await this.getAllMeta()
-    if (!allMeta) {
-      throw new Error('Failed to load account meta')
-    }
-    allMeta.set(address, {
-      alias: `Account ${allMeta.size + 1}`,
-      avatar: genRandomAvatarColor(),
-    })
-  }
-
-  public static async updateMeta(
-    address: SuiAddress,
-    meta: Partial<AccountMeta>
-  ) {
-    const allMeta = await this.getAllMeta()
-    if (!allMeta) {
-      throw new Error('Failed to load account meta')
-    }
-
-    const currentMeta = allMeta.get(address)
-    if (!currentMeta) {
-      throw new Error('Failed to load account meta')
-    }
-
-    allMeta.set(address, {
-      alias: meta?.alias || currentMeta.alias,
-      avatar: meta?.avatar || currentMeta.avatar,
-    })
-  }
-
-  public static async clearMeta() {
-    const allMeta = await this.getAllMeta()
-    allMeta?.clear()
-  }
+export const clearAllMeta = async () => {
+  await setToLocalStorage(META_KEY, null)
 }

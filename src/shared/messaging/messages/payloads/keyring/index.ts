@@ -10,6 +10,7 @@ import type {
 } from '@mysten/sui.js'
 import type { BasePayload, Payload } from '_payloads'
 import type { SerializedAccount } from '_src/background/keyring/Account'
+import type { AccountsMeta } from '_src/background/keyring/Meta'
 
 type MethodToPayloads = {
   create: {
@@ -30,6 +31,7 @@ type MethodToPayloads = {
       isLocked: boolean
       isInitialized: boolean
       accounts: SerializedAccount[]
+      accountsMeta: AccountsMeta
       activeAddress: string | null
     }
   }
