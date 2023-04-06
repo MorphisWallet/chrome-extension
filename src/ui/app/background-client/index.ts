@@ -359,7 +359,7 @@ export class BackgroundClient {
     )
   }
 
-  private getWalletStatus() {
+  public getWalletStatus() {
     return lastValueFrom(
       this.sendMessage(
         createMessage<KeyringPayload<'walletStatusUpdate'>>({

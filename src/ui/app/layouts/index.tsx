@@ -90,18 +90,18 @@ const LayoutBase = ({
       />
       {showHeader && (
         <header className="h-12 px-6 bg-white border-b border-b-[#e6e6e9] flex items-center shrink-0 font-medium z-[1010]">
-          <Link to="/settings/wallet-management">
+          <Link className="shrink-0" to="/settings/wallet-management">
             <Avatar
               avatar={accountsMeta[activeAddress || '']?.avatar}
               size={24}
             />
           </Link>
-          <div className="grow mx-2 text-center cursor-pointer">
+          <div className="grow mx-2 text-center overflow-hidden">
             <Address />
           </div>
           <Button
             title={activeApiEnv}
-            className="!h-6 !w-auto !rounded-[12px] !text-[10px] !px-2.5 max-w-[60px]"
+            className="!h-6 !w-auto !rounded-[12px] !text-[10px] !px-2.5 max-w-[60px] shrink-0"
             onClick={() => setModalOpen(true)}
           >
             {activeApiEnv}
