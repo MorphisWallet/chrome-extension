@@ -406,14 +406,14 @@ export class Keyring {
     for (let i = 0; i <= lastAccountIndex; i++) {
       const account = this.deriveAccount(i, mnemonic)
       this.#accountsMap.set(account.address, account)
+
+      const accountMeta = await getMetaByAddress(account.address)
+      if (!accountMeta) {
+        await setMetaByAddress(account.address)
+      }
+
       if (i === 0) {
         this.#mainDerivedAccount = account.address
-        // if mainDerivedAccount address is not found in meta storage, it means wallet is just created.
-        // set main derived account default meta
-        const _mainDerivedAccountMeta = await getMetaByAddress(account.address)
-        if (!_mainDerivedAccountMeta) {
-          await setMetaByAddress(account.address)
-        }
       }
     }
 

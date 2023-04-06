@@ -43,7 +43,7 @@ const UpdateWalletMetaPage = () => {
     handleBlur,
   } = useFormik<{ alias: string }>({
     initialValues: {
-      alias: addressMeta.alias || '',
+      alias: addressMeta?.alias || '',
     },
     validationSchema: Yup.object().shape({
       alias: Yup.string().min(1).max(16).required('At least one character'),
