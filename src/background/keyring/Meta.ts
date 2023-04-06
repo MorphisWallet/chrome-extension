@@ -10,7 +10,7 @@ type Base64Image = `data:image/${
 
 type HexColor = `#${string}`
 
-type Avatar = Base64Image | HexColor
+export type Avatar = Base64Image | HexColor
 
 const META_KEY = 'meta'
 

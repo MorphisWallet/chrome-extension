@@ -15,12 +15,18 @@ import {
 
 import { useAccountsMeta } from '_hooks'
 import { useAccounts } from '_src/ui/app/hooks/useAccounts'
+import { useBackgroundClient } from '_src/ui/app/hooks/useBackgroundClient'
+
+import { setMetaByAddress } from '_src/background/keyring/Meta'
 
 import ArrowShort from '_assets/icons/arrow_short.svg'
+
+import type { Avatar as AvatarType } from '_src/background/keyring/Meta'
 
 const UpdateWalletMetaPage = () => {
   const { address } = useParams()
   const accounts = useAccounts()
+  const background = useBackgroundClient()
 
   if (!accounts.find((_account) => _account.address === address)) return null
 
@@ -43,20 +49,16 @@ const UpdateWalletMetaPage = () => {
       alias: Yup.string().min(1).max(16).required('At least one character'),
     }),
     onSubmit: async ({ alias: _alias }) => {
-      if (!address) return
+      if (!address || !_alias) {
+        return
+      }
 
       try {
-        // await dispatch(
-        //   setMeta({
-        //     address,
-        //     alias: alias === _alias ? undefined : _alias,
-        //     avatar: avatar === avatarPath ? undefined : avatarPath || undefined,
-        //   })
-        // )
-        // toast({
-        //   type: 'success',
-        //   message: 'Successfully updated name and avatar',
-        // })
+        await setMetaByAddress(address, {
+          alias: _alias,
+          avatar: avatarPath as AvatarType,
+        })
+        await background.getWalletStatus()
       } catch (err) {
         toast({
           type: 'error',
