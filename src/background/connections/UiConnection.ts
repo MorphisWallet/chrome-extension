@@ -19,7 +19,7 @@ import Permissions from '_src/background/Permissions'
 import Tabs from '_src/background/Tabs'
 import Transactions from '_src/background/Transactions'
 import Keyring from '_src/background/keyring'
-import { Meta } from '_src/background/keyring/Meta'
+import { getAllMeta } from '_src/background/keyring/Meta'
 
 import type { Message } from '_messages'
 import type { PortChannelName } from '_messaging/PortChannelName'
@@ -56,7 +56,6 @@ export class UiConnection extends Connection {
   }
 
   public async sendLockedStatusUpdate(isLocked: boolean, replyForId?: string) {
-    const allMeta = await Meta.getAllMeta()
     this.send(
       createMessage<KeyringPayload<'walletStatusUpdate'>>(
         {
@@ -67,8 +66,8 @@ export class UiConnection extends Connection {
             accounts:
               (await Keyring.getAccounts())?.map((anAccount) => ({
                 ...anAccount.toJSON(),
-                ...allMeta.get(anAccount.address),
               })) || [],
+            accountsMeta: await getAllMeta(),
             activeAddress: (await Keyring.getActiveAccount())?.address || null,
             isInitialized: await Keyring.isWalletInitialized(),
           },

@@ -19,7 +19,7 @@ import {
   AUTO_LOCK_TIMER_MIN_MINUTES,
   AUTO_LOCK_TIMER_STORAGE_KEY,
 } from '_src/shared/constants'
-import { Meta } from './Meta'
+import { initMeta, getMetaByAddress, setMetaByAddress } from './Meta'
 
 import type { UiConnection } from '../connections/UiConnection'
 import type { SuiAddress, ExportedKeypair } from '@mysten/sui.js'
@@ -59,7 +59,7 @@ export class Keyring {
    * @throws If the wallet exists or any other error during encrypting/saving to storage or if importedEntropy is invalid
    */
   public async createVault(password: string, importedEntropy?: string) {
-    await Meta.init()
+    await initMeta()
     await VaultStorage.create(password, importedEntropy)
   }
 
@@ -122,7 +122,7 @@ export class Keyring {
     await this.storeLastDerivedIndex(nextIndex)
     const account = this.deriveAccount(nextIndex, mnemonic)
     this.#accountsMap.set(account.address, account)
-    await Meta.addDefaultMeta(account.address)
+    await setMetaByAddress(account.address)
     this.notifyAccountsChanged()
     return account
   }
@@ -197,7 +197,7 @@ export class Keyring {
         keypair: added,
       })
       this.#accountsMap.set(importedAccount.address, importedAccount)
-      await Meta.addDefaultMeta(importedAccount.address)
+      await setMetaByAddress(importedAccount.address)
       this.notifyAccountsChanged()
     }
     return added
@@ -410,14 +410,14 @@ export class Keyring {
         this.#mainDerivedAccount = account.address
         // if mainDerivedAccount address is not found in meta storage, it means wallet is just created.
         // set main derived account default meta
-        const _mainDerivedAccountMeta = Meta.getMetaByAddress(account.address)
+        const _mainDerivedAccountMeta = await getMetaByAddress(account.address)
         if (!_mainDerivedAccountMeta) {
-          Meta.addDefaultMeta(account.address)
+          await setMetaByAddress(account.address)
         }
       }
     }
 
-    VaultStorage.getImportedKeys()?.forEach((anImportedKey) => {
+    VaultStorage.getImportedKeys()?.forEach(async (anImportedKey) => {
       const account = new ImportedAccount({
         keypair: anImportedKey,
       })
@@ -425,6 +425,11 @@ export class Keyring {
       // if later we derive it skip overriding the derived account with the imported one (convert the imported as derived in a way)
       if (!this.#accountsMap.has(account.address)) {
         this.#accountsMap.set(account.address, account)
+      }
+
+      const importedAccountMeta = await getMetaByAddress(account.address)
+      if (!importedAccountMeta) {
+        await setMetaByAddress(account.address)
       }
     })
     mnemonic = null
