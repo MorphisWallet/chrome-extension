@@ -16,7 +16,7 @@ import HistoryPage from '_app/pages/history'
 
 import SettingsPage from '_app/pages/settings'
 import SapPage from '_app/pages/settings/sap'
-// import WalletManagementPage from '_app/pages/settings/wallet_management'
+import WalletManagementPage from '_app/pages/settings/wallet_management'
 // import UpdateWalletMetaPage from '_app/pages/settings/wallet_management/update_wallet_meta'
 import SeedPhrasePage from '_app/pages/settings/sap/seed_phrase'
 import ExportPrivateKeyPage from '_app/pages/settings/sap/export_private_key'
@@ -98,10 +98,10 @@ const router = createHashRouter([
         path: 'settings/sap/change-password',
         element: <ChangePasswordPage />,
       },
-      // {
-      //   path: 'settings/wallet-management',
-      //   element: <WalletManagementPage />,
-      // },
+      {
+        path: 'settings/wallet-management',
+        element: <WalletManagementPage />,
+      },
       // {
       //   path: 'settings/wallet-management/:address',
       //   element: <UpdateWalletMetaPage />,
