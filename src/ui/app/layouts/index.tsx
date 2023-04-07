@@ -92,7 +92,7 @@ const LayoutBase = ({
         <header className="h-12 px-6 bg-white border-b border-b-[#e6e6e9] flex items-center shrink-0 font-medium z-[1010]">
           <Link className="shrink-0" to="/settings/wallet-management">
             <Avatar
-              avatar={accountsMeta[activeAddress || '']?.avatar}
+              avatar={accountsMeta?.[activeAddress || '']?.avatar}
               size={24}
             />
           </Link>

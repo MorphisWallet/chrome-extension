@@ -43,7 +43,7 @@ export const Address = ({ addressOnly = false, address }: AddressProps) => {
       </IconWrapper>
       {!addressOnly && (
         <div className="truncate">
-          {accountsMeta[activeAddress || '']?.alias || ''}
+          {accountsMeta?.[activeAddress || '']?.alias || ''}
         </div>
       )}
     </div>

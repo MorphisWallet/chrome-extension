@@ -31,7 +31,7 @@ const UpdateWalletMetaPage = () => {
   if (!accounts.find((_account) => _account.address === address)) return null
 
   const accountsMeta = useAccountsMeta()
-  const addressMeta = accountsMeta[address || '']
+  const addressMeta = accountsMeta?.[address || ''] || {}
 
   const {
     values,
