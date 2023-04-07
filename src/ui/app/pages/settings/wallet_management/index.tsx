@@ -23,7 +23,7 @@ type AccountSelectProps = {
 
 const AccountSelect = ({ address }: AccountSelectProps) => {
   const accountsMeta = useAccountsMeta()
-  const addressMeta = accountsMeta[address]
+  const addressMeta = accountsMeta?.[address] || {}
   const activeAccountAddress = useActiveAddress()
   const isCurrentAccount = address === activeAccountAddress
   const backgroundClient = useBackgroundClient()

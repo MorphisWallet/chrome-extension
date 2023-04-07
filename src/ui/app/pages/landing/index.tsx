@@ -12,6 +12,7 @@ import { useActiveAddress, useGetAllBalances } from '_hooks'
 import { useFormatCoin } from '_src/ui/core'
 
 import ArrowIcon from '_assets/icons/arrow_short_thin.svg'
+import { setToLocalStorage } from '_src/background/storage-utils'
 
 const LandingPage = () => {
   const accountAddress = useActiveAddress()
@@ -47,7 +48,7 @@ const LandingPage = () => {
           <div className="text-3xl h-6 mb-6">
             <Loading loading={isLoading}>
               <span>{formatted || 0}</span>
-              <span className="text-xl text-[#c0c0c0] ml-2">
+              <span className="text-xl text-[#c0c0c0] ml-2" onClick={() => setToLocalStorage('meta', null)}>
                 {symbol || 'SUI'}
               </span>
             </Loading>
