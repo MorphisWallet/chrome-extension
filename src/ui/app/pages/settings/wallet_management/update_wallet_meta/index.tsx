@@ -107,7 +107,7 @@ const UpdateWalletMetaPage = () => {
         <div className="mb-2 text-xl text-center font-bold relative">
           {addressMeta?.alias || 'Account'}
           <Link
-            to="/settings/wallet-management"
+            to="/settings/general/wallet-management"
             className="absolute left-0 top-[7px]"
           >
             <IconWrapper>

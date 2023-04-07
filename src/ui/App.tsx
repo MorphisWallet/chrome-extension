@@ -21,6 +21,7 @@ import UpdateWalletMetaPage from '_app/pages/settings/wallet_management/update_w
 import SeedPhrasePage from '_app/pages/settings/sap/seed_phrase'
 import ExportPrivateKeyPage from '_app/pages/settings/sap/export_private_key'
 import ChangePasswordPage from '_app/pages/settings/sap/change_password'
+import GeneralPage from '_app/pages/settings/general'
 
 import ConnectPage from '_app/pages/dapp/connect'
 import { ApprovalRequestPage } from '_app/pages/dapp/tx_approval'
@@ -99,11 +100,15 @@ const router = createHashRouter([
         element: <ChangePasswordPage />,
       },
       {
-        path: 'settings/wallet-management',
+        path: 'settings/general',
+        element: <GeneralPage />,
+      },
+      {
+        path: 'settings/general/wallet-management',
         element: <WalletManagementPage />,
       },
       {
-        path: 'settings/wallet-management/:address',
+        path: 'settings/general/wallet-management/:address',
         element: <UpdateWalletMetaPage />,
       },
       {
