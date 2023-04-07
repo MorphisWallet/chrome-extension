@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import ReactTooltip from 'react-tooltip'
+import { Tooltip } from 'react-tooltip'
 import copy from 'copy-to-clipboard'
 
 import {
@@ -76,19 +76,18 @@ const BackupStepOne = ({
                         {String(i + 1).padStart(2, '0')}
                       </span>
                       <span
-                        data-tip={mnemonicArray[i]}
-                        data-for="mnemonic-tooltip"
+                        data-tooltip-content={mnemonicArray[i]}
+                        data-tooltip-id="mnemonic-tooltip"
                         className="truncate"
                       >
                         {mnemonicArray[i]}
                       </span>
                     </div>
                   ))}
-                <ReactTooltip
+                <Tooltip
+                  clickable
                   id="mnemonic-tooltip"
                   place="top"
-                  effect="solid"
-                  padding="4px 8px"
                   delayHide={500}
                   className="!pointer-events-auto before:hidden hover:!visible hover:!opacity-100"
                 />

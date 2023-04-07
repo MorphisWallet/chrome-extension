@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link, Outlet, useParams, useLocation } from 'react-router-dom'
-import ReactTooltip from 'react-tooltip'
+import { Tooltip } from 'react-tooltip'
 import { hasPublicTransfer } from '@mysten/sui.js'
 
 import Layout from '_app/layouts'
@@ -108,19 +108,14 @@ const NftDetail = () => {
                   <Button disabled={!isTransferable}>Send</Button>
                 </Link>
                 <Button
-                  data-tip="Coming soon"
-                  data-for="button-tip"
+                  data-tooltip-content="Coming soon"
+                  data-tooltip-id="button-tip"
                   variant="outlined"
                   className="cursor-not-allowed"
                 >
                   Set as wallet PFP
                 </Button>
-                <ReactTooltip
-                  id="button-tip"
-                  effect="solid"
-                  className="before:hidden"
-                  backgroundColor="#000000"
-                />
+                <Tooltip id="button-tip" className="before:hidden" />
               </div>
             </>
           )}
