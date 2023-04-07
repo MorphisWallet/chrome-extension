@@ -43,6 +43,9 @@ dependencies:
   mitt:
     specifier: ^3.0.0
     version: 3.0.0
+  postcss:
+    specifier: ^8.4.21
+    version: 8.4.21
   react:
     specifier: ^18.2.0
     version: 18.2.0
