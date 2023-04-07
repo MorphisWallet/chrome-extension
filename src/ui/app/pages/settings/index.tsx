@@ -23,29 +23,21 @@ const SettingsPage = () => {
     <Layout>
       <div className="flex flex-col grow font-medium px-6 pt-4 pb-6">
         <p className="mb-6 text-xl font-bold">Settings</p>
-        <Button
-          variant="outlined"
-          disabled
-          className="rounded-[4px] mb-2 text-[13px]"
-        >
-          <div className="flex items-center justify-between">
-            <span>
-              <span className="text-black">General</span>
-              <span className="ml-4 text-[#c4c4c4]">Coming soon</span>
-            </span>
-            <ArrowLong />
-          </div>
-        </Button>
+        <Link to="./general">
+          <Button variant="outlined" className="rounded-[4px] mb-2 text-[13px]">
+            <div className="flex items-center justify-between">
+              <span>General</span>
+              <ArrowLong />
+            </div>
+          </Button>
+        </Link>
         <Link to="./sap">
-        <Button
-          variant="outlined"
-          className="rounded-[4px] mb-2 text-[13px]"
-        >
-          <div className="flex items-center justify-between">
-            <span>Security and Privacy</span>
-            <ArrowLong />
-          </div>
-        </Button>
+          <Button variant="outlined" className="rounded-[4px] mb-2 text-[13px]">
+            <div className="flex items-center justify-between">
+              <span>Security and Privacy</span>
+              <ArrowLong />
+            </div>
+          </Button>
         </Link>
         <Button
           variant="outlined"
