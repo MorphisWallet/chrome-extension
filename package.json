@@ -104,7 +104,7 @@
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.9.0",
     "react-toastify": "^9.1.2",
-    "react-tooltip": "^4.5.1",
+    "react-tooltip": "^5.0.0",
     "react-transition-group": "^4.4.5",
     "rxjs": "^7.8.0",
     "semver": "^7.3.8",
