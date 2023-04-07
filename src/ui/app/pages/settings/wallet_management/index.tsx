@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import ReactTooltip from 'react-tooltip'
+import { Tooltip } from 'react-tooltip'
 import cl from 'classnames'
 import { SuiAddress, formatAddress } from '@mysten/sui.js'
 
@@ -105,20 +105,15 @@ const WalletManagementPage = () => {
           </div>
           <hr className="my-6 border-black" />
           <Button
-            data-tip="Coming soon"
-            data-for="button-tip"
+            data-tooltip-content="Coming soon"
+            data-tooltip-id="button-tip"
             variant="outlined"
             className="flex justify-center items-center shrink-0 rounded-[4px] cursor-not-allowed font-bold"
           >
             <ImportIcon height={13} width={9} className="mr-3" />
             Import an existing wallet
           </Button>
-          <ReactTooltip
-            id="button-tip"
-            effect="solid"
-            className="before:hidden"
-            backgroundColor="#000000"
-          />
+          <Tooltip id="button-tip" className="before:hidden" />
         </div>
       </div>
     </Layout>
