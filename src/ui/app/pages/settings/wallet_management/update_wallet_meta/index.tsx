@@ -59,6 +59,10 @@ const UpdateWalletMetaPage = () => {
           avatar: avatarPath as AvatarType,
         })
         await background.getWalletStatus()
+        toast({
+          type: 'success',
+          message: `Successfully updated account`,
+        })
       } catch (err) {
         toast({
           type: 'error',
