@@ -41,9 +41,11 @@ export const Address = ({ addressOnly = false, address }: AddressProps) => {
         </span>
         <CopyIcon height={14} width={14} className="ml-2" />
       </IconWrapper>
-      <div className="truncate">
-        {accountsMeta[activeAddress || '']?.alias || ''}
-      </div>
+      {!addressOnly && (
+        <div className="truncate">
+          {accountsMeta[activeAddress || '']?.alias || ''}
+        </div>
+      )}
     </div>
   )
 }
