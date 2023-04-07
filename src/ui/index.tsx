@@ -23,6 +23,7 @@ import initSentry from '_src/shared/sentry'
 
 import './global.css'
 import 'react-toastify/dist/ReactToastify.min.css'
+import 'react-tooltip/dist/react-tooltip.css'
 
 async function init() {
   if (process.env.NODE_ENV === 'development') {
