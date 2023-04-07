@@ -8,8 +8,6 @@ type AvatarProps = {
 }
 
 export const Avatar = ({ avatar, size = 24 }: AvatarProps) => {
-  return <Logo height={18} width={18} />
-
   const isHexColor = avatar?.[0] === '#'
 
   if (isHexColor) {
@@ -32,6 +30,10 @@ export const Avatar = ({ avatar, size = 24 }: AvatarProps) => {
         />
       </div>
     )
+  }
+
+  if (!avatar) {
+    return <Logo height={size} width={size} />
   }
 
   return (

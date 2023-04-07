@@ -16,11 +16,12 @@ import HistoryPage from '_app/pages/history'
 
 import SettingsPage from '_app/pages/settings'
 import SapPage from '_app/pages/settings/sap'
-// import WalletManagementPage from '_app/pages/settings/wallet_management'
-// import UpdateWalletMetaPage from '_app/pages/settings/wallet_management/update_wallet_meta'
+import WalletManagementPage from '_app/pages/settings/wallet_management'
+import UpdateWalletMetaPage from '_app/pages/settings/wallet_management/update_wallet_meta'
 import SeedPhrasePage from '_app/pages/settings/sap/seed_phrase'
 import ExportPrivateKeyPage from '_app/pages/settings/sap/export_private_key'
 import ChangePasswordPage from '_app/pages/settings/sap/change_password'
+import GeneralPage from '_app/pages/settings/general'
 
 import ConnectPage from '_app/pages/dapp/connect'
 import { ApprovalRequestPage } from '_app/pages/dapp/tx_approval'
@@ -98,14 +99,18 @@ const router = createHashRouter([
         path: 'settings/sap/change-password',
         element: <ChangePasswordPage />,
       },
-      // {
-      //   path: 'settings/wallet-management',
-      //   element: <WalletManagementPage />,
-      // },
-      // {
-      //   path: 'settings/wallet-management/:address',
-      //   element: <UpdateWalletMetaPage />,
-      // },
+      {
+        path: 'settings/general',
+        element: <GeneralPage />,
+      },
+      {
+        path: 'settings/general/wallet-management',
+        element: <WalletManagementPage />,
+      },
+      {
+        path: 'settings/general/wallet-management/:address',
+        element: <UpdateWalletMetaPage />,
+      },
       {
         path: '*',
         element: <NotFound />,

@@ -3,7 +3,7 @@ import copy from 'copy-to-clipboard'
 
 import { toast, IconWrapper } from '_app/components'
 
-import { useActiveAddress } from '_hooks'
+import { useActiveAddress, useAccountsMeta } from '_hooks'
 
 import CopyIcon from '_assets/icons/copy.svg'
 
@@ -14,6 +14,7 @@ type AddressProps = {
 
 export const Address = ({ addressOnly = false, address }: AddressProps) => {
   const activeAddress = useActiveAddress()
+  const accountsMeta = useAccountsMeta()
 
   const onCopy = () => {
     if (!activeAddress) return
@@ -33,11 +34,18 @@ export const Address = ({ addressOnly = false, address }: AddressProps) => {
   const formatedAddress = formatAddress(address || activeAddress)
 
   return (
-    <IconWrapper onClick={onCopy} className="!scale-100">
-      <span className="text-[#c0c0c0]">
-        {addressOnly ? formatedAddress : `${formatedAddress}`}
-      </span>
-      <CopyIcon height={14} width={14} className="ml-2" />
-    </IconWrapper>
+    <div className="px-6 cursor-pointer">
+      <IconWrapper onClick={onCopy} className="!scale-100">
+        <span className="text-[#c0c0c0]">
+          {addressOnly ? formatedAddress : `${formatedAddress}`}
+        </span>
+        <CopyIcon height={14} width={14} className="ml-2" />
+      </IconWrapper>
+      {!addressOnly && (
+        <div className="truncate">
+          {accountsMeta?.[activeAddress || '']?.alias || ''}
+        </div>
+      )}
+    </div>
   )
 }

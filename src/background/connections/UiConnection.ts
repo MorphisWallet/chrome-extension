@@ -19,6 +19,7 @@ import Permissions from '_src/background/Permissions'
 import Tabs from '_src/background/Tabs'
 import Transactions from '_src/background/Transactions'
 import Keyring from '_src/background/keyring'
+import { getAllMeta } from '_src/background/keyring/Meta'
 
 import type { Message } from '_messages'
 import type { PortChannelName } from '_messaging/PortChannelName'
@@ -63,9 +64,10 @@ export class UiConnection extends Connection {
           return: {
             isLocked,
             accounts:
-              (await Keyring.getAccounts())?.map((anAccount) =>
-                anAccount.toJSON()
-              ) || [],
+              (await Keyring.getAccounts())?.map((anAccount) => ({
+                ...anAccount.toJSON(),
+              })) || [],
+            accountsMeta: await getAllMeta(),
             activeAddress: (await Keyring.getActiveAccount())?.address || null,
             isInitialized: await Keyring.isWalletInitialized(),
           },

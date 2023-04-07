@@ -19,13 +19,13 @@ import {
   AUTO_LOCK_TIMER_MIN_MINUTES,
   AUTO_LOCK_TIMER_STORAGE_KEY,
 } from '_src/shared/constants'
+import { initMeta, getMetaByAddress, setMetaByAddress } from './Meta'
 
 import type { UiConnection } from '../connections/UiConnection'
 import type { SuiAddress, ExportedKeypair } from '@mysten/sui.js'
 import type { Message } from '_messages'
 import type { ErrorPayload } from '_payloads'
 import type { KeyringPayload } from '_payloads/keyring'
-import type { AccountMeta } from './utils'
 
 /** The key for the extension's storage, that holds the index of the last derived account (zero based) */
 const STORAGE_LAST_ACCOUNT_INDEX_KEY = 'last_account_index'
@@ -43,7 +43,6 @@ export class Keyring {
   #locked = true
   #mainDerivedAccount: SuiAddress | null = null
   #accountsMap: Map<SuiAddress, Account> = new Map()
-  #accountMetaMap: Map<SuiAddress, AccountMeta> = new Map()
   public readonly reviveDone: Promise<void>
 
   constructor() {
@@ -60,6 +59,7 @@ export class Keyring {
    * @throws If the wallet exists or any other error during encrypting/saving to storage or if importedEntropy is invalid
    */
   public async createVault(password: string, importedEntropy?: string) {
+    await initMeta()
     await VaultStorage.create(password, importedEntropy)
   }
 
@@ -122,6 +122,7 @@ export class Keyring {
     await this.storeLastDerivedIndex(nextIndex)
     const account = this.deriveAccount(nextIndex, mnemonic)
     this.#accountsMap.set(account.address, account)
+    await setMetaByAddress(account.address)
     this.notifyAccountsChanged()
     return account
   }
@@ -196,6 +197,7 @@ export class Keyring {
         keypair: added,
       })
       this.#accountsMap.set(importedAccount.address, importedAccount)
+      await setMetaByAddress(importedAccount.address)
       this.notifyAccountsChanged()
     }
     return added
@@ -404,12 +406,18 @@ export class Keyring {
     for (let i = 0; i <= lastAccountIndex; i++) {
       const account = this.deriveAccount(i, mnemonic)
       this.#accountsMap.set(account.address, account)
+
+      const accountMeta = await getMetaByAddress(account.address)
+      if (!accountMeta) {
+        await setMetaByAddress(account.address)
+      }
+
       if (i === 0) {
         this.#mainDerivedAccount = account.address
       }
     }
 
-    VaultStorage.getImportedKeys()?.forEach((anImportedKey) => {
+    VaultStorage.getImportedKeys()?.forEach(async (anImportedKey) => {
       const account = new ImportedAccount({
         keypair: anImportedKey,
       })
@@ -417,6 +425,11 @@ export class Keyring {
       // if later we derive it skip overriding the derived account with the imported one (convert the imported as derived in a way)
       if (!this.#accountsMap.has(account.address)) {
         this.#accountsMap.set(account.address, account)
+      }
+
+      const importedAccountMeta = await getMetaByAddress(account.address)
+      if (!importedAccountMeta) {
+        await setMetaByAddress(account.address)
       }
     })
     mnemonic = null

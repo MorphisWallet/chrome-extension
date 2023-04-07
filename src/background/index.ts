@@ -23,6 +23,7 @@ Browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
   // library, we can use some combination of parsing into a date + inspecting patch.
   // const previousVersionSemver = coerce(previousVersion)?.version
   const previousMinorVer = Number(previousVersion?.split('.')?.[2])
+  // const previousPatchVer = Number(previousVersion?.split('.')?.[3])
   if (reason === 'install') {
     await Browser.storage.local.set({
       v: -1,

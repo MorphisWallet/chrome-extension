@@ -6,7 +6,7 @@ import cl from 'classnames'
 import { Button, IconWrapper, Modal, Address, Avatar } from '_app/components'
 import Network from './components/network'
 
-import { useAppSelector } from '_hooks'
+import { useAppSelector, useActiveAddress, useAccountsMeta } from '_hooks'
 
 import CloseIcon from '_assets/icons/close.svg'
 import LandingIcon from '_assets/icons/landing.svg'
@@ -51,10 +51,10 @@ const LayoutBase = ({
   showHeader = true,
   showNav = true,
 }: PageLayoutProps) => {
-  // const dispatch = useAppDispatch()
   const location = useLocation()
-  const network = useAppSelector(({ app }) => app.apiEnv)
-  // const { avatar } = useAppSelector(activeAccountSelector) || {}
+  const activeApiEnv = useAppSelector(({ app }) => app.apiEnv)
+  const activeAddress = useActiveAddress()
+  const accountsMeta = useAccountsMeta()
 
   const [modalOpen, setModalOpen] = useState(false)
 
@@ -90,18 +90,21 @@ const LayoutBase = ({
       />
       {showHeader && (
         <header className="h-12 px-6 bg-white border-b border-b-[#e6e6e9] flex items-center shrink-0 font-medium z-[1010]">
-          {/* <Link to="/settings/wallet-management"> */}
-          <Avatar size={24} />
-          {/* </Link> */}
-          <div className="grow mx-2 text-center cursor-pointer">
+          <Link className="shrink-0" to="/settings/general/wallet-management">
+            <Avatar
+              avatar={accountsMeta?.[activeAddress || '']?.avatar}
+              size={24}
+            />
+          </Link>
+          <div className="grow mx-2 text-center overflow-hidden">
             <Address />
           </div>
           <Button
-            title={network}
-            className="!h-6 !w-auto !rounded-[12px] !text-[10px] !px-2.5 max-w-[60px]"
+            title={activeApiEnv}
+            className="!h-6 !w-auto !rounded-[12px] !text-[10px] !px-2.5 max-w-[60px] shrink-0"
             onClick={() => setModalOpen(true)}
           >
-            {network}
+            {activeApiEnv}
           </Button>
         </header>
       )}
