@@ -5,9 +5,6 @@ import { useQuery } from '@tanstack/react-query'
 import 'swiper/css'
 import 'swiper/css/autoplay'
 
-const BANNER_JSON_COS_URL =
-  'https://morphis-1256253626.cos.accelerate.myqcloud.com/banner.json'
-
 type BannerData = {
   id: string
   link: string
@@ -17,7 +14,8 @@ type BannerData = {
 export const Banner = () => {
   const { isLoading, error, data } = useQuery<BannerData[]>({
     queryKey: ['bannerData'],
-    queryFn: () => fetch(BANNER_JSON_COS_URL).then((res) => res.json()),
+    queryFn: () =>
+      fetch(`${process.env.COS_URL}/banner.json`).then((res) => res.json()),
   })
 
   if (isLoading || error || !data || !data?.length) {
