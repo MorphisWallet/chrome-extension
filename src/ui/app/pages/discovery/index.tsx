@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import Layout from '_app/layouts'
-import { Tabs, Tab, Banner } from '_components/index'
+import { Tabs, Tab, Banner } from '_app/components'
 import NFTs from './components/nfts'
 import Dapps from './components/dapps'
 
