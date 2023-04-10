@@ -1,3 +1,7 @@
+## 0.0.7.3 (Apr 10, 2023)
+
+- Configurable discovery banner
+
 ## 0.0.7.2 (Apr 6, 2023)
 
 - Release wallet management
