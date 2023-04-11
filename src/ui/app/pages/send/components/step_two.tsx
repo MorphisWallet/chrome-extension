@@ -95,7 +95,7 @@ const SendStepTwo = ({ coinBalance, formikProps }: ConfirmStepTwoProps) => {
           type: 'success',
           message: (
             <p>
-              Successfully transferred {values.amount} to {values.address}
+              {`Successfully transferred ${values.amount} to ${values.address} `}
               <TxLink
                 transactionID={digest}
                 type={ExplorerLinkType.transaction}

@@ -53,7 +53,7 @@ export const TxLink = (props: TxLinkProps) => {
   return (
     <a
       className={cl([
-        disableLink && 'pointer-events-none cursor-not-allowed',
+        disableLink && 'font-[#bef9ff] pointer-events-none cursor-not-allowed',
         className,
       ])}
       href={explorerHref || undefined}

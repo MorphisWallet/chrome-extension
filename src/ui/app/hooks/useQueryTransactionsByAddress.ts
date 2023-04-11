@@ -18,12 +18,12 @@ export function useQueryTransactionsByAddress(address: SuiAddress | null) {
       const [txnIds, fromTxnIds] = await Promise.all([
         rpc.queryTransactionBlocks({
           filter: {
-            ToAddress: address as string,
+            ToAddress: address!,
           },
         }),
         rpc.queryTransactionBlocks({
           filter: {
-            FromAddress: address as string,
+            FromAddress: address!,
           },
         }),
       ])
@@ -42,7 +42,7 @@ export function useQueryTransactionsByAddress(address: SuiAddress | null) {
 
       return resp.sort(
         // timestamp could be null, so we need to handle
-        (a, b) => (b.timestampMs || 0) - (a.timestampMs || 0)
+        (a, b) => +(b.timestampMs || 0) - +(a.timestampMs || 0)
       )
     },
     { enabled: !!address, staleTime: 10 * 1000 }
