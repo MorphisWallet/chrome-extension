@@ -1,3 +1,7 @@
+## 0.0.7.4 (Apr 11, 2023)
+
+- Fix wrong 'send to' address in send confirmation page
+
 ## 0.0.7.3 (Apr 10, 2023)
 
 - Configurable discovery banner
