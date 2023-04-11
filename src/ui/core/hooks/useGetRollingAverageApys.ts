@@ -2,9 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useMemo } from 'react'
-import BigNumber from 'bignumber.js'
+// NOTE: Bignumber's .pow() method is very slow, so we use decimal.js for this use-case.
+// this inflates bundle size quite a bit, so we should move this calculation to the API in the future.
+import Decimal from 'decimal.js'
 
 import { useGetValidatorsEvents } from './useGetValidatorsEvents'
+import { useGetSystemState } from './useGetSystemState'
 import { roundFloat } from '../utils/roundFloat'
 
 // recentEpochRewards is list of the last 30 epoch rewards for a specific validator
@@ -12,7 +15,7 @@ import { roundFloat } from '../utils/roundFloat'
 // APY_e_30rollingaverage = average(APY_e,APY_e-1,…,APY_e-29);
 
 const ROLLING_AVERAGE = 30
-const DEFAULT_APY_DECIMALS = 4
+const DEFAULT_APY_DECIMALS = 2
 
 // define the type parsedJson response
 type ParsedJson = {
@@ -40,10 +43,10 @@ export interface ApyByValidator {
 }
 
 const calculateApy = (stake: string, poolStakingReward: string) => {
-  const poolStakingRewardBigNumber = new BigNumber(poolStakingReward)
-  const stakeBigNumber = new BigNumber(stake)
+  const poolStakingRewardBigNumber = new Decimal(poolStakingReward)
+  const stakeBigNumber = new Decimal(stake)
   // Calculate the ratio of pool_staking_reward / stake
-  const ratio = poolStakingRewardBigNumber.dividedBy(stakeBigNumber)
+  const ratio = poolStakingRewardBigNumber.div(stakeBigNumber)
 
   // Perform the exponentiation and subtraction using BigNumber
   const apy = ratio.plus(1).pow(365).minus(1)
@@ -58,13 +61,30 @@ export function useGetRollingAverageApys(numberOfValidators: number | null) {
     order: 'descending',
   })
 
+  const { data, isLoading } = useGetSystemState()
+
   const apyByValidator =
     useMemo<ApyByValidator | null>(() => {
-      if (!validatorEpochEvents?.data || !validatorEpochEvents?.data?.data) {
+      if (!validatorEpochEvents?.data || !data) {
         return null
       }
+      const { stakeSubsidyStartEpoch, epoch, activeValidators } = data || {}
+      // return 0 for all validators if current epoch is less than the stake subsidy start epoch
+      if (+epoch < +stakeSubsidyStartEpoch) {
+        return activeValidators.reduce((acc, validator) => {
+          acc[validator.suiAddress] = 0
+          return acc
+        }, {} as ApyByValidator)
+      }
+
+      // The rolling average epoch is the current epoch - the stake subsidy start epoch
+      const avgEpochNumberAfterSubsidy = Math.max(
+        0,
+        Math.min(ROLLING_AVERAGE, +epoch - +stakeSubsidyStartEpoch)
+      )
       const apyGroups: ApyGroups = {}
-      validatorEpochEvents.data.data.forEach(({ parsedJson }) => {
+
+      validatorEpochEvents.data.forEach(({ parsedJson }) => {
         const { stake, pool_staking_reward, validator_address } =
           parsedJson as ParsedJson
 
@@ -81,10 +101,13 @@ export function useGetRollingAverageApys(numberOfValidators: number | null) {
 
       const apyByValidator: ApyByValidator = Object.entries(apyGroups).reduce(
         (acc, [validatorAddr, apyArr]) => {
-          const apys = apyArr.slice(0, ROLLING_AVERAGE).map((entry) => entry)
+          // prevent negative rolling average epoch by setting it to 0
+          const apys = apyArr
+            .slice(0, avgEpochNumberAfterSubsidy)
+            .map((entry) => entry)
 
           const avgApy = apys.reduce((sum, apy) => sum + apy, 0) / apys.length
-          acc[validatorAddr] = roundFloat(avgApy, DEFAULT_APY_DECIMALS)
+          acc[validatorAddr] = roundFloat(avgApy * 100, DEFAULT_APY_DECIMALS)
           return acc
         },
         {} as ApyByValidator
@@ -92,10 +115,11 @@ export function useGetRollingAverageApys(numberOfValidators: number | null) {
       // return object with validator address as key and APY as value
       // { '0x123': 0.1234, '0x456': 0.4567 }
       return apyByValidator
-    }, [validatorEpochEvents.data]) || null
+    }, [validatorEpochEvents.data, data]) || null
 
   return {
     ...validatorEpochEvents,
+    isLoading: isLoading || validatorEpochEvents.isLoading,
     data: apyByValidator,
   }
 }

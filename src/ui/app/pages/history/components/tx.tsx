@@ -67,6 +67,7 @@ const Tx = ({ txn, address }: TxProps) => {
 
   // const error = getExecutionStatusError(txn)
 
+  console.log(123, txn)
   return (
     <TxLink
       type={ExplorerLinkType.transaction}
@@ -97,7 +98,7 @@ const Tx = ({ txn, address }: TxProps) => {
           </span>
           <span className="text-[10px] text-[#c4c4c4]">
             {txn.timestampMs
-              ? new Date(txn.timestampMs).toLocaleTimeString('en-US')
+              ? new Date(+txn.timestampMs).toLocaleTimeString('en-US')
               : '-'}
           </span>
         </div>

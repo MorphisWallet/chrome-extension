@@ -78,7 +78,7 @@ const NftSend = () => {
           type: 'success',
           message: (
             <p>
-              Successfully transferred NFT {objectId} to {address}
+              {`Successfully transferred NFT ${objectId} to ${address} `}
               <TxLink
                 transactionID={digest}
                 type={ExplorerLinkType.transaction}
