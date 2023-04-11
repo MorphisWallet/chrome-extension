@@ -50,7 +50,7 @@ const SendStepTwo = ({ coinBalance, formikProps }: ConfirmStepTwoProps) => {
   const [executing, setExecuting] = useState(false)
 
   const transaction = useMemo(() => {
-    if (!signer || !formikProps.values || !activeAddress) return null
+    if (!signer || !values || !activeAddress) return null
 
     return createTokenTransferTransaction({
       coinType: coinBalance?.coinType || '',
@@ -131,7 +131,9 @@ const SendStepTwo = ({ coinBalance, formikProps }: ConfirmStepTwoProps) => {
       <p className="mb-10 font-bold">{symbol}</p>
       <div className="flex justify-between w-full">
         <span className="text-[#9f9d9d]">Send to</span>
-        <span title={values.address}>{formatAddress(activeAddress || '')}</span>
+        <span title={values.address}>
+          {formatAddress(values.address || '')}
+        </span>
       </div>
       <hr className="border-t border-t-[#c4c4c4] my-4 w-full" />
       <div className="flex justify-between w-full mb-2">
