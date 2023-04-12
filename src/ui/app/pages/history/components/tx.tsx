@@ -67,7 +67,6 @@ const Tx = ({ txn, address }: TxProps) => {
 
   // const error = getExecutionStatusError(txn)
 
-  console.log(123, txn)
   return (
     <TxLink
       type={ExplorerLinkType.transaction}

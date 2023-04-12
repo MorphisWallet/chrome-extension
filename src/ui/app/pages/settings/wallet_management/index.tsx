@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Tooltip } from 'react-tooltip'
 import cl from 'classnames'
 import { SuiAddress, formatAddress } from '@mysten/sui.js'
@@ -62,6 +62,7 @@ const AccountSelect = ({ address }: AccountSelectProps) => {
 }
 
 const WalletManagementPage = () => {
+  const navigate = useNavigate()
   const accounts = useAccounts()
   const createAccountMutation = useDeriveNextAccountMutation()
 
@@ -81,11 +82,14 @@ const WalletManagementPage = () => {
       <div className="flex flex-col grow font-medium px-6 pt-4 pb-6 overflow-hidden text-sm">
         <div className="mb-6 text-xl text-center font-bold relative">
           Wallet Management
-          <Link to="/settings/general" className="absolute left-0 top-[7px]">
+          <span
+            className="absolute left-0 top-[7px]"
+            onClick={() => navigate(-1)}
+          >
             <IconWrapper>
               <ArrowShort height={10} width={13} />
             </IconWrapper>
-          </Link>
+          </span>
         </div>
         <div className="flex flex-col grow overflow-y-auto px-6 mx-[-24px]">
           <div className="flex flex-col gap-2">
