@@ -108,6 +108,7 @@ const UpdateWalletMetaPage = () => {
           {addressMeta?.alias || 'Account'}
           <Link
             to="/settings/general/wallet-management"
+            state={{ nextPath: '/settings/general' }}
             className="absolute left-0 top-[7px]"
           >
             <IconWrapper>

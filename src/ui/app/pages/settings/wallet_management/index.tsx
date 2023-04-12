@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Tooltip } from 'react-tooltip'
 import cl from 'classnames'
 import { SuiAddress, formatAddress } from '@mysten/sui.js'
@@ -63,6 +63,7 @@ const AccountSelect = ({ address }: AccountSelectProps) => {
 
 const WalletManagementPage = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const accounts = useAccounts()
   const createAccountMutation = useDeriveNextAccountMutation()
 
@@ -77,6 +78,8 @@ const WalletManagementPage = () => {
     }
   }, [createAccountMutation.isError])
 
+  console.log(123, location.state)
+
   return (
     <Layout showNav={false}>
       <div className="flex flex-col grow font-medium px-6 pt-4 pb-6 overflow-hidden text-sm">
@@ -84,7 +87,7 @@ const WalletManagementPage = () => {
           Wallet Management
           <span
             className="absolute left-0 top-[7px]"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate(location.state?.nextPath || -1)}
           >
             <IconWrapper>
               <ArrowShort height={10} width={13} />
