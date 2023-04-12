@@ -2,7 +2,7 @@
 
 - Fix wrong 'send to' address in send confirmation page
 - Fix coin display
-- Update @mysten/sui.js to ^0.32.1
+- Update @mysten/sui.js@^0.32.1 and @mysten/wallet-standard@^0.5.3
 
 ## 0.0.7.3 (Apr 10, 2023)
 
