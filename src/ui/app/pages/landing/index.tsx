@@ -19,7 +19,6 @@ const LandingPage = () => {
     data: balances,
     isLoading,
     isError,
-    error,
     failureCount,
   } = useGetAllBalances(accountAddress)
 
@@ -35,10 +34,10 @@ const LandingPage = () => {
     if (isError && failureCount < 2) {
       toast({
         type: 'error',
-        message: (error as Error)?.message || 'Failed to load balance',
+        message: 'Sui server error - failed to load balance',
       })
     }
-  }, [isError, error, failureCount])
+  }, [isError, failureCount])
 
   return (
     <Layout>

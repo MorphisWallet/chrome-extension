@@ -11,7 +11,7 @@ import type { SuiObjectData } from '@mysten/sui.js'
 
 const NftPage = () => {
   const accountAddress = useActiveAddress()
-  const { data, isLoading, error, isError } = useObjectsOwnedByAddress(
+  const { data, isLoading, isError } = useObjectsOwnedByAddress(
     accountAddress,
     { options: { showType: true, showDisplay: true } }
   )
@@ -27,7 +27,7 @@ const NftPage = () => {
     if (isError) {
       toast({
         type: 'error',
-        message: (error as Error)?.message || 'Failed to load NFTs',
+        message: 'Sui server error - Failed to load NFTs',
       })
     }
   }, [isError])
