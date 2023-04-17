@@ -22,7 +22,6 @@ const NftDetail = () => {
     data: objectData,
     isLoading,
     isError,
-    error,
   } = useOwnedNFT(nftId || '', accountAddress)
   const { nftFields, fileExtensionType, filePath } = useNFTBasicData(objectData)
 
@@ -32,7 +31,7 @@ const NftDetail = () => {
     if (isError) {
       toast({
         type: 'error',
-        message: (error as Error)?.message || 'Failed to load NFT information',
+        message: 'Sui server error - Failed to load NFT information',
       })
     }
   }, [isError])

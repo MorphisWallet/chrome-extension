@@ -18,7 +18,6 @@ const CoinDetailPage = () => {
   const {
     data: coinBalance,
     isError,
-    error,
     isLoading,
   } = useGetCoinBalance(coinType, accountAddress)
 
@@ -34,7 +33,7 @@ const CoinDetailPage = () => {
     if (isError) {
       toast({
         type: 'error',
-        message: (error as Error)?.message || 'Failed to load coin balance',
+        message: 'Sui server error - failed to load coin balance',
       })
     }
   }, [isError])

@@ -19,7 +19,7 @@ const AirdropButton = () => {
     if (mutation.isError) {
       toast({
         type: 'error',
-        message: (mutation.error as Error)?.message || 'Failed to faucet',
+        message: 'Sui server error - failed to faucet',
       })
     }
   }, [mutation.isError])

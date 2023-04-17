@@ -1,3 +1,7 @@
+## 0.0.7.5 (Apr 17, 2023)
+
+- Update error message toast
+
 ## 0.0.7.4 (Apr 11, 2023)
 
 - Fix wrong 'send to' address in send confirmation page

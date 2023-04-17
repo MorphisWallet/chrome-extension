@@ -27,7 +27,6 @@ const SendPage = () => {
   const {
     data: coinBalance,
     isError,
-    error,
     isLoading,
   } = useGetCoinBalance(coinType, activeAddress)
   const [coinDecimals] = useCoinDecimals(coinType)
@@ -42,7 +41,7 @@ const SendPage = () => {
     if (isError) {
       toast({
         type: 'error',
-        message: (error as Error)?.message || 'Failed to load coin balance',
+        message: 'Sui server error - Failed to load coin balance',
       })
     }
   }, [isError])
