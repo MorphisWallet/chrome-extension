@@ -1,3 +1,7 @@
+## 0.0.7.6 (Apr 18, 2023)
+
+- Adjust approve and cancel button position
+
 ## 0.0.7.5 (Apr 17, 2023)
 
 - Update error message toast

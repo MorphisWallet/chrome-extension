@@ -76,6 +76,15 @@ export function UserApproveContainer({
       <div className="flex flex-col grow justify-end">
         <div className="flex gap-4">
           <Button
+            disabled={submitting}
+            onClick={() => {
+              handleOnResponse(false)
+            }}
+            variant="outlined"
+          >
+            {rejectTitle}
+          </Button>
+          <Button
             // recreate the button when changing the variant to avoid animating to the new styles
             key={`approve_${isWarning}`}
             onClick={() => {
@@ -86,15 +95,6 @@ export function UserApproveContainer({
             variant="contained"
           >
             {approveTitle}
-          </Button>
-          <Button
-            disabled={submitting}
-            onClick={() => {
-              handleOnResponse(false)
-            }}
-            variant="outlined"
-          >
-            {rejectTitle}
           </Button>
         </div>
       </div>
