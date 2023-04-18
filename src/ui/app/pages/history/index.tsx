@@ -30,9 +30,9 @@ const HistoryPage = () => {
 
   return (
     <Layout>
-      <div className="flex flex-col grow font-medium px-6 pt-4 pb-6 overflow-hidden">
+      <div className="flex flex-col grow font-medium px-6 pt-4 overflow-hidden">
         <p className="mb-6 text-xl font-bold">Recent activity</p>
-        <div className="flex flex-col grow overflow-y-auto">
+        <div className="flex flex-col grow px-6 -mx-6 overflow-y-auto">
           <Loading loading={isLoading}>
             {!!activeAddress &&
               txns?.map((txn: SuiTransactionBlockResponse) => (
