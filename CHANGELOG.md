@@ -1,3 +1,7 @@
+## 0.0.8.0 (May 2, 2023)
+
+- Support Sui mainnet
+
 ## 0.0.7.6 (Apr 18, 2023)
 
 - Adjust approve and cancel button position
