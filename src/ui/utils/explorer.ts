@@ -11,6 +11,7 @@ const API_ENV_TO_EXPLORER_ENV: Record<API_ENV, string | undefined> = {
   [API_ENV.devNet]: 'devnet',
   [API_ENV.testNet]: 'testnet',
   [API_ENV.customRPC]: '',
+  [API_ENV.mainnet]: 'mainnet',
 }
 
 //TODO - this is a temporary solution, we should have a better way to get the explorer url
