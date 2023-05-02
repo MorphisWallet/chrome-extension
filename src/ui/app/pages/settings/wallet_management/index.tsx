@@ -78,8 +78,6 @@ const WalletManagementPage = () => {
     }
   }, [createAccountMutation.isError])
 
-  console.log(123, location.state)
-
   return (
     <Layout showNav={false}>
       <div className="flex flex-col grow font-medium px-6 pt-4 pb-6 overflow-hidden text-sm">

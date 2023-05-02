@@ -6,4 +6,5 @@ export enum API_ENV {
   devNet = 'devNet',
   testNet = 'testNet',
   customRPC = 'customRPC',
+  mainnet = 'mainnet',
 }

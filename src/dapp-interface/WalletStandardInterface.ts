@@ -57,6 +57,9 @@ type WalletEventsMap = {
 // NOTE: Because this runs in a content script, we can't fetch the manifest.
 const name = process.env.APP_NAME || 'Morphis Wallet'
 
+// use @mysten/wallet-standard
+const SUI_MAINNET_CHAIN = 'sui:mainnet' as const
+
 type ChainType = Wallet['chains'][number]
 const API_ENV_TO_CHAIN: Record<
   Exclude<API_ENV, API_ENV.customRPC>,
@@ -65,6 +68,7 @@ const API_ENV_TO_CHAIN: Record<
   [API_ENV.local]: SUI_LOCALNET_CHAIN,
   [API_ENV.devNet]: SUI_DEVNET_CHAIN,
   [API_ENV.testNet]: SUI_TESTNET_CHAIN,
+  [API_ENV.mainnet]: SUI_MAINNET_CHAIN,
 }
 
 export class SuiWallet implements Wallet {
