@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { Tooltip } from 'react-tooltip'
 import { SUI_TYPE_ARG } from '@mysten/sui.js'
 import cl from 'classnames'
 
@@ -8,13 +9,16 @@ import { Button, Loading, toast } from '_app/components'
 import CoinList from './components/coin_list'
 import AirdropButton from './components/airdrop_button'
 
-import { useActiveAddress, useGetAllBalances } from '_hooks'
+import { useActiveAddress, useGetAllBalances, useAppSelector } from '_hooks'
 import { useFormatCoin } from '_src/ui/core'
+
+import { API_ENV } from '_src/shared/api-env'
 
 import ArrowIcon from '_assets/icons/arrow_short_thin.svg'
 
 const LandingPage = () => {
   const accountAddress = useActiveAddress()
+  const network = useAppSelector(({ app }) => app.apiEnv)
   const {
     data: balances,
     isLoading,
@@ -52,7 +56,22 @@ const LandingPage = () => {
             </Loading>
           </div>
           <div className="flex gap-8 text-sm">
-            <AirdropButton />
+            {network === API_ENV.mainnet ? (
+              <Link
+                className="flex flex-col items-center cursor-not-allowed"
+                data-tooltip-content="Coming soon"
+                data-tooltip-id="link-tip"
+                to="/"
+              >
+                <Button className="!h-[40px] !w-[40px] !px-0 mb-2 rounded-full flex justify-center items-center !cursor-not-allowed">
+                  <ArrowIcon className="rotate-180" />
+                </Button>
+                <span>Receive</span>
+                <Tooltip id="link-tip" />
+              </Link>
+            ) : (
+              <AirdropButton />
+            )}
             <Link
               to={`/send?type=${SUI_TYPE_ARG}`}
               className={cl([
@@ -62,7 +81,7 @@ const LandingPage = () => {
               ])}
             >
               <Button
-                disabled={isLoading}
+                disabled={isLoading || !suiTypeBalance?.totalBalance}
                 variant="outlined"
                 className="!h-[40px] !w-[40px] !px-0 mb-2 rounded-full flex justify-center items-center"
               >

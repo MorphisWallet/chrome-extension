@@ -13,7 +13,7 @@ const AirdropButton = () => {
   const network = useAppSelector(({ app }) => app.apiEnv)
   const mutation = useFaucetMutation()
 
-  const allowAirdrop = API_ENV.customRPC !== network
+  const allowAirdrop = ![API_ENV.customRPC, API_ENV.mainnet].includes(network)
 
   useEffect(() => {
     if (mutation.isError) {
