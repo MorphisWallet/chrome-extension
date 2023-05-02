@@ -22,7 +22,7 @@ const CoinList = ({ balancesLoading, balances }: CoinListProps) => {
   const network = useAppSelector(({ app }) => app.apiEnv)
   const mutation = useFaucetMutation()
 
-  const allowAirdrop = API_ENV.customRPC !== network
+  const allowAirdrop = ![API_ENV.customRPC, API_ENV.mainnet].includes(network)
 
   useEffect(() => {
     if (mutation.isError) {
@@ -39,13 +39,14 @@ const CoinList = ({ balancesLoading, balances }: CoinListProps) => {
         <div className="flex flex-col grow justify-center items-center px-8">
           <NoCoinPlaceholder height={154} width={234} />
           <p className="font-bold text-base mb-3">Add crypto to get started</p>
-          <Button
-            loading={mutation.isLoading}
-            disabled={!allowAirdrop}
-            onClick={() => mutation.mutate()}
-          >
-            Get airdrop
-          </Button>
+          {allowAirdrop && (
+            <Button
+              loading={mutation.isLoading}
+              onClick={() => mutation.mutate()}
+            >
+              Get airdrop
+            </Button>
+          )}
         </div>
       )
     }
