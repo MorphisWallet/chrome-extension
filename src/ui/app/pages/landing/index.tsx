@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Tooltip } from 'react-tooltip'
 import { SUI_TYPE_ARG } from '@mysten/sui.js'
 import cl from 'classnames'
 
@@ -57,17 +56,11 @@ const LandingPage = () => {
           </div>
           <div className="flex gap-8 text-sm">
             {network === API_ENV.mainnet ? (
-              <Link
-                className="flex flex-col items-center cursor-not-allowed"
-                data-tooltip-content="Coming soon"
-                data-tooltip-id="link-tip"
-                to="/"
-              >
-                <Button className="!h-[40px] !w-[40px] !px-0 mb-2 rounded-full flex justify-center items-center !cursor-not-allowed">
+              <Link className="flex flex-col items-center" to="/receive">
+                <Button className="!h-[40px] !w-[40px] !px-0 mb-2 rounded-full flex justify-center items-center">
                   <ArrowIcon className="rotate-180" />
                 </Button>
                 <span>Receive</span>
-                <Tooltip id="link-tip" />
               </Link>
             ) : (
               <AirdropButton />
