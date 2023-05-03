@@ -5,6 +5,7 @@ import ProtectedRouter from '_app/ProtectedRouter'
 import LandingPage from '_app/pages/landing'
 import CoinDetailPage from '_app/pages/landing/coin_detail'
 import SendPage from '_app/pages/send'
+import ReceivePage from '_app/pages/receive'
 
 import NftPage from '_app/pages/nft'
 import NftDetailPage from '_app/pages/nft/nft_detail'
@@ -56,6 +57,10 @@ const router = createHashRouter([
       {
         path: 'send',
         element: <SendPage />,
+      },
+      {
+        path: 'receive',
+        element: <ReceivePage />,
       },
       {
         path: 'nft',
