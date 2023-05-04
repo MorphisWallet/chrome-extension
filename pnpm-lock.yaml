@@ -13,6 +13,9 @@ dependencies:
   '@noble/hashes':
     specifier: ^1.3.0
     version: 1.3.0
+  '@originbyte/js-sdk':
+    specifier: ^0.29.58
+    version: 0.29.58
   '@reduxjs/toolkit':
     specifier: ^1.9.5
     version: 1.9.5(react-redux@8.0.5)(react@18.2.0)
@@ -49,6 +52,9 @@ dependencies:
   postcss:
     specifier: ^8.4.23
     version: 8.4.23
+  qrcode.react:
+    specifier: ^3.1.0
+    version: 3.1.0(react@18.2.0)
   react:
     specifier: ^18.2.0
     version: 18.2.0
@@ -2724,6 +2730,25 @@ packages:
       bs58: 5.0.0
     dev: false
 
+  /@mysten/sui.js@0.32.2:
+    resolution: {integrity: sha512-/Hm4xkGolJhqj8FvQr7QSHDTlxIvL52mtbOao9f75YjrBh7y1Uh9kbJSY7xiTF1NY9sv6p5hUVlYRJuM0Hvn9A==}
+    engines: {node: '>=16'}
+    dependencies:
+      '@mysten/bcs': 0.7.1
+      '@noble/curves': 1.0.0
+      '@noble/hashes': 1.3.0
+      '@scure/bip32': 1.3.0
+      '@scure/bip39': 1.2.0
+      '@suchipi/femver': 1.0.0
+      jayson: 4.1.0
+      rpc-websockets: 7.5.1
+      superstruct: 1.0.3
+      tweetnacl: 1.0.3
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    dev: false
+
   /@mysten/sui.js@0.33.0:
     resolution: {integrity: sha512-vPswzowPoxYmexN+jKrSQ5uKWv8AoX30c11t8VAODCCXeCziq7Y27TEcYFsQmWJBIMU/hYw75kGj9oorJyXyKw==}
     engines: {node: '>=16'}
@@ -2780,6 +2805,16 @@ packages:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.15.0
+
+  /@originbyte/js-sdk@0.29.58:
+    resolution: {integrity: sha512-jUMP+Wpth9tbCz6iJldfj36E7Awh8O4gIrAoGJfsQ0TDAasggrIgEy0972+JtCfxD0ACTHFTcHsuaLsn/dRLyQ==}
+    dependencies:
+      '@mysten/sui.js': 0.32.2
+      superstruct: 1.0.3
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    dev: false
 
   /@pnpm/config.env-replace@1.1.0:
     resolution: {integrity: sha512-htyl8TWnKL7K/ESFa1oW2UB5lVDxuF5DpM7tBi6Hu2LNL3mWkIzNLG6N4zoCUP1lCKNxWy/3iu8mS8MvToGd6w==}
@@ -9226,6 +9261,14 @@ packages:
     resolution: {integrity: sha512-kV/CThkXo6xyFEZUugw/+pIOywXcDbFYgSct5cT3gqlbkBE1SJdwy6UQoZvodiWF/ckQLZyDE/Bu1M6gVu5lVw==}
     engines: {node: '>=0.6.0', teleport: '>=0.2.0'}
     dev: true
+
+  /qrcode.react@3.1.0(react@18.2.0):
+    resolution: {integrity: sha512-oyF+Urr3oAMUG/OiOuONL3HXM+53wvuH3mtIWQrYmsXoAq0DkvZp2RYUWFSMFtbdOpuS++9v+WAkzNVkMlNW6Q==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
 
   /qs@6.5.3:
     resolution: {integrity: sha512-qxXIEh4pCGfHICj1mAJQ2/2XVZkjCDTcEgfoSQxc/fYivUZxTkk7L3bDBJSoNrEzXI17oUO5Dp07ktqE5KzczA==}
