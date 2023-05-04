@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import copy from 'copy-to-clipboard'
+import { QRCodeSVG } from 'qrcode.react'
 import { formatAddress } from '@mysten/sui.js'
 
 import Layout from '_app/layouts'
@@ -39,6 +40,11 @@ const ReceivePage = () => {
             <ArrowShort height={10} width={13} />
           </IconWrapper>
         </div>
+        {activeAddress && (
+          <div className="flex justify-center mb-8">
+            <QRCodeSVG value={activeAddress} />
+          </div>
+        )}
         <div className="flex items-center p-2 border border-[#d9d9d9] rounded">
           <span className="pr-1">
             {accountsMeta?.[activeAddress || '']?.alias || ''}:{' '}
