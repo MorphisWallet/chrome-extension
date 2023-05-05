@@ -80,7 +80,8 @@ const SendStepTwo = ({ coinType, formikProps }: ConfirmStepTwoProps) => {
     })
   }, [
     signer,
-    coinDecimals,
+    coinsData,
+    coinMetadata,
     coinType,
     formikProps.values.amount,
     formikProps.values.address,
@@ -104,7 +105,7 @@ const SendStepTwo = ({ coinType, formikProps }: ConfirmStepTwoProps) => {
       coins: coinsData,
     })
   }, [
-    coinDecimals,
+    coinMetadata,
     coinsData,
     formikProps.values.amount,
     formikProps.values.address,
@@ -169,7 +170,7 @@ const SendStepTwo = ({ coinType, formikProps }: ConfirmStepTwoProps) => {
     <div className="flex flex-col grow items-center font-medium text-sm">
       <div
         className={cl([
-          'h-[56px] w-[56px] mb-2',
+          'h-[56px] w-[56px] flex justify-center items-center mb-2',
           !coinInfo && 'bg-[#c4c4c4] text-white rounded-full',
         ])}
       >

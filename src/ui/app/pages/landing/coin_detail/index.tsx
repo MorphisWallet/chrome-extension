@@ -50,7 +50,7 @@ const CoinDetailPage = () => {
           </Link>
         </div>
         <div className="flex flex-col items-center pt-8 px-6">
-          <CoinIcon type={coinType} className="h-[92px] w-[92px] mb-4" />
+          <CoinIcon type={coinType} className="h-[92px] w-[92px] mb-4 text-2xl" iconSize={92} />
           <div className="font-normal text-lg h-7 mb-7">
             <Loading loading={isLoading}>
               <span className="mr-2">{formatted}</span>
