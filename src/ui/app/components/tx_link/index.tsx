@@ -57,8 +57,8 @@ export const TxLink = (props: TxLinkProps) => {
         className,
       ])}
       href={explorerHref || undefined}
-      target="_blank"
       rel="noreferrer"
+      target="_blank"
     >
       {children}
     </a>

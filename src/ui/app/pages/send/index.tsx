@@ -10,7 +10,7 @@ import SendStepOne from './components/step_one'
 import SendStepTwo from './components/step_two'
 
 import { useActiveAddress, useGetCoinBalance } from '_hooks'
-import { useCoinDecimals } from '_src/ui/core'
+import { useCoinMetadata } from '_src/ui/core'
 
 import { suiAddressValidation } from '_src/ui/utils/validation'
 
@@ -29,7 +29,8 @@ const SendPage = () => {
     isError,
     isLoading,
   } = useGetCoinBalance(coinType, activeAddress)
-  const [coinDecimals] = useCoinDecimals(coinType)
+  const { data: coinMetadata } = useCoinMetadata(coinType)
+  const coinDecimals = coinMetadata?.decimals ?? 0
 
   const [step, setStep] = useState<0 | 1>(0)
 
@@ -68,7 +69,7 @@ const SendPage = () => {
       )
     }
 
-    return <SendStepTwo formikProps={formikProps} coinBalance={coinBalance} />
+    return <SendStepTwo formikProps={formikProps} coinType={coinType} />
   }
 
   return (
@@ -80,7 +81,7 @@ const SendPage = () => {
             onClick={() => {
               step === 0 ? navigate(-1) : setStep(0)
             }}
-            className="absolute left-0 top-[8px]"
+            className="absolute left-0 top-2"
           >
             <ArrowShort height={10} width={13} />
           </IconWrapper>

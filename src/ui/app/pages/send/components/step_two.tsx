@@ -1,13 +1,18 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { formatAddress, getTransactionDigest } from '@mysten/sui.js'
+import {
+  formatAddress,
+  getTransactionDigest,
+  SUI_TYPE_ARG,
+  Coin,
+} from '@mysten/sui.js'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { FormikProps } from 'formik'
 import cl from 'classnames'
 
-import { Button, TxLink, toast } from '_app/components'
+import { Button, TxLink, toast, Loading } from '_app/components'
 
-import { useFormatCoin, useCoinDecimals } from '_src/ui/core'
+import { useFormatCoin, useCoinMetadata, CoinFormat } from '_src/ui/core'
 import {
   useActiveAddress,
   useSigner,
@@ -21,52 +26,96 @@ import { GAS_SYMBOL } from '_redux/slices/sui-objects/Coin'
 import { getSignerOperationErrorMessage } from '_src/ui/app/helpers/errorMessages'
 import { ExplorerLinkType } from '_src/ui/app/components/tx_link/types'
 
-import type { CoinBalance } from '@mysten/sui.js'
 import type { ConfirmFields } from '../utils'
 
 type ConfirmStepTwoProps = {
-  coinBalance: CoinBalance | undefined
+  coinType: string
   formikProps: FormikProps<ConfirmFields>
 }
 
-const SendStepTwo = ({ coinBalance, formikProps }: ConfirmStepTwoProps) => {
-  const { values } = formikProps
-  const coinInfo = coinMap[coinBalance?.coinType || '']
-
+const SendStepTwo = ({ coinType, formikProps }: ConfirmStepTwoProps) => {
   const navigate = useNavigate()
-  const signer = useSigner()
   const queryClient = useQueryClient()
   const activeAddress = useActiveAddress()
-  const [, symbol] = useFormatCoin(
-    coinBalance?.totalBalance,
-    coinBalance?.coinType
-  )
-  const [decimals] = useCoinDecimals(coinBalance?.coinType)
+  const signer = useSigner()
+  // Get all coins of the type
   const { data: coinsData, isLoading: coinsIsLoading } = useGetCoins(
-    coinBalance?.coinType || '',
-    activeAddress || ''
+    coinType,
+    activeAddress
   )
+  // const { data: suiCoinsData, isLoading: suiCoinsIsLoading } = useGetCoins(
+  //   SUI_TYPE_ARG,
+  //   activeAddress!
+  // )
 
-  const [executing, setExecuting] = useState(false)
+  const coinBalance = Coin.totalBalance(coinsData || [])
+  // const suiBalance = Coin.totalBalance(suiCoinsData || [])
+
+  const { data: coinMetadata } = useCoinMetadata(coinType)
+  const coinDecimals = coinMetadata?.decimals ?? 0
+
+  const [, symbol, queryResult] = useFormatCoin(
+    coinBalance,
+    coinType,
+    CoinFormat.FULL
+  )
 
   const transaction = useMemo(() => {
-    if (!signer || !values || !activeAddress) return null
+    if (
+      !signer ||
+      !formikProps.values.amount ||
+      !formikProps.values.address ||
+      !coinsData
+    ) {
+      return null
+    }
 
     return createTokenTransferTransaction({
-      coinType: coinBalance?.coinType || '',
-      coinDecimals: decimals,
-      to: values.address,
-      amount: values.amount,
-      coins:
-        coinsData?.filter(({ lockedUntilEpoch }) => !lockedUntilEpoch) || [],
+      coinType,
+      coinDecimals: coinMetadata?.decimals ?? 0,
+      to: formikProps.values.address,
+      amount: formikProps.values.amount,
       isPayAllSui: false,
+      coins: coinsData,
     })
-  }, [coinsData, signer, values.address, values.amount, decimals])
+  }, [
+    signer,
+    coinDecimals,
+    coinType,
+    formikProps.values.amount,
+    formikProps.values.address,
+  ])
 
-  const { data: gasBudget } = useTransactionGasBudget(
+  const transactionGas = useMemo(() => {
+    if (
+      !formikProps.values.amount ||
+      !formikProps.values.address ||
+      !coinsData
+    ) {
+      return null
+    }
+
+    return createTokenTransferTransaction({
+      to: formikProps.values.address,
+      amount: formikProps.values.amount,
+      coinType: SUI_TYPE_ARG,
+      coinDecimals,
+      isPayAllSui: false,
+      coins: coinsData,
+    })
+  }, [
+    coinDecimals,
+    coinsData,
+    formikProps.values.amount,
+    formikProps.values.address,
+  ])
+
+  const { data: gasBudget, isLoading: isGasLoading } = useTransactionGasBudget(
     activeAddress,
-    transaction
+    transactionGas
   )
+
+  const coinInfo = coinMap[coinType]
 
   const executeTransfer = useMutation({
     mutationFn: async () => {
@@ -74,7 +123,6 @@ const SendStepTwo = ({ coinBalance, formikProps }: ConfirmStepTwoProps) => {
         throw new Error('Missing data')
       }
 
-      setExecuting(true)
       return signer.signAndExecuteTransactionBlock({
         transactionBlock: transaction,
         options: {
@@ -89,14 +137,14 @@ const SendStepTwo = ({ coinBalance, formikProps }: ConfirmStepTwoProps) => {
       queryClient.invalidateQueries(['coin-balance'])
 
       const digest = getTransactionDigest(response)
-      navigate(`/send?type=${coinBalance?.coinType}`)
       setTimeout(() => {
         toast({
           type: 'success',
           message: (
             <p>
-              {`Successfully transferred ${values.amount} to ${values.address} `}
+              {`Successfully transferred ${formikProps.values.amount} to ${formikProps.values.address} `}
               <TxLink
+                className="text-[#6bb7e9]"
                 transactionID={digest}
                 type={ExplorerLinkType.transaction}
               >
@@ -105,16 +153,15 @@ const SendStepTwo = ({ coinBalance, formikProps }: ConfirmStepTwoProps) => {
             </p>
           ),
         })
-      }, 0)
+      }, 100)
+
+      navigate('/landing')
     },
     onError: (error) => {
       toast({
         type: 'error',
         message: getSignerOperationErrorMessage(error),
       })
-    },
-    onSettled: () => {
-      setExecuting(false)
     },
   })
 
@@ -131,16 +178,16 @@ const SendStepTwo = ({ coinBalance, formikProps }: ConfirmStepTwoProps) => {
       <p className="mb-10 font-bold">{symbol}</p>
       <div className="flex justify-between w-full">
         <span className="text-[#9f9d9d]">Send to</span>
-        <span title={values.address}>
-          {formatAddress(values.address || '')}
+        <span title={formikProps.values.address}>
+          {formatAddress(formikProps.values.address || '')}
         </span>
       </div>
       <hr className="border-t border-t-[#c4c4c4] my-4 w-full" />
       <div className="flex justify-between w-full mb-2">
         <span className="text-[#9f9d9d] shrink-0 mr-2">Total value</span>
         <span className="flex shrink truncate">
-          <span title={values.amount} className="truncate">
-            {values.amount || '-'}
+          <span title={formikProps.values.amount} className="truncate">
+            {formikProps.values.amount || '-'}
           </span>
           <span className="ml-1">{symbol}</span>
         </span>
@@ -148,17 +195,26 @@ const SendStepTwo = ({ coinBalance, formikProps }: ConfirmStepTwoProps) => {
       <div className="flex justify-between w-full">
         <span className="text-[#9f9d9d] shrink-0 mr-2">Est. gas fee</span>
         <span className="flex shrink truncate">
-          <span title={gasBudget} className="truncate">
-            {gasBudget || '-'}
-          </span>
+          {coinsData ? (
+            <Loading loading={isGasLoading}>
+              <span>{gasBudget}</span>
+            </Loading>
+          ) : (
+            '-'
+          )}
           <span className="ml-1">{GAS_SYMBOL}</span>
         </span>
       </div>
       <div className="grow" />
       <Button
         type="button"
-        loading={executing}
-        disabled={coinsIsLoading || executing}
+        loading={executeTransfer.isLoading}
+        disabled={
+          queryResult.isLoading ||
+          coinsIsLoading ||
+          // suiCoinsIsLoading ||
+          isGasLoading
+        }
         onClick={() => executeTransfer.mutateAsync()}
       >
         Confirm and Send
