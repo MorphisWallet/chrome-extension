@@ -1,3 +1,8 @@
+## 0.0.8.1 (May 5, 2023)
+
+- Fix crash when send bridged tokens on mainnet
+- Fix bridged tokens display on mainnet
+
 ## 0.0.8.0 (May 2, 2023)
 
 - Support Sui mainnet
