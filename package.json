@@ -1,6 +1,6 @@
 {
   "name": "@morphis/chrome-extension",
-  "version": "0.0.8.1",
+  "version": "0.0.8.2",
   "description": "Morphis - the most friendly wallet on Sui",
   "engines": {
     "node": ">=16.0.0",
@@ -84,6 +84,7 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.14",
     "@metamask/browser-passworder": "^4.1.0",
     "@mysten/sui.js": "^0.33.0",
     "@mysten/wallet-standard": "^0.5.5",
