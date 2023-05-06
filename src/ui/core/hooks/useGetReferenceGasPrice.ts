@@ -4,7 +4,9 @@
 import { useRpcClient } from '../api/RpcClientContext'
 import { useQuery } from '@tanstack/react-query'
 
-export function useGetSystemState() {
+export function useGetReferenceGasPrice() {
   const rpc = useRpcClient()
-  return useQuery(['system', 'state'], () => rpc.getLatestSuiSystemState())
+  return useQuery(['current-epoch', 'gas-price'], () =>
+    rpc.getReferenceGasPrice()
+  )
 }
