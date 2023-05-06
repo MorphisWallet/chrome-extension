@@ -14,6 +14,7 @@ import { useFormatCoin } from '_src/ui/core'
 import { API_ENV } from '_src/shared/api-env'
 
 import ArrowIcon from '_assets/icons/arrow_short_thin.svg'
+import Bridge from '_assets/icons/bridge.svg'
 
 const LandingPage = () => {
   const accountAddress = useActiveAddress()
@@ -66,22 +67,36 @@ const LandingPage = () => {
               <AirdropButton />
             )}
             <Link
-              to={`/send?type=${SUI_TYPE_ARG}`}
               className={cl([
                 'flex flex-col items-center',
                 (isLoading || !suiTypeBalance?.totalBalance) &&
                   'pointer-events-none',
               ])}
+              to={`/send?type=${SUI_TYPE_ARG}`}
             >
               <Button
+                className="!h-[40px] !w-[40px] !px-0 mb-2 rounded-full flex justify-center items-center"
                 disabled={isLoading || !suiTypeBalance?.totalBalance}
                 variant="outlined"
-                className="!h-[40px] !w-[40px] !px-0 mb-2 rounded-full flex justify-center items-center"
               >
                 <ArrowIcon />
               </Button>
               <span>Send</span>
             </Link>
+            <a
+              className="flex flex-col items-center"
+              href="https://www.portalbridge.com/#/transfer"
+              rel="noreferrer"
+              target="_blank"
+            >
+              <Button
+                className="!h-[40px] !w-[40px] !px-0 mb-2 rounded-full flex justify-center items-center"
+                variant="outlined"
+              >
+                <Bridge height={24} width={24} />
+              </Button>
+              <span>Bridge</span>
+            </a>
           </div>
         </div>
         <div className="flex grow max-h-[286px] overflow-y-auto">
