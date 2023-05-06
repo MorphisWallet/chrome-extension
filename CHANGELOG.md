@@ -1,5 +1,11 @@
+## 0.0.8.2 (May 6, 2023)
+
+- Add wormhole link
+- Fix NFT display issue
+
 ## 0.0.8.1 (May 5, 2023)
 
+- Add address QR code
 - Fix crash when send bridged tokens on mainnet
 - Fix bridged tokens display on mainnet
 
