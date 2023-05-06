@@ -1,37 +1,67 @@
 import { useEffect } from 'react'
 import { Link, Outlet, useParams, useLocation } from 'react-router-dom'
 import { Tooltip } from 'react-tooltip'
-import { hasPublicTransfer } from '@mysten/sui.js'
+import cl from 'classnames'
+import { Disclosure } from '@headlessui/react'
+import { hasPublicTransfer, formatAddress } from '@mysten/sui.js'
 
 import Layout from '_app/layouts'
 import { Loading, IconWrapper, Button, TxLink, toast } from '_app/components'
 import NftCard from '../components/nft_card'
 
-import { useActiveAddress, useOwnedNFT, useNFTBasicData } from '_hooks'
+import {
+  useActiveAddress,
+  useOwnedNFT,
+  useNFTBasicData,
+  useGetNFTMeta,
+} from '_hooks'
 
 import { ExplorerLinkType } from '_src/ui/app/components/tx_link/types'
 
 import ArrowShort from '_assets/icons/arrow_short.svg'
+import ChevronRight from '_assets/icons/chevron_right.svg'
 
 const NftDetail = () => {
   const location = useLocation()
-  const { objectId: nftId = '' } = useParams()
+  const { objectId = '' } = useParams()
 
   const accountAddress = useActiveAddress()
   const {
     data: objectData,
     isLoading,
     isError,
-  } = useOwnedNFT(nftId || '', accountAddress)
-  const { nftFields, fileExtensionType, filePath } = useNFTBasicData(objectData)
+    error,
+  } = useOwnedNFT(objectId || '', accountAddress)
 
   const isTransferable = !!objectData && hasPublicTransfer(objectData)
+  const { nftFields, fileExtensionType, filePath } = useNFTBasicData(objectData)
+  // Extract either the attributes, or use the top-level NFT fields:
+  const metaFields =
+    nftFields?.metadata?.fields?.attributes?.fields ||
+    Object.entries(nftFields ?? {})
+      .filter(([key]) => key !== 'id')
+      .reduce(
+        (acc, [key, value]) => {
+          acc.keys.push(key)
+          acc.values.push(value)
+          return acc
+        },
+        { keys: [] as string[], values: [] as string[] }
+      )
+  const metaKeys: string[] = metaFields ? metaFields.keys : []
+  const metaValues = metaFields ? metaFields.values : []
+
+  const { data: nftDisplayData, isLoading: isLoadingDisplay } = useGetNFTMeta(
+    objectId || ''
+  )
 
   useEffect(() => {
     if (isError) {
       toast({
         type: 'error',
-        message: 'Sui server error - Failed to load NFT information',
+        message:
+          (error as Error)?.message ||
+          'Sui server error - Failed to load NFT information',
       })
     }
   }, [isError])
@@ -52,7 +82,7 @@ const NftDetail = () => {
 
     return (
       <div className="flex flex-col grow font-medium px-6 pb-6 overflow-hidden">
-        <div className="flex shrink-0 px-6 pt-4 pb-3 mx-[-24px] border-b border-b-[#e6e6e9] text-xl text-center font-bold relative overflow-hidden">
+        <div className="flex shrink-0 px-6 pt-4 pb-3 -mx-6 border-b border-b-[#e6e6e9] text-xl text-center font-bold relative overflow-hidden">
           <span className="grow mx-10 text-center truncate">
             {nftFields?.name || nftFields?.metadata?.fields?.name || '-'}
           </span>
@@ -62,31 +92,32 @@ const NftDetail = () => {
             </IconWrapper>
           </Link>
         </div>
-        <div className="flex flex-col grow px-6 pt-4 mx-[-24px] overflow-y-auto">
+        <div className="flex flex-col grow px-6 py-4 -mx-6 -mb-6 overflow-y-auto">
           <NftCard
-            nft={objectData}
             className="h-[308px] shrink-0 mb-2 rounded bg-[#f0f0f0] overflow-hidden"
+            imageOnly
+            objectId={objectId}
           />
           {sendFlag ? (
             <Outlet />
           ) : (
-            <>
-              {nftFields?.description && (
-                <p className="shrink-0 text-lg mb-2 truncate">
-                  {nftFields.description}
-                </p>
-              )}
+            <Loading loading={isLoadingDisplay}>
+              <p className="shrink-0 text-lg mb-2">
+                {nftDisplayData?.description || (
+                  <span className="text-[#6bb7e9]">No description</span>
+                )}
+              </p>
               <div className="flex flex-col gap-1 mb-2">
                 <div className="flex justify-between w-full text-sm">
                   <span className="text-[#9f9d9d] shrink-0 mr-2">
                     Object ID
                   </span>
                   <TxLink
-                    type={ExplorerLinkType.object}
-                    objectID={nftId}
                     className="flex shrink text-[#6bb7e9] truncate"
+                    objectID={objectId}
+                    type={ExplorerLinkType.object}
                   >
-                    {objectData.objectId}
+                    <span title={objectId}>{formatAddress(objectId)}</span>
                   </TxLink>
                 </div>
                 <div className="flex justify-between w-full text-sm">
@@ -102,6 +133,36 @@ const NftDetail = () => {
                   </span>
                 </div>
               </div>
+              <div className="mb-2">
+                <Disclosure>
+                  {({ open }) => (
+                    <>
+                      <Disclosure.Button className="flex w-full justify-between py-2 text-left text-sm font-medium rounded-lg transition-colors hover:text-gray-500">
+                        <p className="grow flex justify-between items-center">
+                          <span>Attributes</span>
+                          <ChevronRight
+                            className={cl([open ? '-rotate-90' : 'rotate-90'])}
+                            height={12}
+                            width={12}
+                          />
+                        </p>
+                      </Disclosure.Button>
+                      <Disclosure.Panel className="pb-2 text-sm text-gray-500">
+                        {metaKeys.map((_key, i) => (
+                          <p className="flex" key={_key}>
+                            <span className="w-1/2 truncate">{_key}</span>
+                            <span className="w-1/2 overflow-x-auto">
+                              {typeof metaValues[i] === 'object'
+                                ? JSON.stringify(metaValues[i])
+                                : metaValues[i]}
+                            </span>
+                          </p>
+                        ))}
+                      </Disclosure.Panel>
+                    </>
+                  )}
+                </Disclosure>
+              </div>
               <div className="flex gap-2 shrink-0">
                 <Link to="./send" className="w-full">
                   <Button disabled={!isTransferable}>Send</Button>
@@ -116,7 +177,7 @@ const NftDetail = () => {
                 </Button>
                 <Tooltip id="button-tip" className="before:hidden" />
               </div>
-            </>
+            </Loading>
           )}
         </div>
       </div>

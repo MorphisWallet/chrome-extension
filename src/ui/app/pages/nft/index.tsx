@@ -56,7 +56,7 @@ const NftPage = () => {
             key={_nft.objectId}
             to={`./${_nft.objectId}`}
           >
-            <NftCard objectId={_nft.objectId} />
+            <NftCard className="min-h-[169px]" objectId={_nft.objectId} />
           </Link>
         ))}
       </div>

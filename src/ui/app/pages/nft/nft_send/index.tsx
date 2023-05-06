@@ -88,7 +88,7 @@ const NftSend = () => {
             </p>
           ),
         })
-      }, 0)
+      }, 100)
     },
     onError: (error) => {
       toast({
@@ -98,9 +98,7 @@ const NftSend = () => {
     },
   })
 
-  if (ownedNFT && objectId && hasPublicTransfer(ownedNFT)) {
-    return <Navigate to="/" replace />
-  }
+  const isTransferable = !!ownedNFT && hasPublicTransfer(ownedNFT)
 
   return (
     <form onSubmit={handleSubmit}>
@@ -118,7 +116,11 @@ const NftSend = () => {
         onBlur={handleBlur}
       />
       <div className="flex gap-2">
-        <Button type="submit" loading={isSubmitting} disabled={isLoading}>
+        <Button
+          type="submit"
+          loading={isSubmitting}
+          disabled={isLoading || !isTransferable}
+        >
           Send
         </Button>
         <Link to="../" className="w-full">
