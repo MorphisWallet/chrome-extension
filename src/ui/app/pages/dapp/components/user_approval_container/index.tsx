@@ -4,7 +4,9 @@
 import { useCallback, useMemo, useState } from 'react'
 import { formatAddress } from '@mysten/sui.js'
 
-import { Button } from '_app/components'
+import { Button, Avatar } from '_app/components'
+
+import { useAccountsMeta } from '_src/ui/app/hooks'
 
 import type { ReactNode } from 'react'
 import type { SuiAddress } from '@mysten/sui.js'
@@ -36,6 +38,9 @@ export function UserApproveContainer({
   isWarning,
   address,
 }: UserApproveContainerProps) {
+  const accountsMeta = useAccountsMeta()
+  const addressMeta = address ? accountsMeta?.[address] : { avatar: '' }
+
   const [submitting, setSubmitting] = useState(false)
 
   const handleOnResponse = useCallback(
@@ -68,7 +73,12 @@ export function UserApproveContainer({
             {origin}
           </a>
           {address && (
-            <p className="text-slate-500">{formatAddress(address || '')}</p>
+            <p className="flex items-center mb-4">
+              <Avatar avatar={addressMeta?.avatar || ''} size={24} />
+              <span className="ml-2 text-slate-500">
+                {formatAddress(address || '')}
+              </span>
+            </p>
           )}
         </div>
         <div>{children}</div>
