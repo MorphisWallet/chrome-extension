@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { Tooltip } from 'react-tooltip'
 import cl from 'classnames'
 import { SuiAddress, formatAddress } from '@mysten/sui.js'
 
@@ -72,7 +71,7 @@ const WalletManagementPage = () => {
       toast({
         type: 'error',
         message:
-          (createAccountMutation.error as Error).message ||
+          (createAccountMutation.error as Error)?.message ||
           'Fail to create new account',
       })
     }
@@ -109,16 +108,15 @@ const WalletManagementPage = () => {
             </Button>
           </div>
           <hr className="my-6 border-black" />
-          <Button
-            data-tooltip-content="Coming soon"
-            data-tooltip-id="button-tip"
-            variant="outlined"
-            className="flex justify-center items-center shrink-0 rounded-[4px] cursor-not-allowed font-bold"
-          >
-            <ImportIcon height={13} width={9} className="mr-3" />
-            Import an existing wallet
-          </Button>
-          <Tooltip id="button-tip" className="before:hidden" />
+          <Link to="./import">
+            <Button
+              variant="outlined"
+              className="flex justify-center items-center shrink-0 font-bold rounded-[4px]"
+            >
+              <ImportIcon height={13} width={9} className="mr-3" />
+              Import private key
+            </Button>
+          </Link>
         </div>
       </div>
     </Layout>

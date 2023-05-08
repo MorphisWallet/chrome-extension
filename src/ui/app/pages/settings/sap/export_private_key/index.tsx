@@ -36,7 +36,7 @@ const ExportPrivateKeyPage = () => {
 
   const privateKey = useMemo(() => {
     if (exportMutation.data?.privateKey) {
-      return `0x${bytesToHex(
+      return `${bytesToHex(
         fromB64(exportMutation.data.privateKey).slice(0, 32)
       )}`
     }
