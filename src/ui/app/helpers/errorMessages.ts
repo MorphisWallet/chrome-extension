@@ -6,5 +6,5 @@
  * from SignerWithProvider instances (e.g., signTransaction, getAddress, and so forth)
  */
 export function getSignerOperationErrorMessage(error: unknown) {
-  return (error as Error).message || 'Something went wrong.'
+  return (error as Error)?.message || 'Something went wrong.'
 }

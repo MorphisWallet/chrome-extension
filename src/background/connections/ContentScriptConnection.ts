@@ -155,7 +155,7 @@ export class ContentScriptConnection extends Connection {
         {
           error: true,
           code: -1,
-          message: (e as Error).message,
+          message: (e as Error)?.message,
         },
         msg.id
       )

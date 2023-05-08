@@ -3,7 +3,7 @@ import cl from 'classnames'
 
 import { Loading } from '_app/components'
 
-import { useGetNFTMeta, useFileExtensionType } from '_hooks'
+import { useGetNFTMeta } from '_hooks'
 
 type NftCardProps = {
   objectId: string
