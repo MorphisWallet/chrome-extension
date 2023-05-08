@@ -32,7 +32,7 @@ const LockedPage = () => {
     try {
       await dispatch(unlockWallet({ password })).unwrap()
     } catch (e) {
-      setFieldError('password', (e as Error).message || 'Incorrect password')
+      setFieldError('password', (e as Error)?.message || 'Incorrect password')
     }
   }
 

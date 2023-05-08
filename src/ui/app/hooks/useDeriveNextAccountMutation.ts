@@ -22,7 +22,7 @@ export function useDeriveNextAccountMutation() {
     // onError: (e) => {
     //   toast({
     //     type: 'error',
-    //     message: (e as Error).message || 'Failed to create new account',
+    //     message: (e as Error)?.message || 'Failed to create new account',
     //   })
     // },
   })

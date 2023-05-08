@@ -62,7 +62,7 @@ const ChangePasswordPage = () => {
         })
       }, 0)
     } catch (e) {
-      setFieldError('oldPassword', (e as Error).message || 'Wrong password')
+      setFieldError('oldPassword', (e as Error)?.message || 'Wrong password')
     }
   }
 

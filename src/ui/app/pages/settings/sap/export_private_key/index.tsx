@@ -72,7 +72,7 @@ const ExportPrivateKeyPage = () => {
     } catch (e) {
       toast({
         type: 'error',
-        message: (e as Error).message || 'Failed to export private key',
+        message: (e as Error)?.message || 'Failed to export private key',
       })
     }
   }

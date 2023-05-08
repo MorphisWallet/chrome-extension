@@ -44,7 +44,7 @@ const Confirm = ({ warnings, checkboxText, onSuccess }: ConfirmModalProps) => {
         await backgroundService.verifyPassword(password)
         await onSuccess(password)
       } catch (e) {
-        setFieldError('password', (e as Error).message || 'Incorrect password')
+        setFieldError('password', (e as Error)?.message || 'Incorrect password')
       }
     },
   })

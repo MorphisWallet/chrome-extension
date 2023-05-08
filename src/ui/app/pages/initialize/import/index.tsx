@@ -45,7 +45,7 @@ const ImportPage = () => {
     } catch (err) {
       toast({
         type: 'error',
-        message: `Fail to imported wallet, ${(err as Error).message}`,
+        message: `Fail to imported wallet, ${(err as Error)?.message || ''}`,
         containerId: 'initialize-toast',
       })
     }

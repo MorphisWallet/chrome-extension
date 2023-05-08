@@ -355,7 +355,7 @@ export class Keyring {
     } catch (e) {
       uiConnection.send(
         createMessage<ErrorPayload>(
-          { code: -1, error: true, message: (e as Error).message },
+          { code: -1, error: true, message: (e as Error)?.message },
           id
         )
       )

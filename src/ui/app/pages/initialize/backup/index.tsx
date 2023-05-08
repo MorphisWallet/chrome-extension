@@ -36,7 +36,7 @@ const BackupPage = () => {
         toast({
           type: 'error',
           message:
-            (e as Error).message ||
+            (e as Error)?.message ||
             'Something is wrong, Recovery Phrase is empty.',
           containerId: 'initialize-toast',
         })
