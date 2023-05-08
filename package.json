@@ -1,6 +1,6 @@
 {
   "name": "@morphis/chrome-extension",
-  "version": "0.0.8.2",
+  "version": "0.0.8.3",
   "description": "Morphis - the most friendly wallet on Sui",
   "engines": {
     "node": ">=16.0.0",
@@ -12,6 +12,7 @@
     "lint": "npx eslint src --ext .js,.jsx,.ts,.tsx",
     "prettier": "prettier --write src",
     "start": "pnpm build:dev --watch",
+    "start:prod": "pnpm build:prod --watch",
     "build:dev": "cross-env NODE_ENV=\"development\" TS_NODE_PROJECT=\"./configs/ts/tsconfig.webpack.json\" webpack --progress",
     "build:prod": "cross-env NODE_ENV=\"production\" TS_NODE_PROJECT=\"./configs/ts/tsconfig.webpack.json\" webpack --progress",
     "check-updates": "npx npm-check-updates",

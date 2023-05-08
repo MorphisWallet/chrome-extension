@@ -1,3 +1,8 @@
+## 0.0.8.3 (May 7, 2023)
+
+- Reopen private key import
+- Fix transaction information display issue
+
 ## 0.0.8.2 (May 6, 2023)
 
 - Add wormhole link
