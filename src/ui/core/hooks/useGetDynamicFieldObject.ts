@@ -22,7 +22,7 @@ export function useGetDynamicFieldObject(
         name,
       }),
     {
-      enabled: !!parentId && !!name,
+      enabled: !!parentId && !!name?.type,
     }
   )
 }
