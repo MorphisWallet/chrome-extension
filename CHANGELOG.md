@@ -1,3 +1,7 @@
+## 0.0.8.4 (May 29, 2023)
+
+- Fix NFT transaction information display issue
+
 ## 0.0.8.3 (May 7, 2023)
 
 - Reopen private key import
