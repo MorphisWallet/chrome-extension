@@ -8,12 +8,14 @@ import {
   formatAddress,
   normalizeSuiAddress,
   BuilderCallArg,
+  TypeTagSerializer,
   type TransactionType,
   type TransactionArgument,
   type MakeMoveVecTransaction,
   type PublishTransaction,
   type SuiAddress,
   type TransactionBlock,
+  type TypeTag,
 } from '@mysten/sui.js'
 
 import { Loading, TxLink } from '_src/ui/app/components'
@@ -44,6 +46,10 @@ function convertCommandArgumentToString(
   }
 
   if (typeof arg === 'object' && 'Some' in arg) {
+    if (typeof arg.Some === 'object') {
+      // MakeMoveVecTransaction['type'] is TypeTag type
+      return TypeTagSerializer.tagToString(arg.Some as TypeTag)
+    }
     return arg.Some
   }
 
@@ -74,6 +80,7 @@ function convertCommandArgumentToString(
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function convertCommandToString({ kind, ...command }: TransactionType) {
   const commandArguments = Object.entries(command)
 
