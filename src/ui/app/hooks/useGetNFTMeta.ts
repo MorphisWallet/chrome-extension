@@ -20,7 +20,7 @@ export function useGetNFTMeta(objectID: string) {
     if (!display.data) {
       return null
     }
-    const { name, description, creator, image_url, link, project_url } =
+    const { name, description, creator, image_url, link, project_url, kiosk } =
       display.data
     return {
       name: name || null,
@@ -29,6 +29,7 @@ export function useGetNFTMeta(objectID: string) {
       link: link || null,
       projectUrl: project_url || null,
       creator: creator || null,
+      kiosk: kiosk || null,
     }
   }, [resp])
   return {
