@@ -11,6 +11,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Input, Button, TxLink, toast } from '_app/components'
 
 import { useActiveAddress, useOwnedNFT, useSigner } from '_hooks'
+import { useGetOriginByteKioskContents } from '_src/ui/core/hooks/useGetOriginByteKioskContents'
+import { useTransferKioskItem } from './useTransferKioskItem'
 
 import { suiAddressValidation } from '_src/ui/utils/validation'
 import { getSignerOperationErrorMessage } from '_src/ui/app/helpers/errorMessages'
@@ -23,10 +25,17 @@ type Fields = {
 const NftSend = () => {
   const navigate = useNavigate()
   const { objectId = '' } = useParams()
-  const signer = useSigner()
   const queryClient = useQueryClient()
+
+  const signer = useSigner()
   const address = useActiveAddress()
   const { data: ownedNFT, isLoading } = useOwnedNFT(objectId || '', address)
+  const kioskContents = useGetOriginByteKioskContents(address)
+  const transferKioskItem = useTransferKioskItem({
+    objectId,
+    objectType: ownedNFT?.type,
+  })
+
   const {
     values,
     errors,
@@ -56,6 +65,24 @@ const NftSend = () => {
       if (!to || !signer) {
         throw new Error('Missing data')
       }
+
+      // if (suiNSEnabled && isSuiNSName(to)) {
+      //   const address = await rpc.resolveNameServiceAddress({
+      //     name: to,
+      //   })
+      //   if (!address) {
+      //     throw new Error('SuiNS name not found.')
+      //   }
+      //   to = address
+      // }
+
+      const isContainedInKiosk = kioskContents?.data?.some(
+        (kioskItem) => kioskItem.data?.objectId === objectId
+      )
+      if (isContainedInKiosk) {
+        return transferKioskItem.mutateAsync(to)
+      }
+
       const tx = new TransactionBlock()
       tx.transferObjects([tx.object(objectId)], tx.pure(to))
 

@@ -35,7 +35,7 @@ const NftPage = () => {
       <div className="grid grid-cols-2 gap-x-2.5 gap-y-4 mx-[-24px] mb-[-24px] px-6 pt-2.5 pb-6 overflow-y-auto">
         {nfts.map((_nft) => (
           <Link
-            className="flex overflow-hidden transition-transform duration-100 ease-in-out hover:scale-[1.01]"
+            className="flex transition-transform duration-100 ease-in-out hover:scale-[1.01]"
             key={_nft.objectId}
             to={`./${_nft.objectId}`}
           >
