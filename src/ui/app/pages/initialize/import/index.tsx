@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 import Layout from '_app/layouts'
 import { Loading, toast } from '_app/components'
@@ -7,7 +8,7 @@ import InitializeStepTwo from './components/step_two'
 
 import { useAppDispatch, useLockedGuard, useInitializedGuard } from '_hooks'
 
-import { createVault } from '_redux/slices/account'
+import { createVault, logout } from '_redux/slices/account'
 
 import { MAIN_UI_URL } from '_shared/utils'
 import { entropyToSerialized, mnemonicToEntropy } from '_shared/utils/bip39'
@@ -17,9 +18,12 @@ import Logo from '_assets/icons/logo.svg'
 import type { MnemonicField, PasswordField } from './types'
 
 const ImportPage = () => {
+  const [searchParams] = useSearchParams()
+  const isForgot = searchParams.get('type') === 'forgot'
+
   const dispatch = useAppDispatch()
-  const guardsLoading = useLockedGuard(false)
-  const checkingInitialized = useInitializedGuard(false)
+  const guardsLoading = useLockedGuard(isForgot)
+  const checkingInitialized = useInitializedGuard(isForgot)
 
   const [step, setStep] = useState<0 | 1>(0)
   const [mnemonic, setMnemonic] = useState('')
@@ -31,6 +35,10 @@ const ImportPage = () => {
 
   const onSubmit = async ({ password }: PasswordField) => {
     try {
+      if (isForgot) {
+        await dispatch(logout()).unwrap()
+      }
+
       await dispatch(
         createVault({
           password,

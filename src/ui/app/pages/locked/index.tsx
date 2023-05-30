@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { Tooltip } from 'react-tooltip'
 import { Formik, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
 
@@ -84,13 +83,10 @@ const LockedPage = () => {
             </Formik>
           </div>
           <Link
-            to=""
-            data-tooltip-content="Coming soon"
-            data-tooltip-id="link-tip"
-            className="text-sm text-[#818181] text-center font-medium cursor-not-allowed"
+            to="/initialize/import?type=forgot"
+            className="text-sm text-[#818181] text-center font-medium"
           >
             <span>Forgot password?</span>
-            <Tooltip id="link-tip" />
           </Link>
         </div>
       </Layout>
