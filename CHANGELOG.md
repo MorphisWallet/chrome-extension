@@ -1,3 +1,8 @@
+## 0.0.8.5 (May 30, 2023)
+
+- Fix NFT transfer error
+- Support forgot password
+
 ## 0.0.8.4 (May 29, 2023)
 
 - Fix NFT transaction information display issue
