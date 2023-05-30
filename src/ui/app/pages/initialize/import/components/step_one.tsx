@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
 
@@ -58,6 +59,11 @@ const InitializeStepOne = ({ mnemonic, onSubmit }: StepOneProps) => (
             Continue
           </Button>
         </div>
+        <Link className="w-full" to="/">
+          <Button className="mt-4" variant="outlined">
+            Cancel
+          </Button>
+        </Link>
       </form>
     )}
   </Formik>
