@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { Coin } from '@mysten/sui.js'
 
 import { Loading, Button, toast } from '_app/components'
 import CoinInfo from './coin_info'
@@ -33,6 +34,26 @@ const CoinList = ({ balancesLoading, balances }: CoinListProps) => {
     }
   }, [mutation.isError])
 
+  const suiBalance = useMemo(
+    () =>
+      balances?.find(
+        (_balance: CoinBalance) => _balance.coinType === '0x2::sui::SUI'
+      ),
+    [balances]
+  )
+  const otherBalances = useMemo(
+    () =>
+      balances
+        ?.filter(
+          (_balance: CoinBalance) => _balance.coinType !== '0x2::sui::SUI'
+        )
+        ?.sort((a, b) =>
+          Coin.getCoinSymbol(a.coinType).localeCompare(
+            Coin.getCoinSymbol(b.coinType)
+          )
+        ),
+    [balances]
+  )
   const renderCoinList = () => {
     if (!balances?.length) {
       return (
@@ -53,7 +74,15 @@ const CoinList = ({ balancesLoading, balances }: CoinListProps) => {
 
     return (
       <div className="flex flex-col grow">
-        {balances.map((_balance: CoinBalance) => (
+        {suiBalance && (
+          <Link
+            key={suiBalance.coinType}
+            to={`./details?type=${suiBalance.coinType}`}
+          >
+            <CoinInfo balance={suiBalance} />
+          </Link>
+        )}
+        {otherBalances?.map((_balance: CoinBalance) => (
           <Link
             key={_balance.coinType}
             to={`./details?type=${_balance.coinType}`}
