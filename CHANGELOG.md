@@ -1,3 +1,9 @@
+## 0.0.8.6 (Jun 19, 2023)
+
+- SDK and wallet standard upgrade
+- Fix wrong redirect of wallet management icon
+- Sort coin list and SUI on top
+
 ## 0.0.8.5 (May 30, 2023)
 
 - Fix NFT transfer error
