@@ -90,7 +90,22 @@ const LayoutBase = ({
       />
       {showHeader && (
         <header className="h-12 px-6 bg-white border-b border-b-[#e6e6e9] flex items-center shrink-0 font-medium z-[1010]">
-          <Link className="shrink-0" to="/settings/general/wallet-management">
+          <Link
+            className={cl([
+              'shrink-0',
+              ![
+                '/landing',
+                '/nft',
+                '/discovery',
+                '/history',
+                '/settings',
+              ].includes(location?.pathname) && 'pointer-events-none',
+            ])}
+            state={{
+              nextPath: location.pathname,
+            }}
+            to="/settings/general/wallet-management"
+          >
             <Avatar
               avatar={accountsMeta?.[activeAddress || '']?.avatar}
               size={24}
