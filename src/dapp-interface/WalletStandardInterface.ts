@@ -46,6 +46,7 @@ import type {
   ExecuteTransactionResponse,
   SignTransactionRequest,
   SignTransactionResponse,
+  StakeRequest,
 } from '_payloads/transactions'
 import type { NetworkEnvType } from '_src/background/NetworkEnv'
 
@@ -67,6 +68,14 @@ const API_ENV_TO_CHAIN: Record<
   [API_ENV.devNet]: SUI_DEVNET_CHAIN,
   [API_ENV.testNet]: SUI_TESTNET_CHAIN,
   [API_ENV.mainnet]: SUI_MAINNET_CHAIN,
+}
+
+type StakeInput = { validatorAddress: string }
+type SuiWalletStakeFeature = {
+  'suiWallet:stake': {
+    version: '0.0.1'
+    stake: (input: StakeInput) => Promise<void>
+  }
 }
 
 export class SuiWallet implements Wallet {
@@ -94,7 +103,10 @@ export class SuiWallet implements Wallet {
     return SUI_CHAINS
   }
 
-  get features(): StandardConnectFeature & StandardEventsFeature & SuiFeatures {
+  get features(): StandardConnectFeature &
+    StandardEventsFeature &
+    SuiFeatures &
+    SuiWalletStakeFeature {
     return {
       'standard:connect': {
         version: '1.0.0',
@@ -115,6 +127,10 @@ export class SuiWallet implements Wallet {
       'sui:signMessage': {
         version: '1.0.0',
         signMessage: this.#signMessage,
+      },
+      'suiWallet:stake': {
+        version: '0.0.1',
+        stake: this.#stake,
       },
     }
   }
@@ -268,6 +284,13 @@ export class SuiWallet implements Wallet {
         return response.return
       }
     )
+  }
+
+  #stake = async (input: StakeInput) => {
+    this.#send<StakeRequest, void>({
+      type: 'stake-request',
+      validatorAddress: input.validatorAddress,
+    })
   }
 
   #hasPermissions(permissions: HasPermissionsRequest['permissions']) {
