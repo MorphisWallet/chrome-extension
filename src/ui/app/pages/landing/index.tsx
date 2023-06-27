@@ -7,6 +7,7 @@ import Layout from '_app/layouts'
 import { Button, Loading, toast } from '_app/components'
 import CoinList from './components/coin_list'
 import AirdropButton from './components/airdrop_button'
+import StakingButton from './components/staking_button'
 
 import { useActiveAddress, useGetAllBalances, useAppSelector } from '_hooks'
 import { useFormatCoin } from '_src/ui/core'
@@ -46,7 +47,7 @@ const LandingPage = () => {
   return (
     <Layout>
       <div className="flex flex-col grow font-medium">
-        <div className="flex flex-col h-[180px] justify-center items-center py-6 border-b border-b-[#e7e7e9]">
+        <div className="flex flex-col h-[180px] justify-center items-center py-6">
           <div className="text-3xl h-6 mb-6">
             <Loading loading={isLoading}>
               <span>{formatted || 0}</span>
@@ -99,6 +100,7 @@ const LandingPage = () => {
             </a>
           </div>
         </div>
+        {accountAddress && <StakingButton address={accountAddress} />}
         <div className="flex grow max-h-[286px] overflow-y-auto">
           <CoinList balancesLoading={isLoading} balances={balances} />
         </div>
