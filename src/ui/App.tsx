@@ -6,6 +6,7 @@ import LandingPage from '_app/pages/landing'
 import CoinDetailPage from '_app/pages/landing/coin_detail'
 import SendPage from '_app/pages/send'
 import ReceivePage from '_app/pages/receive'
+import StakingPage from '_app/pages/staking'
 
 import NftPage from '_app/pages/nft'
 import NftDetailPage from '_app/pages/nft/nft_detail'
@@ -120,6 +121,10 @@ const router = createHashRouter([
       {
         path: 'settings/general/wallet-management/:address',
         element: <UpdateWalletMetaPage />,
+      },
+      {
+        path: 'staking/',
+        element: <StakingPage />,
       },
       {
         path: '*',

@@ -41,7 +41,7 @@ const StakingButton = ({ address }: StakingButtonProps) => {
   return (
     <Link
       className="min-h-[40px] mx-6 mb-6 py-2 flex items-center justify-center rounded-[5px] bg-[#A7D9E3] cursor-pointer transition hover:opacity-80 hover:scale-[1.02]"
-      to="/stake"
+      to="/staking"
     >
       <Loading loading={isLoading || queryResult.isLoading}>
         <>
