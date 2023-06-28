@@ -3,10 +3,12 @@ import { useNavigate, Link } from 'react-router-dom'
 
 import { IconWrapper, Loading, toast, Button } from '_app/components'
 import StakingAmount from './components/staking_amount'
+import ValidatorStakingStat from './components/validator_staking_stat'
 
 import { useActiveAddress } from '_hooks'
 import { useGetDelegatedStake } from './useGetDelegatedStake'
 import { useGetSystemState } from '_src/ui/core/hooks/useGetSystemState'
+
 import { getAllStakeSui } from './getAllStakeSui'
 
 import ArrowShort from '_assets/icons/arrow_short.svg'
@@ -102,6 +104,16 @@ const StakingPage = () => {
             <StakingAmount balance={totalEarnTokenReward} />
             earned
           </p>
+          <div className="grow">
+            {system &&
+              delegations?.map((_delegation) => (
+                <ValidatorStakingStat
+                  currentEpoch={Number(system.epoch)}
+                  delegationObject={_delegation}
+                  key={_delegation.stakedSuiId}
+                />
+              ))}
+          </div>
           <Link to="/staking/new">
             <Button>Stake SUI</Button>
           </Link>
