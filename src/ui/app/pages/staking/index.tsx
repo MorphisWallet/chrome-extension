@@ -46,9 +46,9 @@ const StakingPage = () => {
   }, [activeValidators, delegatedStake])
 
   // Check if there are any inactive validators
-  const hasInactiveValidatorDelegation = delegations?.some(
-    ({ inactiveValidator }) => inactiveValidator
-  )
+  // const hasInactiveValidatorDelegation = delegations?.some(
+  //   ({ inactiveValidator }) => inactiveValidator
+  // )
 
   // Get total rewards for all delegations
   const totalEarnTokenReward = useMemo(() => {

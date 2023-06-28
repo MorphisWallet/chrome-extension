@@ -18,6 +18,7 @@ const StakingAmount = ({
   return (
     <span>
       <span className={formatClassName}>{formatted}</span>
+      &nbsp;
       <span className={symbolClassName}>{symbol}</span>
     </span>
   )
