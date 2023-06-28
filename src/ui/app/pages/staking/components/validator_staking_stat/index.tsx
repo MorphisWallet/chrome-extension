@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { SUI_TYPE_ARG } from '@mysten/sui.js'
 
 import { Loading } from '_src/ui/app/components'
+import StakingAmount from '../staking_amount'
 
 import { useGetSystemState } from '_src/ui/core/hooks/useGetSystemState'
 import { useFormatCoin } from '_src/ui/core'
@@ -53,11 +54,6 @@ const ValidatorStakingStat = ({
     isEarnedRewards && estimatedReward ? BigInt(estimatedReward) : 0n
 
   const { data, isLoading } = useGetSystemState()
-  const [principalStaked, symbol] = useFormatCoin(
-    inactiveValidator ? principal + rewards : principal,
-    SUI_TYPE_ARG
-  )
-  const [rewardsStaked] = useFormatCoin(rewards, SUI_TYPE_ARG)
 
   const validatorMeta = useMemo(() => {
     if (!data) return null
@@ -73,7 +69,10 @@ const ValidatorStakingStat = ({
   return (
     <Link
       className="flex flex-col px-4 py-2 bg-[#f2faff] rounded-[10px] transition hover:opacity-80 hover:scale-[1.01]"
-      to={`/staking/${delegationObject.validatorAddress}`}
+      to={`/staking/details?${new URLSearchParams({
+        validator: validatorAddress,
+        staked: stakedSuiId,
+      }).toString()}`}
     >
       <Loading loading={isLoading}>
         <div className="mb-2 flex items-center">
@@ -89,9 +88,9 @@ const ValidatorStakingStat = ({
         </div>
         <p className="mb-2 flex justify-between">
           <span className="text-[#a0a0a0]">Stake amount</span>
-          <span>
-            {principalStaked} {symbol}
-          </span>
+          <StakingAmount
+            balance={inactiveValidator ? principal + rewards : principal}
+          />
         </p>
         <p className="flex justify-between">
           {delegationState === StakeState.WARM_UP && (
@@ -102,9 +101,7 @@ const ValidatorStakingStat = ({
           {delegationState === StakeState.EARNING && (
             <>
               <span className="text-[#a0a0a0]">Rewards earned</span>
-              <span>
-                {rewardsStaked} {symbol}
-              </span>
+              <StakingAmount balance={rewards} />
             </>
           )}
           {delegationState === StakeState.IN_ACTIVE && (
