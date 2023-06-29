@@ -57,7 +57,7 @@ const ValidatorStakingStat = ({
       }).toString()}`}
     >
       <div className="mb-2 flex items-center">
-        <ValidatorLogo delegationObject={delegationObject} />
+        <ValidatorLogo validatorAddress={validatorAddress} />
         <ArrowShort className="h-[12px] w-[12px] rotate-180" />
       </div>
       <p className="mb-2 flex justify-between">

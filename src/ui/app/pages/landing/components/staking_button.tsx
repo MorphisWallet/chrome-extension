@@ -47,9 +47,15 @@ const StakingButton = ({ address }: StakingButtonProps) => {
         <>
           <StakingCoin className="mr-2" height={25} width={34} />
           <div className="flex font-medium">
-            <span>Stake SUI and earn up to</span>
-            <span>&nbsp;</span>
-            <DelegatedAPY stakedValidators={stakedValidators} />
+            {totalActivePendingStake ? (
+              <>
+                <span>Stake SUI and earn up to</span>
+                <span>&nbsp;</span>
+                <DelegatedAPY stakedValidators={stakedValidators} />
+              </>
+            ) : (
+              <span>Stake and earn SUI</span>
+            )}
           </div>
         </>
       </Loading>
