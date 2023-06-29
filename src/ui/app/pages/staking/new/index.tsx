@@ -1,14 +1,16 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import BigNumber from 'bignumber.js'
+import throttle from 'lodash/throttle'
 import { SUI_TYPE_ARG } from '@mysten/sui.js'
 
 import { Button, IconWrapper, Loading, Input } from '_app/components'
 import { CountDownTimer } from '_src/ui/app/shared/countdown_timer'
 import StakingAmount from '../components/staking_amount'
 import { CoinIcon } from '_app/components'
+import StakingConfirmModal from './components/StakingConfirmModal'
 
 import { useActiveAddress } from '_src/ui/app/hooks'
 import { useGetCoinBalance } from '_src/ui/app/hooks'
@@ -123,20 +125,30 @@ const StakingNew = () => {
             : false
         ),
     }),
-    onSubmit: async ({ amount }) => {
-      console.log(555, amount)
+    onSubmit: async () => {
+      setConfirmModalOpen(true)
     },
   })
 
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false)
+  const [selectValidatorsModalOpen, setSelectValidatorsConfirmModalOpen] =
+    useState(false)
+
   const coinSymbol = useMemo(() => Coin.getCoinSymbol(SUI_TYPE_ARG) || '', [])
 
-  const transaction = useMemo(() => {
-    if (!values.amount || !metadata?.decimals) return null
-    const amountWithoutDecimals = parseAmount(values.amount, metadata.decimals)
-    return createStakeTransaction(amountWithoutDecimals, validatorAddress)
-  }, [values.amount, validatorAddress, metadata?.decimals])
+  const transaction = useMemo(
+    throttle(() => {
+      if (!values.amount || !metadata?.decimals) return null
+      const amountWithoutDecimals = parseAmount(
+        values.amount,
+        metadata.decimals
+      )
+      return createStakeTransaction(amountWithoutDecimals, validatorAddress)
+    }, 500),
+    [values.amount, validatorAddress, metadata?.decimals]
+  )
 
-  const { data: gasBudget } = useTransactionGasBudget(
+  const { data: gasBudget, isLoading: gasLoading } = useTransactionGasBudget(
     accountAddress,
     transaction
   )
@@ -153,7 +165,18 @@ const StakingNew = () => {
   }
 
   return (
-    <div className="flex flex-col grow font-medium px-6 pt-4 pb-6 overflow-hidden text-sm">
+    <div className="relative flex flex-col grow font-medium px-6 pt-4 pb-6 overflow-hidden text-sm">
+      <StakingConfirmModal
+        open={confirmModalOpen}
+        setOpen={setConfirmModalOpen}
+        validatorAddress={validatorAddress}
+        stake={`${values.amount} ${symbol}`}
+        apy={apy}
+        timeBeforeStakeRewardsStarts={timeBeforeStakeRewardsStarts}
+        epoch={system?.epoch}
+        startEarningRewardsEpoch={startEarningRewardsEpoch}
+        gas={`${gasBudget} ${symbol}`}
+      />
       <div className="mb-6 text-xl text-center font-bold relative">
         Stake SUI
         <span
@@ -262,13 +285,17 @@ const StakingNew = () => {
         </form>
         <p className="mb-2 flex justify-between">
           <span className="text-[#a0a0a0]">Gas budget</span>
-          <span>
-            {gasBudget} {symbol}
-          </span>
+          <div>
+            <Loading loading={!!values.amount && gasLoading}>
+              {gasBudget || '-'} {symbol}
+            </Loading>
+          </div>
         </p>
       </div>
       <Button
-        disabled={loadingSuiBalances || !!errors.amount}
+        disabled={
+          loadingSuiBalances || gasLoading || !!errors.amount || !values.amount
+        }
         form="form"
         loading={isSubmitting}
         type="submit"
