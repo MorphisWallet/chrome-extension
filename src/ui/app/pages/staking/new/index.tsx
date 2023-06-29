@@ -110,9 +110,11 @@ const StakingNew = () => {
             return decimals <= coinDecimals
           }
         )
-        .test('min', `Amount must be greater than 0`, (amount?: BigNumber) =>
-          amount ? amount.gt(0) : false
-        )
+        .test('min', `Amount must be greater than 1`, (amount?: BigNumber) => {
+          return amount
+            ? amount.gte(new BigNumber(1).shiftedBy(coinDecimals))
+            : false
+        })
         .test('max', 'Not enough balance', (amount?: BigNumber) =>
           amount
             ? amount
