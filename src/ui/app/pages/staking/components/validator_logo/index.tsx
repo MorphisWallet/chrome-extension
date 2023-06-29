@@ -4,17 +4,13 @@ import { Loading } from '_src/ui/app/components'
 
 import { useGetSystemState } from '_src/ui/core/hooks/useGetSystemState'
 
-import type { StakeObject, SuiAddress } from '@mysten/sui.js'
+import type { SuiAddress } from '@mysten/sui.js'
 
-type DelegationObjectWithValidator = StakeObject & {
+type ValidatorLogoProps = {
   validatorAddress: SuiAddress
 }
 
-type ValidatorLogoProps = {
-  delegationObject: DelegationObjectWithValidator
-}
-
-const ValidatorLogo = ({ delegationObject }: ValidatorLogoProps) => {
+const ValidatorLogo = ({ validatorAddress }: ValidatorLogoProps) => {
   const { data, isLoading } = useGetSystemState()
 
   const validatorMeta = useMemo(() => {
@@ -22,11 +18,10 @@ const ValidatorLogo = ({ delegationObject }: ValidatorLogoProps) => {
 
     return (
       data.activeValidators.find(
-        (validator) =>
-          validator.suiAddress === delegationObject.validatorAddress
+        (validator) => validator.suiAddress === validatorAddress
       ) || null
     )
-  }, [delegationObject.validatorAddress, data])
+  }, [validatorAddress, data])
 
   return (
     <Loading loading={isLoading}>
