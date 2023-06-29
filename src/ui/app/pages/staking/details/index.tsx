@@ -109,7 +109,13 @@ const StakingDetails = () => {
         <Link className="grow" to="">
           <Button variant="outlined">Unstake</Button>
         </Link>
-        <Link className="grow" to="">
+        <Link
+          className="grow"
+          to={`/staking/new?${new URLSearchParams({
+            address: validatorAddressParams,
+            staked: stakeIdParams,
+          }).toString()}`}
+        >
           <Button>Stake more</Button>
         </Link>
       </div>
