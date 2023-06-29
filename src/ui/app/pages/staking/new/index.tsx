@@ -11,6 +11,7 @@ import { CountDownTimer } from '_src/ui/app/shared/countdown_timer'
 import StakingAmount from '../components/staking_amount'
 import { CoinIcon } from '_app/components'
 import StakingConfirmModal from './components/StakingConfirmModal'
+import SelectValidatorModal from './components/SelectValidatorModal'
 
 import { useActiveAddress } from '_src/ui/app/hooks'
 import { useGetCoinBalance } from '_src/ui/app/hooks'
@@ -179,6 +180,10 @@ const StakingNew = () => {
         startEarningRewardsEpoch={startEarningRewardsEpoch}
         gas={`${gasBudget} ${symbol}`}
       />
+      <SelectValidatorModal
+        open={selectValidatorsModalOpen}
+        setOpen={setSelectValidatorsConfirmModalOpen}
+      />
       <div className="mb-6 text-xl text-center font-bold relative">
         Stake SUI
         <span
@@ -191,7 +196,10 @@ const StakingNew = () => {
         </span>
       </div>
       <div className="flex flex-col px-6 pb-6 mx-[-24px] border-b border-b-[#EFEFEF]">
-        <div className="flex items-center my-6 px-8 py-2 rounded-[30px] bg-[#f2faff] cursor-pointer transition hover:opacity-80 hover:scale-[1.01]">
+        <div
+          className="flex items-center my-6 px-8 py-2 rounded-[30px] bg-[#f2faff] cursor-pointer transition hover:opacity-80 hover:scale-[1.01]"
+          onClick={() => setSelectValidatorsConfirmModalOpen(true)}
+        >
           <Loading loading={validatorsIsloading}>
             <ValidatorLogo validatorAddress={validatorAddress} />
             <ArrowShort className="h-[12px] w-[12px] rotate-180" />
