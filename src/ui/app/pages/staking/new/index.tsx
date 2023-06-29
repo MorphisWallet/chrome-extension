@@ -4,6 +4,7 @@ import { SUI_TYPE_ARG } from '@mysten/sui.js'
 
 import { IconWrapper, Loading, toast, Button } from '_app/components'
 import { CountDownTimer } from '_src/ui/app/shared/countdown_timer'
+import StakingAmount from '../components/staking_amount'
 
 import { useActiveAddress } from '_src/ui/app/hooks'
 import { useGetCoinBalance } from '_src/ui/app/hooks'
@@ -12,6 +13,7 @@ import { useGetValidatorsApy } from '_src/ui/core/hooks/useGetValidatorsApy'
 import { useGetSystemState } from '_src/ui/core/hooks/useGetSystemState'
 
 import { getDelegationDataByStakeId } from '../getDelegationByStakeId'
+import { getTokenStakeSuiForValidator } from '../getTokenStakeSuiForValidator'
 import { useGetTimeBeforeEpochNumber } from '_src/ui/core/hooks/useGetTimeBeforeEpochNumber'
 
 import {
@@ -53,11 +55,17 @@ const StakingNew = () => {
   const { data: timeBeforeStakeRewardsRedeemable } =
     useGetTimeBeforeEpochNumber(redeemableRewardsEpoch)
 
-  const stakeData = useMemo(() => {
-    if (!allDelegation || !stakeSuiIdParams) return null
-    // return delegation data for a specific stakeId
-    return getDelegationDataByStakeId(allDelegation, stakeSuiIdParams)
-  }, [allDelegation, stakeSuiIdParams])
+  const validatorData = useMemo(() => {
+    if (!system) return null
+    return system.activeValidators.find(
+      (av) => av.suiAddress === validatorAddress
+    )
+  }, [validatorAddress, system])
+
+  const totalStake = useMemo(() => {
+    if (!allDelegation) return 0n
+    return getTokenStakeSuiForValidator(allDelegation, validatorAddress)
+  }, [allDelegation, validatorAddress])
 
   if (!validatorAddress) return null
 
@@ -107,12 +115,28 @@ const StakingNew = () => {
           </span>
         </p>
         <p className="mb-2 flex justify-between">
+          <span className="text-[#a0a0a0]">Staking rewards redeemable</span>
+          <span>
+            {timeBeforeStakeRewardsRedeemable > 0 ? (
+              <CountDownTimer
+                endLabel="--"
+                label="in"
+                timestamp={timeBeforeStakeRewardsRedeemable}
+              />
+            ) : system?.epoch ? (
+              `Epoch #${Number(redeemableRewardsEpoch)}`
+            ) : (
+              '--'
+            )}
+          </span>
+        </p>
+        <p className="mb-2 flex justify-between">
           <span className="text-[#a0a0a0]">Gas budget</span>
           <span></span>
         </p>
         <p className="mb-2 flex justify-between">
           <span className="text-[#a0a0a0]">Your staked SUI</span>
-          <span></span>
+          <StakingAmount balance={totalStake} />
         </p>
       </div>
     </div>
