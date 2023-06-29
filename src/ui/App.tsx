@@ -8,6 +8,7 @@ import SendPage from '_app/pages/send'
 import ReceivePage from '_app/pages/receive'
 import StakingPage from '_app/pages/staking'
 import StakingDetailsPage from '_app/pages/staking/details'
+import StakingNewPage from '_app/pages/staking/new'
 
 import NftPage from '_app/pages/nft'
 import NftDetailPage from '_app/pages/nft/nft_detail'
@@ -130,6 +131,10 @@ const router = createHashRouter([
       {
         path: 'staking/details',
         element: <StakingDetailsPage />,
+      },
+      {
+        path: 'staking/new',
+        element: <StakingNewPage />,
       },
       {
         path: '*',

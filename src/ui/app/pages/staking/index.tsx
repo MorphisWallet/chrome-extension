@@ -90,21 +90,31 @@ const StakingPage = () => {
           </IconWrapper>
         </span>
       </div>
-      <div className="flex flex-col grow overflow-y-auto px-6 mx-[-24px]">
+      <div className="flex flex-col grow overflow-y-auto px-6 mx-[-24px] text-center">
         <Loading loading={isLoading}>
-          <p>
-            Staking on {numberOfValidators || '-'} validator
-            {numberOfValidators > 1 ? 's' : ''}
-          </p>
-          <p>Your stake</p>
-          <p>
-            <StakingAmount balance={totalStake} />
-          </p>
-          <p>
-            <StakingAmount balance={totalEarnTokenReward} />
-            earned
-          </p>
-          <div className="grow">
+          <div className="pb-6 px-6 -mx-6 border-b border-b-[#EFEFEF]">
+            <p className="font-bold leading-[48px]">
+              Staking on {numberOfValidators || '-'} validator
+              {numberOfValidators > 1 ? 's' : ''}
+            </p>
+            <p className="font-medium text-[#7E7E7E] leading-[24px]">
+              Your stake
+            </p>
+            <p className="leading-[48px]">
+              <StakingAmount
+                balance={totalStake}
+                formatClassName="text-[48px] font-bold"
+              />
+            </p>
+            <p className="mb-2">
+              <StakingAmount
+                balance={totalEarnTokenReward}
+                formatClassName="font-bold"
+              />
+              &nbsp;earned
+            </p>
+          </div>
+          <div className="flex flex-col gap-4 grow px-6 py-4 mb-4 -mx-6 overflow-x-hidden overflow-y-auto">
             {system &&
               delegations?.map((_delegation) => (
                 <ValidatorStakingStat
