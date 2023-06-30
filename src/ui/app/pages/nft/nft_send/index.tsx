@@ -107,6 +107,7 @@ const NftSend = () => {
             <p>
               {`Successfully transferred NFT ${objectId} to ${address} `}
               <TxLink
+                className="text-[#6bb7e9]"
                 transactionID={digest}
                 type={ExplorerLinkType.transaction}
               >

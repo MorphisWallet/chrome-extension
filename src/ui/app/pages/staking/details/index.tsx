@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useSearchParams, useNavigate, Navigate, Link } from 'react-router-dom'
 
+import Layout from '_src/ui/app/layouts'
 import { Loading, IconWrapper, Button } from '_src/ui/app/components'
 import StakingAmount from '../components/staking_amount'
 
@@ -62,64 +63,68 @@ const StakingDetails = () => {
     : 0
 
   return (
-    <div className="flex flex-col grow font-medium px-6 pt-4 pb-6 overflow-hidden text-sm">
-      <div className="h-[28px] flex items-center justify-center mb-6 text-xl font-bold relative">
-        <Loading loading={validatorsLoading}>
-          <img
-            alt={validatorData?.name}
-            className="h-[14px] w-[14px] mr-2 shrink-0 rounded-full"
-            src={validatorData?.imageUrl}
-          />
-          <span className="max-w-[224px] text-ellipsis overflow-hidden">
-            {validatorData?.name || 'unknown validator'}
+    <Layout showHeader={false} showNav={false}>
+      <div className="flex flex-col grow font-medium px-6 pt-4 pb-6 overflow-hidden text-sm">
+        <div className="h-[28px] flex items-center justify-center mb-6 text-xl font-bold relative">
+          <Loading loading={validatorsLoading || allDelegationLoading}>
+            <img
+              alt={validatorData?.name}
+              className="h-[14px] w-[14px] mr-2 shrink-0 rounded-full"
+              src={validatorData?.imageUrl}
+            />
+            <span className="max-w-[224px] text-ellipsis overflow-hidden">
+              {validatorData?.name || 'unknown validator'}
+            </span>
+          </Loading>
+          <span
+            className="absolute left-0 top-[7px]"
+            onClick={() => navigate('/staking')}
+          >
+            <IconWrapper>
+              <ArrowShort height={10} width={13} />
+            </IconWrapper>
           </span>
-        </Loading>
-        <span
-          className="absolute left-0 top-[7px]"
-          onClick={() => navigate('/staking')}
-        >
-          <IconWrapper>
-            <ArrowShort height={10} width={13} />
-          </IconWrapper>
-        </span>
+        </div>
+        <div className="flex flex-col p-4 bg-[#f2faff] rounded-[10px]">
+          <p className="mb-2 flex justify-between">
+            <span className="text-[#a0a0a0]">Stake amount</span>
+            <StakingAmount balance={totalStake} />
+          </p>
+          <p className="mb-2 flex justify-between">
+            <span className="text-[#a0a0a0]">Rewards earned</span>
+            <StakingAmount balance={suiEarned} />
+          </p>
+          <p className="mb-2 flex justify-between">
+            <span className="text-[#a0a0a0]">APY</span>
+            <Loading className="!w-auto !grow-0" loading={apyLoading}>
+              <span>
+                {isApyApproxZero ? '~' : ''}
+                {apy}%
+              </span>
+            </Loading>
+          </p>
+          <p className="mb-2 flex justify-between">
+            <span className="text-[#a0a0a0]">Commission</span>
+            <span>{commission}%</span>
+          </p>
+        </div>
+        <div className="grow" />
+        <div className="flex gap-2">
+          <Link className="grow" to="">
+            <Button variant="outlined">Unstake</Button>
+          </Link>
+          <Link
+            className="grow"
+            to={`/staking/new?${new URLSearchParams({
+              address: validatorAddressParams,
+              staked: stakeIdParams,
+            }).toString()}`}
+          >
+            <Button>Stake more</Button>
+          </Link>
+        </div>
       </div>
-      <div className="flex flex-col p-4 bg-[#f2faff] rounded-[10px]">
-        <p className="mb-2 flex justify-between">
-          <span className="text-[#a0a0a0]">Stake amount</span>
-          <StakingAmount balance={totalStake} />
-        </p>
-        <p className="mb-2 flex justify-between">
-          <span className="text-[#a0a0a0]">Rewards earned</span>
-          <StakingAmount balance={suiEarned} />
-        </p>
-        <p className="mb-2 flex justify-between">
-          <span className="text-[#a0a0a0]">APY</span>
-          <span>
-            {isApyApproxZero ? '~' : ''}
-            {apy}%
-          </span>
-        </p>
-        <p className="mb-2 flex justify-between">
-          <span className="text-[#a0a0a0]">Commission</span>
-          <span>{commission}%</span>
-        </p>
-      </div>
-      <div className="grow" />
-      <div className="flex gap-2">
-        <Link className="grow" to="">
-          <Button variant="outlined">Unstake</Button>
-        </Link>
-        <Link
-          className="grow"
-          to={`/staking/new?${new URLSearchParams({
-            address: validatorAddressParams,
-            staked: stakeIdParams,
-          }).toString()}`}
-        >
-          <Button>Stake more</Button>
-        </Link>
-      </div>
-    </div>
+    </Layout>
   )
 }
 
