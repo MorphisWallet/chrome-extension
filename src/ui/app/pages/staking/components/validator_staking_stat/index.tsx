@@ -1,10 +1,15 @@
 import { Link } from 'react-router-dom'
+import { SUI_TYPE_ARG } from '@mysten/sui.js'
 
 import StakingAmount from '../staking_amount'
 import ValidatorLogo from '../validator_logo'
+import { CountDownTimer } from '_src/ui/app/shared/countdown_timer'
+
+import { useFormatCoin } from '_src/ui/core'
+import { useGetTimeBeforeEpochNumber } from '_src/ui/core/hooks/useGetTimeBeforeEpochNumber'
 
 import { NUM_OF_EPOCH_BEFORE_STAKING_REWARDS_REDEEMABLE } from '_src/shared/constants'
-import { StakeState } from './utils'
+import { StakeState, STATUS_TEXT } from './utils'
 
 import ArrowShort from '_assets/icons/arrow_short.svg'
 
@@ -45,8 +50,28 @@ const ValidatorStakingStat = ({
     ? StakeState.EARNING
     : StakeState.WARM_UP
 
+  // Applicable only for warm up
+  const epochBeforeRewards =
+    delegationState === StakeState.WARM_UP ? earningRewardsEpoch : null
+
+  const { data: rewardEpochTime } = useGetTimeBeforeEpochNumber(
+    Number(epochBeforeRewards)
+  )
+
   const rewards =
     isEarnedRewards && estimatedReward ? BigInt(estimatedReward) : 0n
+
+  const [rewardsStaked, symbol] = useFormatCoin(rewards, SUI_TYPE_ARG)
+
+  const statusText = {
+    // Epoch time before earning
+    [StakeState.WARM_UP]: `Epoch #${earningRewardsEpoch}`,
+    [StakeState.EARNING]: `${rewardsStaked} ${symbol}`,
+    // Epoch time before redrawing
+    [StakeState.COOL_DOWN]: `Epoch #`,
+    [StakeState.WITHDRAW]: 'Now',
+    [StakeState.IN_ACTIVE]: 'Not earning rewards',
+  }
 
   return (
     <Link
@@ -67,20 +92,14 @@ const ValidatorStakingStat = ({
         />
       </p>
       <p className="flex justify-between">
-        {delegationState === StakeState.WARM_UP && (
-          <span className="text-[#a0a0a0]">
-            Starts Earning Epoch #{earningRewardsEpoch}
-          </span>
-        )}
-        {delegationState === StakeState.EARNING && (
-          <>
-            <span className="text-[#a0a0a0]">Rewards earned</span>
-            <StakingAmount balance={rewards} />
-          </>
-        )}
-        {delegationState === StakeState.IN_ACTIVE && (
-          <span className="text-[#a0a0a0]">Inactive, Not earning rewards</span>
-        )}
+        <span className="text-[#a0a0a0]">{STATUS_TEXT[delegationState]}</span>
+        <span>
+          {Number(epochBeforeRewards) && rewardEpochTime > 0 ? (
+            <CountDownTimer timestamp={rewardEpochTime} label="in" />
+          ) : (
+            statusText[delegationState]
+          )}
+        </span>
       </p>
     </Link>
   )
