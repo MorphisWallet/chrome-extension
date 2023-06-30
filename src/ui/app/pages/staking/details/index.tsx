@@ -110,7 +110,13 @@ const StakingDetails = () => {
         </div>
         <div className="grow" />
         <div className="flex gap-2">
-          <Link className="grow" to="">
+          <Link
+            className="grow"
+            to={`/staking/unstake?${new URLSearchParams({
+              address: validatorAddressParams,
+              staked: stakeIdParams,
+            }).toString()}`}
+          >
             <Button variant="outlined">Unstake</Button>
           </Link>
           <Link
