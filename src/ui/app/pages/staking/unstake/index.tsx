@@ -130,9 +130,9 @@ const Unstake = () => {
           </span>
         </div>
         {!!validatorAddress && !!stakeId && (
-          <Loading loading={isLoading || systemLoading || gasLoading}>
+          <Loading loading={isLoading || systemLoading}>
             <div className="flex flex-col -mx-6 px-6 py-2 border-b border-b-[#EFEFEF]">
-              <div className="h-16 flex items-center justify-center my-2">
+              <div className="h-16 flex items-center justify-center my-4">
                 <ValidatorLogo
                   iconClassName="!h-8 !w-8"
                   nameClassName="!grow-0"

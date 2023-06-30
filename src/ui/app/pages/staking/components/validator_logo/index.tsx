@@ -46,7 +46,7 @@ const ValidatorLogo = ({
       {!showAddress && (
         <span
           className={cl([
-            'grow text-left text-ellipsis overflow-hidden',
+            'grow text-left truncate overflow-hidden',
             nameClassName,
           ])}
         >
@@ -55,7 +55,7 @@ const ValidatorLogo = ({
       )}
       {showAddress && (
         <span className="flex flex-col">
-          <span>{validatorMeta?.name || '-'}</span>
+          <span className={nameClassName}>{validatorMeta?.name || '-'}</span>
           <span className="text-[#a0a0a0]">
             {formatAddress(validatorAddress)}
           </span>
