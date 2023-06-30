@@ -190,10 +190,19 @@ const SelectValidatorModal = ({ open, setOpen }: SelectValidatorModalProps) => {
                   key={_validator.address}
                 >
                   <ValidatorLogo
-                    iconClassName="!w-[32px] !h-[32px]"
+                    iconClassName="!w-8 !h-8"
+                    nameClassName="max-w-[180px] truncate"
                     showAddress
                     validatorAddress={_validator.address}
                   />
+                  <div className="flex flex-col items-end grow">
+                    {[SortBy.APY_ASC, SortBy.APY_DESC].includes(sortBy) && (
+                      <span>{_validator.apy}%</span>
+                    )}
+                    {[SortBy.SHARE_ASC, SortBy.SHARE_DESC].includes(sortBy) && (
+                      <span>{_validator.stakeShare}%</span>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
