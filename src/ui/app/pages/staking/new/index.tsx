@@ -4,14 +4,23 @@ import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import BigNumber from 'bignumber.js'
 import throttle from 'lodash/throttle'
-import { SUI_TYPE_ARG } from '@mysten/sui.js'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { SUI_TYPE_ARG, getTransactionDigest } from '@mysten/sui.js'
 
-import { Button, IconWrapper, Loading, Input } from '_app/components'
+import Layout from '_app/layouts'
+import {
+  Button,
+  IconWrapper,
+  Loading,
+  Input,
+  toast,
+  TxLink,
+} from '_app/components'
 import { CountDownTimer } from '_src/ui/app/shared/countdown_timer'
 import StakingAmount from '../components/staking_amount'
 import { CoinIcon } from '_app/components'
-import StakingConfirmModal from './components/StakingConfirmModal'
-import SelectValidatorModal from './components/SelectValidatorModal'
+import StakingConfirmModal from './components/staking_confirm_modal'
+import SelectValidatorModal from './components/select_validator_modal'
 
 import { useActiveAddress } from '_src/ui/app/hooks'
 import { useGetCoinBalance } from '_src/ui/app/hooks'
@@ -21,6 +30,7 @@ import { useGetSystemState } from '_src/ui/core/hooks/useGetSystemState'
 import { useFormatCoin } from '_src/ui/core'
 import { useTransactionGasBudget } from '_src/ui/app/hooks'
 import { useCoinMetadata } from '_src/ui/core'
+import { useSigner } from '_src/ui/app/hooks'
 
 import { getTokenStakeSuiForValidator } from '../getTokenStakeSuiForValidator'
 import { useGetTimeBeforeEpochNumber } from '_src/ui/core/hooks/useGetTimeBeforeEpochNumber'
@@ -32,9 +42,12 @@ import {
   NUM_OF_EPOCH_BEFORE_STAKING_REWARDS_STARTS,
   NUM_OF_EPOCH_BEFORE_STAKING_REWARDS_REDEEMABLE,
 } from '_src/shared/constants'
+import { ExplorerLinkType } from '_src/ui/app/components/tx_link/types'
 
 import ArrowShort from '_assets/icons/arrow_short.svg'
 import ValidatorLogo from '../components/validator_logo'
+
+import type { SuiAddress } from '@mysten/sui.js'
 
 type Fields = {
   amount: string
@@ -48,6 +61,8 @@ const StakingNew = () => {
     '0xa987c410fa047b973d479555894c85208c4450ef65fd1d8d5911b46fbca83365'
 
   const accountAddress = useActiveAddress()
+  const signer = useSigner()
+  const queryClient = useQueryClient()
   const { data: system, isLoading: validatorsIsloading } = useGetSystemState()
   const { data: suiBalance, isLoading: loadingSuiBalances } = useGetCoinBalance(
     SUI_TYPE_ARG,
@@ -75,6 +90,10 @@ const StakingNew = () => {
   const { data: timeBeforeStakeRewardsRedeemable } =
     useGetTimeBeforeEpochNumber(redeemableRewardsEpoch)
 
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false)
+  const [selectValidatorsModalOpen, setSelectValidatorsConfirmModalOpen] =
+    useState(false)
+
   const {
     values,
     errors,
@@ -83,6 +102,7 @@ const StakingNew = () => {
     handleSubmit,
     handleChange,
     handleBlur,
+    resetForm,
   } = useFormik<Fields>({
     initialValues: {
       amount: '',
@@ -128,14 +148,63 @@ const StakingNew = () => {
             : false
         ),
     }),
-    onSubmit: async () => {
-      setConfirmModalOpen(true)
+    onSubmit: async ({ amount }) => {
+      if (!validatorAddress) {
+        return
+      }
+
+      try {
+        const bigIntAmount = parseAmount(amount, coinDecimals)
+        const response = await stakeMutation.mutateAsync({
+          amount: bigIntAmount,
+          tokenTypeArg: SUI_TYPE_ARG,
+          validatorAddress: validatorAddress,
+        })
+
+        if (!response) {
+          throw new Error('Failed to get staking data')
+        }
+
+        const txDigest = getTransactionDigest(response)
+
+        // Invalidate the react query for system state and validator
+        Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: ['system', 'state'],
+          }),
+          queryClient.invalidateQueries({
+            queryKey: ['validator'],
+          }),
+        ])
+
+        resetForm()
+
+        setTimeout(() => {
+          toast({
+            type: 'success',
+            message: (
+              <p>
+                {`Successfully staked ${amount} to validator ${validatorAddress}. `}
+                <TxLink
+                  className="text-[#6bb7e9]"
+                  transactionID={txDigest}
+                  type={ExplorerLinkType.transaction}
+                >
+                  View on explorer
+                </TxLink>
+              </p>
+            ),
+          })
+        }, 100)
+        navigate('/staking')
+      } catch (error) {
+        toast({
+          type: 'error',
+          message: (error as Error)?.message || 'Failed to stake',
+        })
+      }
     },
   })
-
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false)
-  const [selectValidatorsModalOpen, setSelectValidatorsConfirmModalOpen] =
-    useState(false)
 
   const coinSymbol = useMemo(() => Coin.getCoinSymbol(SUI_TYPE_ARG) || '', [])
 
@@ -167,152 +236,201 @@ const StakingNew = () => {
     apy: 0,
   }
 
+  const stakeMutation = useMutation({
+    mutationFn: async ({
+      tokenTypeArg,
+      amount,
+      validatorAddress,
+    }: {
+      tokenTypeArg: string
+      amount: bigint
+      validatorAddress: SuiAddress
+    }) => {
+      if (!validatorAddress || !amount || !tokenTypeArg || !signer) {
+        throw new Error('Failed, missing required field')
+      }
+
+      try {
+        const transactionBlock = createStakeTransaction(
+          amount,
+          validatorAddress
+        )
+        return await signer.signAndExecuteTransactionBlock({
+          transactionBlock,
+          requestType: 'WaitForLocalExecution',
+          options: {
+            showInput: true,
+            showEffects: true,
+            showEvents: true,
+          },
+        })
+      } catch (error) {
+        toast({
+          type: 'error',
+          message: (error as Error)?.message || 'Failed to stake',
+        })
+      }
+    },
+    onSuccess: (_, { amount, validatorAddress }) => {
+      toast({
+        type: 'success',
+        message: `Successfully staked ${amount} to ${validatorAddress}. It will take some time to update staking data.}`,
+      })
+    },
+  })
+
   return (
-    <div className="relative flex flex-col grow font-medium px-6 pt-4 pb-6 overflow-hidden text-sm">
-      <StakingConfirmModal
-        open={confirmModalOpen}
-        setOpen={setConfirmModalOpen}
-        validatorAddress={validatorAddress}
-        stake={`${values.amount} ${symbol}`}
-        apy={apy}
-        timeBeforeStakeRewardsStarts={timeBeforeStakeRewardsStarts}
-        epoch={system?.epoch}
-        startEarningRewardsEpoch={startEarningRewardsEpoch}
-        gas={`${gasBudget} ${symbol}`}
-      />
-      <SelectValidatorModal
-        open={selectValidatorsModalOpen}
-        setOpen={setSelectValidatorsConfirmModalOpen}
-      />
-      <div className="mb-6 text-xl text-center font-bold relative">
-        Stake SUI
-        <span
-          className="absolute left-0 top-[7px]"
-          onClick={() => navigate('/staking')}
-        >
-          <IconWrapper>
-            <ArrowShort height={10} width={13} />
-          </IconWrapper>
-        </span>
-      </div>
-      <div className="flex flex-col px-6 pb-6 mx-[-24px] border-b border-b-[#EFEFEF]">
-        <div
-          className="flex items-center my-6 px-8 py-2 rounded-[30px] bg-[#f2faff] cursor-pointer transition hover:opacity-80 hover:scale-[1.01]"
-          onClick={() => setSelectValidatorsConfirmModalOpen(true)}
-        >
-          <Loading loading={validatorsIsloading}>
-            <ValidatorLogo validatorAddress={validatorAddress} />
-            <ArrowShort className="h-[12px] w-[12px] rotate-180" />
-          </Loading>
+    <Layout showHeader={false} showNav={false}>
+      <div className="relative flex flex-col grow font-medium px-6 pt-4 pb-6 overflow-hidden text-sm">
+        <StakingConfirmModal
+          open={confirmModalOpen}
+          setOpen={setConfirmModalOpen}
+          validatorAddress={validatorAddress}
+          stake={`${values.amount} ${symbol}`}
+          apy={apy}
+          timeBeforeStakeRewardsStarts={timeBeforeStakeRewardsStarts}
+          epoch={system?.epoch}
+          startEarningRewardsEpoch={startEarningRewardsEpoch}
+          gas={`${gasBudget} ${symbol}`}
+          isSubmitting={isSubmitting}
+        />
+        <SelectValidatorModal
+          open={selectValidatorsModalOpen}
+          setOpen={setSelectValidatorsConfirmModalOpen}
+        />
+        <div className="mb-6 text-xl text-center font-bold relative">
+          Stake SUI
+          <span
+            className="absolute left-0 top-[7px]"
+            onClick={() => navigate('/staking')}
+          >
+            <IconWrapper>
+              <ArrowShort height={10} width={13} />
+            </IconWrapper>
+          </span>
         </div>
-        <p className="mb-2 flex justify-between">
-          <span className="shrink-0 text-[#a0a0a0]">Staking APY</span>
-          <span>
-            <Loading loading={apyLoading}>
-              {isApyApproxZero ? '~' : ''}
-              {apy}%
-            </Loading>
-          </span>
-        </p>
-        <p className="mb-2 flex justify-between">
-          <span className="text-[#a0a0a0]">Staking rewards start</span>
-          <span>
-            {timeBeforeStakeRewardsStarts > 0 ? (
-              <CountDownTimer
-                endLabel="--"
-                label="in"
-                timestamp={timeBeforeStakeRewardsStarts}
-              />
-            ) : system?.epoch ? (
-              `Epoch #${Number(startEarningRewardsEpoch)}`
-            ) : (
-              '--'
-            )}
-          </span>
-        </p>
-        <p className="mb-2 flex justify-between">
-          <span className="text-[#a0a0a0]">Staking rewards redeemable</span>
-          <span>
-            {timeBeforeStakeRewardsRedeemable > 0 ? (
-              <CountDownTimer
-                endLabel="--"
-                label="in"
-                timestamp={timeBeforeStakeRewardsRedeemable}
-              />
-            ) : system?.epoch ? (
-              `Epoch #${Number(redeemableRewardsEpoch)}`
-            ) : (
-              '--'
-            )}
-          </span>
-        </p>
-        <p className="mb-2 flex justify-between">
-          <span className="text-[#a0a0a0]">Your staked SUI</span>
-          <div>
-            <Loading loading={delegationLoading}>
-              <StakingAmount balance={totalStake} />
+        <div className="flex flex-col px-6 pb-6 mx-[-24px] border-b border-b-[#EFEFEF]">
+          <div
+            className="flex items-center my-6 px-8 py-2 rounded-[30px] bg-[#f2faff] cursor-pointer transition hover:opacity-80 hover:scale-[1.01]"
+            onClick={() => setSelectValidatorsConfirmModalOpen(true)}
+          >
+            <Loading loading={validatorsIsloading}>
+              <ValidatorLogo validatorAddress={validatorAddress} />
+              <ArrowShort className="h-[12px] w-[12px] rotate-180" />
             </Loading>
           </div>
-        </p>
+          <p className="mb-2 flex justify-between">
+            <span className="shrink-0 text-[#a0a0a0]">Staking APY</span>
+            <span>
+              <Loading loading={apyLoading}>
+                {isApyApproxZero ? '~' : ''}
+                {apy}%
+              </Loading>
+            </span>
+          </p>
+          <p className="mb-2 flex justify-between">
+            <span className="text-[#a0a0a0]">Staking rewards start</span>
+            <span>
+              {timeBeforeStakeRewardsStarts > 0 ? (
+                <CountDownTimer
+                  endLabel="--"
+                  label="in"
+                  timestamp={timeBeforeStakeRewardsStarts}
+                />
+              ) : system?.epoch ? (
+                `Epoch #${Number(startEarningRewardsEpoch)}`
+              ) : (
+                '--'
+              )}
+            </span>
+          </p>
+          <p className="mb-2 flex justify-between">
+            <span className="text-[#a0a0a0]">Staking rewards redeemable</span>
+            <span>
+              {timeBeforeStakeRewardsRedeemable > 0 ? (
+                <CountDownTimer
+                  endLabel="--"
+                  label="in"
+                  timestamp={timeBeforeStakeRewardsRedeemable}
+                />
+              ) : system?.epoch ? (
+                `Epoch #${Number(redeemableRewardsEpoch)}`
+              ) : (
+                '--'
+              )}
+            </span>
+          </p>
+          <p className="mb-2 flex justify-between">
+            <span className="text-[#a0a0a0]">Your staked SUI</span>
+            <div>
+              <Loading loading={delegationLoading}>
+                <StakingAmount balance={totalStake} />
+              </Loading>
+            </div>
+          </p>
+        </div>
+        <div className="flex flex-col grow pt-6">
+          <p className="mb-2 flex justify-between">
+            <span>Amount to stake</span>
+            <div className="text-[#a0a0a0]">
+              <Loading loading={loadingSuiBalances}>
+                <span>
+                  {maxToken} {symbol}
+                </span>
+              </Loading>
+            </div>
+          </p>
+          <form className="relative" id="form" onSubmit={handleSubmit}>
+            <CoinIcon
+              type={SUI_TYPE_ARG}
+              className="absolute h-6 w-6 top-[9px] left-4 mr-2 cursor-pointer transition-transform duration-300 ease-in-out hover:scale-110"
+            />
+            <span className="absolute text-sm top-3 left-12">{coinSymbol}</span>
+            <Input
+              id="amount"
+              name="amount"
+              value={values.amount}
+              placeholder="0.00"
+              disabled={loadingSuiBalances}
+              onChange={(e) => {
+                if (
+                  e.target.value !== '' &&
+                  !/^\d+((\.|,)\d{0,9})?$/g.test(e.target.value)
+                ) {
+                  return
+                }
+                handleChange(e)
+              }}
+              onBlur={handleBlur}
+              className="pb-4"
+              inputClassName="rounded px-4 pl-24 text-right"
+              error={touched.amount && errors.amount}
+            />
+          </form>
+          <p className="mb-2 flex justify-between">
+            <span className="text-[#a0a0a0]">Gas budget</span>
+            <div>
+              <Loading loading={!!values.amount && gasLoading}>
+                {gasBudget || '-'} {symbol}
+              </Loading>
+            </div>
+          </p>
+        </div>
+        <Button
+          disabled={
+            loadingSuiBalances ||
+            gasLoading ||
+            !!errors.amount ||
+            !values.amount
+          }
+          loading={isSubmitting}
+          onClick={() => setConfirmModalOpen(true)}
+          type="button"
+        >
+          Stake
+        </Button>
       </div>
-      <div className="flex flex-col grow pt-6">
-        <p className="mb-2 flex justify-between">
-          <span>Amount to stake</span>
-          <div className="text-[#a0a0a0]">
-            <Loading loading={loadingSuiBalances}>
-              <span>
-                {maxToken} {symbol}
-              </span>
-            </Loading>
-          </div>
-        </p>
-        <form className="relative" id="form" onSubmit={handleSubmit}>
-          <CoinIcon
-            type={SUI_TYPE_ARG}
-            className="absolute h-6 w-6 top-[9px] left-4 mr-2 cursor-pointer transition-transform duration-300 ease-in-out hover:scale-110"
-          />
-          <span className="absolute text-sm top-3 left-12">{coinSymbol}</span>
-          <Input
-            id="amount"
-            name="amount"
-            value={values.amount}
-            placeholder="0.00"
-            disabled={loadingSuiBalances}
-            onChange={(e) => {
-              if (
-                e.target.value !== '' &&
-                !/^\d+((\.|,)\d{0,9})?$/g.test(e.target.value)
-              ) {
-                return
-              }
-              handleChange(e)
-            }}
-            onBlur={handleBlur}
-            className="pb-4"
-            inputClassName="rounded px-4 pl-24 text-right"
-            error={touched.amount && errors.amount}
-          />
-        </form>
-        <p className="mb-2 flex justify-between">
-          <span className="text-[#a0a0a0]">Gas budget</span>
-          <div>
-            <Loading loading={!!values.amount && gasLoading}>
-              {gasBudget || '-'} {symbol}
-            </Loading>
-          </div>
-        </p>
-      </div>
-      <Button
-        disabled={
-          loadingSuiBalances || gasLoading || !!errors.amount || !values.amount
-        }
-        form="form"
-        loading={isSubmitting}
-        type="submit"
-      >
-        Stake
-      </Button>
-    </div>
+    </Layout>
   )
 }
 

@@ -20,6 +20,7 @@ type StakingConfirmModalProps = {
   epoch: string | undefined
   startEarningRewardsEpoch: number
   gas: string
+  isSubmitting: boolean
 }
 
 const StakingConfirmModal = ({
@@ -32,6 +33,7 @@ const StakingConfirmModal = ({
   epoch,
   startEarningRewardsEpoch,
   gas,
+  isSubmitting,
 }: StakingConfirmModalProps) => {
   const { data, isLoading } = useGetSystemState()
 
@@ -105,7 +107,13 @@ const StakingConfirmModal = ({
           </p>
         </div>
         <div className="flex flex-col justify-end grow">
-          <Button className="">Confirm</Button>
+          <Button
+            form="form"
+            loading={isSubmitting}
+            type="submit"
+          >
+            Confirm
+          </Button>
         </div>
       </div>
     </Modal>
