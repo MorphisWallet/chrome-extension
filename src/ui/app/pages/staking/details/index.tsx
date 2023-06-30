@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useSearchParams, useNavigate, Navigate, Link } from 'react-router-dom'
+import cl from 'classnames'
 
 import Layout from '_src/ui/app/layouts'
 import { Loading, IconWrapper, Button } from '_src/ui/app/components'
@@ -47,6 +48,9 @@ const StakingDetails = () => {
       ? getDelegationDataByStakeId(allDelegation, stakeIdParams)
       : null
   }, [allDelegation, stakeIdParams])
+
+  const delegationId =
+    delegationData?.status === 'Active' && delegationData?.stakedSuiId
 
   const totalStake = BigInt(delegationData?.principal || 0n)
 
@@ -111,13 +115,18 @@ const StakingDetails = () => {
         <div className="grow" />
         <div className="flex gap-2">
           <Link
-            className="grow"
+            className={cl([
+              'grow',
+              (!totalStake || !delegationId) && 'pointer-events-none	',
+            ])}
             to={`/staking/unstake?${new URLSearchParams({
               address: validatorAddressParams,
               staked: stakeIdParams,
             }).toString()}`}
           >
-            <Button variant="outlined">Unstake</Button>
+            <Button disabled={!totalStake || !delegationId} variant="outlined">
+              Unstake
+            </Button>
           </Link>
           <Link
             className="grow"

@@ -12,12 +12,14 @@ type ValidatorLogoProps = {
   validatorAddress: SuiAddress
   showAddress?: boolean
   iconClassName?: string
+  nameClassName?: string
 }
 
 const ValidatorLogo = ({
   validatorAddress,
   showAddress = false,
   iconClassName,
+  nameClassName,
 }: ValidatorLogoProps) => {
   const { data, isLoading } = useGetSystemState()
 
@@ -42,7 +44,12 @@ const ValidatorLogo = ({
         src={validatorMeta?.imageUrl}
       />
       {!showAddress && (
-        <span className="grow text-left text-ellipsis overflow-hidden">
+        <span
+          className={cl([
+            'grow text-left text-ellipsis overflow-hidden',
+            nameClassName,
+          ])}
+        >
           {validatorMeta?.name || '-'}
         </span>
       )}
