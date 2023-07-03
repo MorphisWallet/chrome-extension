@@ -101,7 +101,7 @@ const LandingPage = () => {
           </div>
         </div>
         {accountAddress && <StakingButton address={accountAddress} />}
-        <div className="flex grow max-h-[286px] overflow-y-auto">
+        <div className="flex grow max-h-[220px] overflow-y-auto">
           <CoinList balancesLoading={isLoading} balances={balances} />
         </div>
       </div>
