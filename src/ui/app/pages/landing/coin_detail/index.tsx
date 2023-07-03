@@ -27,8 +27,6 @@ const CoinDetailPage = () => {
     return <Navigate to="/" replace={true} />
   }
 
-  // const coinInfo = coinMap[coinType]
-
   useEffect(() => {
     if (isError) {
       toast({

@@ -116,7 +116,7 @@ const SendStepTwo = ({ coinType, formikProps }: ConfirmStepTwoProps) => {
     transactionGas
   )
 
-  const coinInfo = coinMap[coinType]
+  const coinInfo = coinMap[coinMetadata?.symbol || '']
 
   const executeTransfer = useMutation({
     mutationFn: async () => {
