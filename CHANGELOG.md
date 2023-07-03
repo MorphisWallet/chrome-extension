@@ -2,6 +2,8 @@
 
 - Add user staking
 - Remove NFT pages
+- Update Morphis logo
+- Update fonts
 
 ## 0.0.8.6 (Jun 19, 2023)
 
