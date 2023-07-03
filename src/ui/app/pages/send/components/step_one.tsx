@@ -45,6 +45,7 @@ const SendStepOne = ({
           type={coinBalance?.coinType || ''}
           className="absolute h-6 w-6 top-[9px] left-4 mr-2 cursor-pointer transition-transform duration-300 ease-in-out hover:scale-110"
           onClick={() => setModalOpen(true)}
+          iconSize={24}
         />
         <span className="absolute text-sm top-3 left-12">{symbol}</span>
         <Input
