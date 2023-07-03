@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 
 import Layout from '_app/layouts'
-import { Button, IconWrapper, Loading } from '_app/components'
+import { Button, IconWrapper, Loading, toast } from '_app/components'
 import ValidatorLogo from '../components/validator_logo'
 import StakingAmount from '../components/staking_amount'
 
@@ -89,14 +89,18 @@ const Unstake = () => {
     transaction
   )
 
-  const unStakeToken = useMutation({
-    mutationFn: async ({ stakedSuiId }: { stakedSuiId: string }) => {
-      if (!stakedSuiId || !signer) {
+  const unstakeToken = useMutation({
+    mutationFn: async () => {
+      if (!totalStake || !delegationId || !gasBudget) {
+        throw new Error('Failed, invalid parameters.')
+      }
+
+      if (!stakeId || !signer) {
         throw new Error('Failed, missing required field.')
       }
 
       try {
-        const transactionBlock = createUnstakeTransaction(stakedSuiId)
+        const transactionBlock = createUnstakeTransaction(stakeId)
         return await signer.signAndExecuteTransactionBlock({
           transactionBlock,
           requestType: 'WaitForLocalExecution',
@@ -107,11 +111,20 @@ const Unstake = () => {
           },
         })
       } catch (error) {
-        //
+        toast({
+          type: 'error',
+          message: (error as Error)?.message,
+        })
       }
     },
     onSuccess: () => {
-      //
+      setTimeout(() => {
+        toast({
+          type: 'success',
+          message: `Successfully unstake stake ${stakeId}`,
+        })
+      }, 100)
+      navigate('/staking')
     },
   })
 
@@ -186,6 +199,7 @@ const Unstake = () => {
             </div>
             <Button
               disabled={!totalStake || !delegationId || !gasBudget}
+              onClick={() => unstakeToken.mutateAsync()}
               type="button"
             >
               Unstake now
