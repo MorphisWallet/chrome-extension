@@ -1,4 +1,9 @@
-## 0.0.9.0 (Jul, 3 2023)
+## 0.0.9.1 (Jul 4, 2023)
+
+- Update coin icons
+- Collapse unrecognized coins
+
+## 0.0.9.0 (Jul 3, 2023)
 
 - Add user staking
 - Remove NFT pages
