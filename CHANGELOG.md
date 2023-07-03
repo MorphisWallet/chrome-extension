@@ -1,3 +1,8 @@
+## 0.0.9.0 (Jul, 3 2023)
+
+- Add user staking
+- Remove NFT pages
+
 ## 0.0.8.6 (Jun 19, 2023)
 
 - SDK and wallet standard upgrade
