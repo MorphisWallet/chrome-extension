@@ -51,7 +51,7 @@ const StakingConfirmModal = ({
     <Modal open={open} onClose={() => setOpen(false)}>
       <div className="flex flex-col grow font-medium px-6 py-4">
         <div className="mb-6 text-xl text-center font-bold relative">
-          Staking confirmed
+          Confirm stake
           <span
             className="absolute left-0 top-[7px]"
             onClick={() => setOpen(false)}
@@ -107,11 +107,7 @@ const StakingConfirmModal = ({
           </p>
         </div>
         <div className="flex flex-col justify-end grow">
-          <Button
-            form="form"
-            loading={isSubmitting}
-            type="submit"
-          >
+          <Button form="form" loading={isSubmitting} type="submit">
             Confirm
           </Button>
         </div>
