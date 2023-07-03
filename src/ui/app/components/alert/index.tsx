@@ -34,7 +34,7 @@ export const Alert = ({
   children,
   className,
 }: AlertProps) => (
-  <div className={cl(['flex items-center font-["satoshi"]', className])}>
+  <div className={cl(['flex items-center font-["general-sans"]', className])}>
     <div className="shrink-0">{mapIcon(type, size)}</div>
     <div className="ml-2 max-h-20 overflow-y-auto">{children}</div>
   </div>
