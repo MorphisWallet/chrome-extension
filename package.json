@@ -1,12 +1,11 @@
 {
   "name": "@morphis/chrome-extension",
-  "version": "0.0.9.0",
+  "version": "0.0.9.1",
   "description": "Morphis - the most friendly wallet on Sui",
   "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=8.0.0"
+    "node": ">=16.18.0"
   },
-  "packageManager": "pnpm@8.6.5",
+  "packageManager": "pnpm@8.6.0+",
   "scripts": {
     "prepare": "husky install",
     "lint": "npx eslint src --ext .js,.jsx,.ts,.tsx",
