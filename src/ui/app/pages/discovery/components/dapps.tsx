@@ -22,7 +22,7 @@ const Card = ({ name, image, link }: DiscoveryAppItem) => (
     target="_blank"
     rel="noreferrer"
     className={cl([
-      'flex flex-col shrink-0 h-[170px] w-[128px] px-1 py-2 border border-[#f2f2f2] shadow-[0_4px_10px_rgba(184, 184, 184, 0.25)] cursor-pointer',
+      'flex flex-col shrink-0 h-[170px] w-[128px] px-1 pt-2 border border-[#f2f2f2] shadow-[0_4px_10px_rgba(184, 184, 184, 0.25)] cursor-pointer',
       'transition hover:scale-105 hover:bg-[#fdede5]',
     ])}
   >
@@ -33,7 +33,7 @@ const Card = ({ name, image, link }: DiscoveryAppItem) => (
         src={`${process.env.COS_URL}/dapps/${image}`}
       />
     </div>
-    <div className="grow mt-2 font-bold truncate">{name}</div>
+    <div className="grow font-bold leading-[42px] truncate">{name}</div>
   </a>
 )
 
