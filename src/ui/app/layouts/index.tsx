@@ -10,6 +10,7 @@ import { useAppSelector, useActiveAddress, useAccountsMeta } from '_hooks'
 
 import CloseIcon from '_assets/icons/close.svg'
 import LandingIcon from '_assets/icons/landing.svg'
+import NftIcon from '_assets/icons/nft.svg'
 import DiscoveryIcon from '_assets/icons/discovery.svg'
 import HistoryIcon from '_assets/icons/history.svg'
 import SettingsIcon from '_assets/icons/settings.svg'
@@ -25,6 +26,10 @@ const ROUTES = [
   {
     name: 'landing',
     icon: LandingIcon,
+  },
+  {
+    name: 'nft',
+    icon: NftIcon,
   },
   {
     name: 'discovery',
@@ -90,6 +95,7 @@ const LayoutBase = ({
               'shrink-0',
               ![
                 '/landing',
+                '/nft',
                 '/discovery',
                 '/history',
                 '/settings',

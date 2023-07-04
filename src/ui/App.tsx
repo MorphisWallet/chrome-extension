@@ -11,6 +11,10 @@ import StakingDetailsPage from '_app/pages/staking/details'
 import StakingNewPage from '_app/pages/staking/new'
 import UnstakePage from './app/pages/staking/unstake'
 
+import NftPage from '_app/pages/nft'
+import NftDetailPage from '_app/pages/nft/nft_detail'
+import NftSend from '_app/pages/nft/nft_send'
+
 import DiscoveryPage from './app/pages/discovery'
 
 import HistoryPage from '_app/pages/history'
@@ -62,6 +66,20 @@ const router = createHashRouter([
       {
         path: 'receive',
         element: <ReceivePage />,
+      },
+      {
+        path: 'nft',
+        element: <NftPage />,
+      },
+      {
+        path: 'nft/:objectId',
+        element: <NftDetailPage />,
+        children: [
+          {
+            path: 'send',
+            element: <NftSend />,
+          },
+        ],
       },
       {
         path: 'discovery',
