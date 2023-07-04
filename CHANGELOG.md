@@ -1,3 +1,11 @@
+## 0.0.9.2 (Jul 5, 2023)
+
+- Update coin icons
+- Remove NFT tab under discovery
+- Restore NFT pages
+- Fix error of getting recent activities
+- Update UI
+
 ## 0.0.9.1 (Jul 4, 2023)
 
 - Update coin icons
