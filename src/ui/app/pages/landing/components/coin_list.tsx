@@ -120,7 +120,7 @@ const CoinList = ({ balancesLoading, balances }: CoinListProps) => {
         {!!unrecognizedBalances?.length && (
           <div className="flex items-center justify-center">
             <div
-              className="flex items-center px-2 py-0.5 rounded-[10px] bg-[#F2FAFF] cursor-pointer transition-opacity hover:opacity-80"
+              className="flex items-center px-2 py-0.5 my-2 rounded-[10px] bg-[#F2FAFF] cursor-pointer transition-opacity hover:opacity-80"
               onClick={() => setCollapsed(!collapsed)}
             >
               <span className="mr-1">
