@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Navigate, Link, useSearchParams } from 'react-router-dom'
 import cl from 'classnames'
+import { SUI_TYPE_ARG } from '@mysten/sui.js'
 
 import Layout from '_app/layouts'
 import { Loading, IconWrapper, Button, CoinIcon, toast } from '_app/components/'
@@ -59,16 +60,23 @@ const CoinDetailPage = () => {
               <span className="text-[#c0c0c0]">{symbol}</span>
             </Loading>
           </div>
-          <Link
-            to={`/send?type=${coinType}`}
-            className={cl([
-              'w-full',
-              (isLoading || !coinBalance?.totalBalance) &&
-                'pointer-events-none',
-            ])}
-          >
-            <Button disabled={isLoading}>Send</Button>
-          </Link>
+          <div className="w-full flex gap-2">
+            <Link
+              to={`/send?type=${coinType}`}
+              className={cl([
+                'w-full',
+                (isLoading || !coinBalance?.totalBalance) &&
+                  'pointer-events-none',
+              ])}
+            >
+              <Button disabled={isLoading}>Send</Button>
+            </Link>
+            {coinType === SUI_TYPE_ARG && (
+              <Link to="/staking" className="w-full">
+                <Button variant="outlined">Stake</Button>
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </Layout>
