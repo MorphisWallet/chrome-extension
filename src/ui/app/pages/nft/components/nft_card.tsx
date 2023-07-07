@@ -1,12 +1,9 @@
-import { useMemo } from 'react'
 import cl from 'classnames'
 import { formatAddress } from '@mysten/sui.js'
 
 import { Loading } from '_app/components'
 
 import { useGetNFTMeta } from '_hooks'
-import { useGetDynamicFields } from '_src/ui/core/hooks/useGetDynamicFields'
-import { useGetDynamicFieldObject } from '_src/ui/core/hooks/useGetDynamicFieldObject'
 
 type NftCardProps = {
   objectId: string
@@ -16,26 +13,9 @@ type NftCardProps = {
 
 const NftCard = ({ objectId, imageOnly = false, className }: NftCardProps) => {
   const { data: nftMeta, isLoading } = useGetNFTMeta(objectId)
-  const { data: dynamicFields } = useGetDynamicFields(nftMeta?.kiosk || '')
-
-  const kioskItem = useMemo(
-    () =>
-      dynamicFields?.pages?.[0]?.data?.find(
-        (_item) => _item?.name?.type === '0x2::kiosk::Item'
-      ),
-    [dynamicFields]
-  )
-
-  const { data: kioskField } = useGetDynamicFieldObject(nftMeta?.kiosk || '', {
-    type: kioskItem?.name.type || '',
-    value: kioskItem?.name.value,
-  })
 
   const nftName = nftMeta?.name || formatAddress(objectId)
-  const nftImageUrl =
-    // eslint-disable-next-line
-    // @ts-ignore
-    nftMeta?.imageUrl || kioskField?.data?.content?.fields?.url || ''
+  const nftImageUrl = nftMeta?.imageUrl || ''
 
   return (
     <div className={cl(['flex flex-col grow', className])}>
