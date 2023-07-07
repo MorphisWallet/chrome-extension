@@ -35,6 +35,7 @@ const NftDetail = () => {
 
   const isTransferable = !!objectData && hasPublicTransfer(objectData)
   const { nftFields, fileExtensionType, filePath } = useNFTBasicData(objectData)
+
   // Extract either the attributes, or use the top-level NFT fields:
   const metaFields =
     nftFields?.metadata?.fields?.attributes?.fields ||
@@ -94,7 +95,7 @@ const NftDetail = () => {
         </div>
         <div className="flex flex-col grow px-6 py-4 -mx-6 -mb-6 overflow-y-auto">
           <NftCard
-            className="h-[308px] shrink-0 mb-2 rounded bg-[#f0f0f0] overflow-hidden"
+            className="h-[308px] max-h-[308px] shrink-0 mb-2 rounded bg-[#f0f0f0] overflow-hidden"
             imageOnly
             objectId={objectId}
           />

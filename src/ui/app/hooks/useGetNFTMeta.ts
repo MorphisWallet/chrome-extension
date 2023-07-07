@@ -1,8 +1,8 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getObjectDisplay } from '@mysten/sui.js'
 import { useMemo } from 'react'
+import { getObjectDisplay } from '@mysten/sui.js'
 
 import { useGetObject } from './useGetObject'
 
@@ -20,7 +20,7 @@ export function useGetNFTMeta(objectID: string) {
     if (!display.data) {
       return null
     }
-    const { name, description, creator, image_url, link, project_url, kiosk } =
+    const { name, description, creator, image_url, link, project_url } =
       display.data
     return {
       name: name || null,
@@ -29,7 +29,6 @@ export function useGetNFTMeta(objectID: string) {
       link: link || null,
       projectUrl: project_url || null,
       creator: creator || null,
-      kiosk: kiosk || null,
     }
   }, [resp])
   return {
