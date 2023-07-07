@@ -2,11 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useGetOwnedObjects } from '_src/ui/core/hooks/useGetOwnedObjects'
-import { useGetOriginByteKioskContents } from '_src/ui/core/hooks/useGetOriginByteKioskContents'
-import { hasDisplayData } from '_src/ui/core/utils/hasDisplayData'
-import useAppSelector from './useAppSelector'
-
+import { useGetKioskContents } from '_src/ui/core/hooks/useGetKioskContents'
 import type { SuiObjectData, SuiAddress } from '@mysten/sui.js'
+
+import { hasDisplayData } from '_src/ui/core/utils/hasDisplayData'
+
+import useAppSelector from './useAppSelector'
 
 export function useGetNFTs(address?: SuiAddress | null) {
   const {
@@ -26,18 +27,17 @@ export function useGetNFTs(address?: SuiAddress | null) {
     50
   )
   const { apiEnv } = useAppSelector((state) => state.app)
+  const disableOriginByteKiosk = apiEnv !== 'mainnet'
 
-  const shouldFetchKioskContents = apiEnv === 'mainnet'
-  const { data: obKioskContents, isLoading: areKioskContentsLoading } =
-    useGetOriginByteKioskContents(address, !shouldFetchKioskContents)
+  const { data: kioskData, isLoading: areKioskContentsLoading } =
+    useGetKioskContents(address, disableOriginByteKiosk)
 
-  const filteredKioskContents =
-    obKioskContents
-      ?.filter(hasDisplayData)
-      .map(({ data }) => data as SuiObjectData) || []
+  const filteredKioskContents = (kioskData?.list ?? [])
+    .filter(hasDisplayData)
+    .map(({ data }) => (data as SuiObjectData) || [])
 
   const nfts = [
-    ...filteredKioskContents,
+    ...(filteredKioskContents ?? []),
     ...(data?.pages
       .flatMap((page) => page.data)
       .filter(hasDisplayData)
@@ -50,8 +50,7 @@ export function useGetNFTs(address?: SuiAddress | null) {
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
-    isLoading:
-      isLoading || (shouldFetchKioskContents && areKioskContentsLoading),
+    isLoading: isLoading || areKioskContentsLoading,
     isError: isError,
     error,
   }
