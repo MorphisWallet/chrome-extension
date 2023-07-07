@@ -1,9 +1,13 @@
+## 0.0.9.3 (Jul 7, 2023)
+
+- Fix the issue that some kiosk NFTs will not display
+
 ## 0.0.9.2 (Jul 5, 2023)
 
 - Update coin icons
 - Remove NFT tab under discovery
 - Restore NFT pages
-- Fix error of getting recent activities
+- Fix the error of getting recent activities
 - Update UI
 
 ## 0.0.9.1 (Jul 4, 2023)
@@ -13,8 +17,7 @@
 
 ## 0.0.9.0 (Jul 3, 2023)
 
-- Add user staking
-- Remove NFT pages
+- Provide ability to stake
 - Update Morphis logo
 - Update fonts
 
@@ -121,7 +124,7 @@
 
 ## 0.0.5.0 (Jan 11, 2023)
 
-- Provide ability to created derived wallet accounts
+- Provide ability to create derived wallet accounts
 
 ## 0.0.4.0 (Dec 26, 2022)
 
