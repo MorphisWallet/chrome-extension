@@ -11,8 +11,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Input, Button, TxLink, toast } from '_app/components'
 
 import { useActiveAddress, useOwnedNFT, useSigner } from '_hooks'
-import { useGetOriginByteKioskContents } from '_src/ui/core/hooks/useGetOriginByteKioskContents'
 import { useTransferKioskItem } from './useTransferKioskItem'
+import { useGetKioskContents } from '_src/ui/core/hooks/useGetKioskContents'
 
 import { suiAddressValidation } from '_src/ui/utils/validation'
 import { getSignerOperationErrorMessage } from '_src/ui/app/helpers/errorMessages'
@@ -26,15 +26,18 @@ const NftSend = () => {
   const navigate = useNavigate()
   const { objectId = '' } = useParams()
   const queryClient = useQueryClient()
-
   const signer = useSigner()
   const address = useActiveAddress()
+  const { data: kiosk } = useGetKioskContents(address)
   const { data: ownedNFT, isLoading } = useOwnedNFT(objectId || '', address)
-  const kioskContents = useGetOriginByteKioskContents(address)
   const transferKioskItem = useTransferKioskItem({
     objectId,
     objectType: ownedNFT?.type,
   })
+
+  const isContainedInKiosk = kiosk?.list.some(
+    (kioskItem) => kioskItem.data?.objectId === objectId
+  )
 
   const {
     values,
@@ -66,19 +69,6 @@ const NftSend = () => {
         throw new Error('Missing data')
       }
 
-      // if (suiNSEnabled && isSuiNSName(to)) {
-      //   const address = await rpc.resolveNameServiceAddress({
-      //     name: to,
-      //   })
-      //   if (!address) {
-      //     throw new Error('SuiNS name not found.')
-      //   }
-      //   to = address
-      // }
-
-      const isContainedInKiosk = kioskContents?.data?.some(
-        (kioskItem) => kioskItem.data?.objectId === objectId
-      )
       if (isContainedInKiosk) {
         return transferKioskItem.mutateAsync(to)
       }
@@ -128,6 +118,19 @@ const NftSend = () => {
 
   const isTransferable = !!ownedNFT && hasPublicTransfer(ownedNFT)
 
+  if (isContainedInKiosk) {
+    return (
+      <a
+        className="w-full"
+        href="https://docs.sui.io/build/sui-kiosk"
+        rel="noreferrer"
+        target="_blank"
+      >
+        <Button className="w-full">Learn more about Kiosks</Button>
+      </a>
+    )
+  }
+
   return (
     <form onSubmit={handleSubmit}>
       <label htmlFor="address">Address</label>
@@ -136,7 +139,7 @@ const NftSend = () => {
         name="address"
         className="mb-3.5"
         inputClassName="px-4 rounded-[4px] mb-0"
-        disabled={isSubmitting}
+        disabled={isSubmitting || isContainedInKiosk}
         value={values.address}
         error={touched.address && errors.address}
         placeholder="Address or SUI name"
