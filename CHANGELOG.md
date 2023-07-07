@@ -1,4 +1,4 @@
-## 0.0.9.3 (Jul 7, 2023)
+## 0.0.9.4 (Jul 7, 2023)
 
 - Fix the issue that kiosk NFTs details will not be found
 - Add kiosk doc link for non-transferable kiosk NFTs
