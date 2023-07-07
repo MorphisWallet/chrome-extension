@@ -15,6 +15,7 @@ import {
   useNFTBasicData,
   useGetNFTMeta,
 } from '_hooks'
+import { useGetKioskContents } from '_src/ui/core/hooks/useGetKioskContents'
 
 import { ExplorerLinkType } from '_src/ui/app/components/tx_link/types'
 
@@ -32,6 +33,7 @@ const NftDetail = () => {
     isError,
     error,
   } = useOwnedNFT(objectId || '', accountAddress)
+  const { data: kiosk } = useGetKioskContents(accountAddress)
 
   const isTransferable = !!objectData && hasPublicTransfer(objectData)
   const { nftFields, fileExtensionType, filePath } = useNFTBasicData(objectData)
@@ -66,6 +68,10 @@ const NftDetail = () => {
       })
     }
   }, [isError])
+
+  const isContainedInKiosk = kiosk?.kiosks.sui.some(
+    (kioskItem) => kioskItem.data?.objectId === objectId
+  )
 
   const renderNft = () => {
     if (!objectData) {
@@ -165,8 +171,18 @@ const NftDetail = () => {
                 </Disclosure>
               </div>
               <div className="flex gap-2 shrink-0">
-                <Link to="./send" className="w-full">
-                  <Button disabled={!isTransferable}>Send</Button>
+                <Link
+                  to="./send"
+                  className={cl([
+                    'w-full',
+                    !isTransferable ||
+                      (isContainedInKiosk &&
+                        'pointer-events-none cursor-not-allowed'),
+                  ])}
+                >
+                  <Button disabled={!isTransferable || isContainedInKiosk}>
+                    Send
+                  </Button>
                 </Link>
                 <Button
                   data-tooltip-content="Coming soon"
@@ -178,6 +194,16 @@ const NftDetail = () => {
                 </Button>
                 <Tooltip id="button-tip" className="before:hidden" />
               </div>
+              {isContainedInKiosk && (
+                <a
+                  className="w-full mt-2"
+                  href="https://docs.sui.io/build/sui-kiosk"
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  <Button className="w-full">Learn more about Kiosks</Button>
+                </a>
+              )}
             </Loading>
           )}
         </div>

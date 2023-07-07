@@ -35,7 +35,7 @@ const NftSend = () => {
     objectType: ownedNFT?.type,
   })
 
-  const isContainedInKiosk = kiosk?.list.some(
+  const isContainedInKiosk = kiosk?.kiosks.sui.some(
     (kioskItem) => kioskItem.data?.objectId === objectId
   )
 
