@@ -96,8 +96,8 @@ dependencies:
     specifier: ^3.0.0
     version: 3.0.0
   swiper:
-    specifier: ^9.4.1
-    version: 9.4.1
+    specifier: ^12.0.0
+    version: 12.0.0
   tailwindcss:
     specifier: ^3.3.2
     version: 3.3.2(ts-node@10.9.1)
@@ -10594,10 +10594,6 @@ packages:
       tweetnacl: 0.14.5
     dev: true
 
-  /ssr-window@4.0.2:
-    resolution: {integrity: sha512-ISv/Ch+ig7SOtw7G2+qkwfVASzazUnvlDTwypdLoPoySv+6MqlOV10VwPSE6EWkGjhW50lUmghPmpYZXMu/+AQ==}
-    dev: false
-
   /stack-utils@2.0.6:
     resolution: {integrity: sha512-XlkWvfIm6RmsWtNJx+uqtKLS8eqFbxUg0ZzLXqY0caEy9l7hruX8IpiDnjsLavoBgqCCR71TqWO8MaXYheJ3RQ==}
     engines: {node: '>=10'}
@@ -10862,11 +10858,9 @@ packages:
       picocolors: 1.0.0
     dev: true
 
-  /swiper@9.4.1:
-    resolution: {integrity: sha512-1nT2T8EzUpZ0FagEqaN/YAhRj33F2x/lN6cyB0/xoYJDMf8KwTFT3hMOeoB8Tg4o3+P/CKqskP+WX0Df046fqA==}
+  /swiper@12.0.0:
+    resolution: {integrity: sha512-kFHBbYk+muKIljUCTkJV3kp/F7kwTfhfLYJB5bM7Uns2KFDG9r9GksFc+KI9jUEcu7AoFlY4QLBrmS8rTuMTmw==}
     engines: {node: '>= 4.7.0'}
-    dependencies:
-      ssr-window: 4.0.2
     dev: false
 
   /synckit@0.8.5:
