@@ -7,7 +7,7 @@ settings:
 dependencies:
   '@headlessui/react':
     specifier: ^1.7.15
-    version: 1.7.15(react-dom@18.2.0)(react@18.2.0)
+    version: 1.7.19(react-dom@18.2.0)(react@18.2.0)
   '@metamask/browser-passworder':
     specifier: ^4.1.0
     version: 4.1.0
@@ -2745,13 +2745,14 @@ packages:
       typescript: 5.1.6
     dev: false
 
-  /@headlessui/react@1.7.15(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-OTO0XtoRQ6JPB1cKNFYBZv2Q0JMqMGNhYP1CjPvcJvjz8YGokz8oAj89HIYZGN0gZzn/4kk9iUpmMF4Q21Gsqw==}
+  /@headlessui/react@1.7.19(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-Ll+8q3OlMJfJbAKM/+/Y2q6PPYbryqNTXDbryx7SXLIDamkF6iQFbriYHga0dY44PvDhvvBWCx1Xj4U5+G4hOw==}
     engines: {node: '>=10'}
     peerDependencies:
       react: ^16 || ^17 || ^18
       react-dom: ^16 || ^17 || ^18
     dependencies:
+      '@tanstack/react-virtual': 3.14.10(react-dom@18.2.0)(react@18.2.0)
       client-only: 0.0.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -3535,6 +3536,21 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       use-sync-external-store: 1.2.0(react@18.2.0)
+    dev: false
+
+  /@tanstack/react-virtual@3.14.10(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-SRyoUbdFMRHuYXMijV5H4ZarQWpXkj3iANq8OFre+pybeVap8ZJjZ3Nz9bVjx4d8PfobVUQUdKyyyHYk3E+djw==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    dependencies:
+      '@tanstack/virtual-core': 3.17.8
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /@tanstack/virtual-core@3.17.8:
+    resolution: {integrity: sha512-BfEvehNpOT75r5Ksc5xW6NZuXujTfb7nlSEyVu4XHG3gdxNg1KqXruWbDewXOUaUYIo4oRbSfkjIajz4MAT8tA==}
     dev: false
 
   /@trysound/sax@0.2.0:
@@ -4769,7 +4785,7 @@ packages:
     hasBin: true
     optionalDependencies:
       dtrace-provider: 0.8.8
-      moment: 2.29.4
+      moment: 2.30.1
       mv: 2.1.1
       safe-json-stringify: 1.2.0
     dev: true
@@ -4938,7 +4954,7 @@ packages:
       normalize-path: 3.0.0
       readdirp: 3.6.0
     optionalDependencies:
-      fsevents: 2.3.2
+      fsevents: 2.3.3
     dev: false
 
   /chrome-launcher@0.15.1:
@@ -6597,8 +6613,8 @@ packages:
   /fs.realpath@1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
 
-  /fsevents@2.3.2:
-    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
+  /fsevents@2.3.3:
+    resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     requiresBuild: true
@@ -7666,7 +7682,7 @@ packages:
       micromatch: 4.0.5
       walker: 1.0.8
     optionalDependencies:
-      fsevents: 2.3.2
+      fsevents: 2.3.3
     dev: true
 
   /jest-leak-detector@29.6.1:
@@ -8579,8 +8595,8 @@ packages:
       ufo: 1.1.2
     dev: true
 
-  /moment@2.29.4:
-    resolution: {integrity: sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==}
+  /moment@2.30.1:
+    resolution: {integrity: sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==}
     requiresBuild: true
     dev: true
     optional: true
@@ -10256,7 +10272,7 @@ packages:
     engines: {node: '>=14.18.0', npm: '>=8.0.0'}
     hasBin: true
     optionalDependencies:
-      fsevents: 2.3.2
+      fsevents: 2.3.3
     dev: true
 
   /run-applescript@5.0.0:
@@ -11499,7 +11515,7 @@ packages:
       postcss: 8.4.25
       rollup: 3.26.2
     optionalDependencies:
-      fsevents: 2.3.2
+      fsevents: 2.3.3
     dev: true
 
   /vitest@0.33.0:
